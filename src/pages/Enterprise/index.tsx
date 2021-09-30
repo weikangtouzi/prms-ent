@@ -4,9 +4,13 @@ import { useState } from 'react';
 import Base from '@/pages/Enterprise/base';
 import Intro from '@/pages/Enterprise/intro';
 import Bonus from '@/pages/Enterprise/bonus';
+import Team from '@/pages/Enterprise/team';
+import Experience from '@/pages/Enterprise/experience';
+import ProIntro from '@/pages/Enterprise/proIntro';
+import Ip from '@/pages/Enterprise/ip';
 
 const Enterprise = () => {
-  const [tabKey, setTabKey] = useState('bonus');
+  const [tabKey, setTabKey] = useState('production-introduction');
   return (
     <PageHeaderWrapper
       tabList={[
@@ -48,6 +52,10 @@ const Enterprise = () => {
         {tabKey === 'base' && <Base />}
         {tabKey === 'introduction' && <Intro />}
         {tabKey === 'bonus' && <Bonus />}
+        {tabKey === 'team' && <Team />}
+        {tabKey === 'experience' && <Experience />}
+        {tabKey === 'production-introduction' && <ProIntro />}
+        {tabKey === 'ip' && <Ip />}
       </Card>
     </PageHeaderWrapper>
   );
