@@ -8,41 +8,52 @@ import Team from '@/pages/Enterprise/team';
 import Experience from '@/pages/Enterprise/experience';
 import ProIntro from '@/pages/Enterprise/proIntro';
 import Ip from '@/pages/Enterprise/ip';
+import Auth from '@/pages/Enterprise/auth';
+
+const hasAuthTab = [
+  {
+    tab: '基本信息',
+    key: 'base',
+  },
+  {
+    tab: '公司介绍',
+    key: 'introduction',
+  },
+  {
+    tab: '公司福利',
+    key: 'bonus',
+  },
+  {
+    tab: '公司形象',
+    key: 'ip',
+  },
+  {
+    tab: '产品介绍',
+    key: 'production-introduction',
+  },
+  {
+    tab: '团队成员',
+    key: 'team',
+  },
+  {
+    tab: '工作体验',
+    key: 'experience',
+  },
+];
+
+const noAuth = [
+  {
+    tab: '企业认证',
+    key: 'auth',
+  },
+];
 
 const Enterprise = () => {
-  const [tabKey, setTabKey] = useState('production-introduction');
+  const [tabKey, setTabKey] = useState('auth');
+  const [authed] = useState(false);
   return (
     <PageHeaderWrapper
-      tabList={[
-        {
-          tab: '基本信息',
-          key: 'base',
-        },
-        {
-          tab: '公司介绍',
-          key: 'introduction',
-        },
-        {
-          tab: '公司福利',
-          key: 'bonus',
-        },
-        {
-          tab: '公司形象',
-          key: 'ip',
-        },
-        {
-          tab: '产品介绍',
-          key: 'production-introduction',
-        },
-        {
-          tab: '团队成员',
-          key: 'team',
-        },
-        {
-          tab: '工作体验',
-          key: 'experience',
-        },
-      ]}
+      tabList={authed ? hasAuthTab : noAuth}
       tabActiveKey={tabKey}
       onTabChange={(key) => {
         setTabKey(key);
@@ -56,6 +67,7 @@ const Enterprise = () => {
         {tabKey === 'experience' && <Experience />}
         {tabKey === 'production-introduction' && <ProIntro />}
         {tabKey === 'ip' && <Ip />}
+        {tabKey === 'auth' && <Auth />}
       </Card>
     </PageHeaderWrapper>
   );
