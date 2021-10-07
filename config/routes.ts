@@ -28,19 +28,18 @@
     name: 'enterprise',
     icon: 'table',
     path: '/enterprise',
-    component: './Enterprise',
     routes: [
       {
         path: '/enterprise/info',
         name: 'info',
         icon: 'smile',
-        component: './Enterprise',
+        component: './Enterprise/index.tsx',
       },
       {
         path: '/enterprise/member',
         name: 'member',
         icon: 'smile',
-        component: './Enterprise',
+        component: './Enterprise/member.tsx',
       },
       {
         path: '/enterprise/asset',

@@ -1,14 +1,14 @@
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { Card } from 'antd';
 import { useState } from 'react';
-import Base from '@/pages/Enterprise/base';
-import Intro from '@/pages/Enterprise/intro';
-import Bonus from '@/pages/Enterprise/bonus';
-import Team from '@/pages/Enterprise/team';
-import Experience from '@/pages/Enterprise/experience';
-import ProIntro from '@/pages/Enterprise/proIntro';
-import Ip from '@/pages/Enterprise/ip';
-import Auth from '@/pages/Enterprise/auth';
+import Base from '@/pages/Enterprise/common/base';
+import Intro from '@/pages/Enterprise/common/intro';
+import Bonus from '@/pages/Enterprise/common/bonus';
+import Team from '@/pages/Enterprise/common/team';
+import Experience from '@/pages/Enterprise/common/experience';
+import ProIntro from '@/pages/Enterprise/common/proIntro';
+import Ip from '@/pages/Enterprise/common/ip';
+import Auth from '@/pages/Enterprise/common/auth';
 
 const hasAuthTab = [
   {
