@@ -45,7 +45,7 @@
         path: '/enterprise/asset',
         name: 'asset',
         icon: 'smile',
-        component: './Enterprise',
+        component: './Enterprise/assets.tsx',
       },
     ],
   },

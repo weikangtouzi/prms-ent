@@ -9,3 +9,53 @@
     }
   }
 }
+.capital{
+  :global{
+    .ant-card{
+      border-radius: 3px;
+    }
+  }
+  .withdraw{
+    border: 1px solid white;
+    border-radius: 3px;
+    padding: 2px 5px;
+    float: right;
+    cursor: pointer;
+    &:hover{
+      background: rgba(255,255,255,0.15);
+    }
+  }
+}
+
+.chartTitle{
+  font-size: 15px;
+  line-height: 22px;
+  color:#00DA8A;
+  font-weight: 500;
+}
+.chartTotal {
+  height: 38px;
+  margin: 20px 0 22px;
+  overflow: hidden;
+  font-size: 25px;
+  line-height: 38px;
+  white-space: nowrap;
+  padding: 0;
+  display: inline-block;
+  text-overflow: ellipsis;
+  word-break: break-all;
+}
+.chartSum{
+  background: linear-gradient(315deg, #81E3AE 0%, #54D693 100%);
+  color:white;
+  .chartTitle{
+    color:white
+  }
+}
+.chartIncome{
+  background: linear-gradient(135deg, #3469FF 0%, #4B7AFF 100%);
+  color:white;
+  .chartTitle{
+    color:white
+  }
+}
