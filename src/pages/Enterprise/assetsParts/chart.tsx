@@ -1,4 +1,5 @@
 import {Card, Col, Row} from "antd";
+import {history} from "umi";
 import  numeral from "numeral";
 import styles from '../index.less'
 
@@ -25,6 +26,9 @@ const sideColResponsiveProps = {
 const yuan = (val: number | string) => `¥ ${numeral(val).format('0,0')}`;
 
 const Chart= ()=>{
+  const goToWithDraw = ()=>{
+    history.push('/enterprise/withdraw')
+  }
   return <Row justify="space-between">
     <Col {...topColResponsiveProps}>
       <Card bodyStyle={bodyStyle} className={styles.chartSum}>
@@ -54,7 +58,7 @@ const Chart= ()=>{
       <Card bodyStyle={bodyStyle} className={styles.chartIncome}>
         <div className={styles.chartTitle}>
           <span>课程售卖收入</span>
-          <span className={styles.withdraw}>提现</span>
+          <span className={styles.withdraw} onClick={goToWithDraw}>提现</span>
         </div>
         <div className={styles.chartTotal}>123650</div>
       </Card>

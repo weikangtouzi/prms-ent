@@ -1,7 +1,9 @@
-import {useRef} from 'react';
+import {useRef, useState} from 'react';
 import {Avatar} from 'antd';
 import type {ProColumns, ActionType} from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
+import Share from './share'
+import Transfer from './transfer'
 import request from 'umi-request';
 
 type GithubIssueItem = {
@@ -25,6 +27,9 @@ type GithubIssueItem = {
 export default () => {
   const actionRef = useRef<ActionType>();
 
+  const [shareModalShow,setShareModalShow] = useState(false)
+  const [transferModalShow,setTransferModalShow] = useState(true)
+
   const columns: ProColumns<GithubIssueItem>[] = [
     {
       dataIndex: 'avatar',
@@ -47,6 +52,7 @@ export default () => {
     {
       title: '描述',
       dataIndex: 'title',
+      hideInSearch:true,
       ellipsis: true,
       formItemProps: {
         rules: [
@@ -102,6 +108,16 @@ export default () => {
         dateFormatter="string"
         options={false}
         toolBarRender={false}
+      />
+      <Share
+        handleCancel={()=>{setShareModalShow(false)}}
+        handleOk={()=>{setShareModalShow(false)}}
+        isModalVisible={shareModalShow}
+      />
+      <Transfer
+        handleCancel={()=>{setTransferModalShow(false)}}
+        handleOk={()=>{setTransferModalShow(false)}}
+        isModalVisible={transferModalShow}
       />
     </div>
   );
