@@ -26,6 +26,7 @@ export default {
   'menu.enterprise.info': '企业信息',
   'menu.enterprise.member': '成员管理',
   'menu.enterprise.asset': '资产管理',
+  'menu.enterprise.account': '账户信息',
   'menu.list.table-list': '查询表格',
   'menu.list.basic-list': '标准列表',
   'menu.list.card-list': '卡片列表',

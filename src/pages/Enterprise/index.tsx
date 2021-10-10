@@ -50,7 +50,7 @@ const noAuth = [
 
 const Enterprise = () => {
   const [tabKey, setTabKey] = useState('base');
-  const [authed] = useState(false);
+  const [authed] = useState(true);
   return (
     <PageHeaderWrapper
       tabList={authed ? hasAuthTab : noAuth}

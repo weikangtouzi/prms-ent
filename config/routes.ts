@@ -49,6 +49,13 @@
         component: './Enterprise/assets.tsx',
       },
       {
+        path: '/enterprise/account',
+        name: 'account',
+        icon: 'smile',
+        fastRefresh:true,
+        component: './Enterprise/account.tsx',
+      },
+      {
         path: '/enterprise/withdraw',
         name: 'asset',
         icon: 'smile',
