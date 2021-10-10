@@ -1,10 +1,11 @@
 import {Tabs} from 'antd';
 import Capital from './assetsParts/capital'
 import Detail from './assetsParts/detail'
+import Balance from './assetsParts/balance'
 
 const {TabPane} = Tabs;
 const Assets = () => {
-  return <Tabs defaultActiveKey="income-out">
+  return <Tabs defaultActiveKey="balance">
     <TabPane tab="资产分布" key="capital">
       <Capital/>
     </TabPane>
@@ -12,7 +13,7 @@ const Assets = () => {
       <Detail/>
     </TabPane>
     <TabPane tab="结算信息" key="balance">
-      Content of Tab Pane 2
+      <Balance/>
     </TabPane>
   </Tabs>
 }
