@@ -49,7 +49,7 @@ const noAuth = [
 ];
 
 const Enterprise = () => {
-  const [tabKey, setTabKey] = useState('auth');
+  const [tabKey, setTabKey] = useState('base');
   const [authed] = useState(false);
   return (
     <PageHeaderWrapper
