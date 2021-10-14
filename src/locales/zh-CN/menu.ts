@@ -23,6 +23,8 @@ export default {
   'menu.form.advanced-form': '高级表单',
   'menu.list': '列表页',
   'menu.enterprise': '企业管理',
+  'menu.userinfo': '个人信息',
+  'menu.userinfo.index': '我的资料',
   'menu.enterprise.info': '企业信息',
   'menu.enterprise.member': '成员管理',
   'menu.enterprise.asset': '资产管理',

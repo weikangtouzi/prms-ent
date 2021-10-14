@@ -65,6 +65,19 @@
     ],
   },
   {
+    name: 'userinfo',
+    icon: 'table',
+    path: '/userinfo',
+    routes: [
+      {
+        path: '/userinfo/index',
+        name: 'index',
+        icon: 'smile',
+        component: './user/info/index.tsx',
+      }
+    ],
+  },
+  {
     path: '/admin',
     name: 'admin',
     icon: 'crown',
