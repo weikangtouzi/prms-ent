@@ -26,7 +26,7 @@
   },
   {
     name: 'enterprise',
-    icon: 'table',
+    icon: 'audit',
     path: '/enterprise',
     routes: [
       {
@@ -66,7 +66,7 @@
   },
   {
     name: 'userinfo',
-    icon: 'table',
+    icon: 'solution',
     path: '/userinfo',
     routes: [
       {
@@ -74,6 +74,19 @@
         name: 'index',
         icon: 'smile',
         component: './user/info/index.tsx',
+      }
+    ],
+  },
+  {
+    name: 'message',
+    icon: 'message',
+    path: '/message',
+    routes: [
+      {
+        path: '/message/index',
+        name: 'index',
+        icon: 'smile',
+        component: './message/index.tsx',
       }
     ],
   },

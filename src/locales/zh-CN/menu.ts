@@ -25,6 +25,8 @@ export default {
   'menu.enterprise': '企业管理',
   'menu.userinfo': '个人信息',
   'menu.userinfo.index': '我的资料',
+  'menu.message': '系统通知',
+  'menu.message.index': '消息中心',
   'menu.enterprise.info': '企业信息',
   'menu.enterprise.member': '成员管理',
   'menu.enterprise.asset': '资产管理',
