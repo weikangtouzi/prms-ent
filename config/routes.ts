@@ -64,6 +64,7 @@
       },
     ],
   },
+
   {
     name: 'userinfo',
     icon: 'solution',
@@ -91,30 +92,83 @@
     ],
   },
   {
-    path: '/admin',
-    name: 'admin',
-    icon: 'crown',
-    access: 'canAdmin',
-    component: './Admin',
+    name: 'employ',
+    icon: 'alert',
+    path: '/employ',
     routes: [
       {
-        path: '/admin/sub-page',
-        name: 'sub-page',
+        path: '/employ/position',
+        name: 'position',
         icon: 'smile',
-        component: './Welcome',
+        routes: [
+          {
+            path:'/employ/position',
+            name: 'position',
+            icon: 'smile',
+            hideInMenu:true,
+            component: './Employ/index.tsx',
+          },
+          {
+            path:'/employ/position/publish',
+            name: 'publish',
+            icon: 'smile',
+            hideInMenu:true,
+            component: './Employ/publish.tsx',
+          },
+          {
+            path:'/employ/position/edit',
+            name: 'edit',
+            icon: 'smile',
+            hideInMenu:true,
+            component: './Employ/edit.tsx',
+          }
+        ]
       },
       {
-        component: './404',
+        path: '/employ/people',
+        name: 'people',
+        icon: 'smile',
+        component: './Employ/people.tsx',
+      },
+      {
+        path: '/employ/search',
+        name: 'search',
+        icon: 'smile',
+        component: './Employ/search.tsx',
+      },
+      {
+        path: '/employ/recruitment',
+        name: 'recruitment',
+        icon: 'smile',
+        component: './Employ/recruitment.tsx',
       },
     ],
   },
-
-  {
-    name: 'list.table-list',
-    icon: 'table',
-    path: '/list',
-    component: './TableList',
-  },
+  // {
+  //   path: '/admin',
+  //   name: 'admin',
+  //   icon: 'crown',
+  //   access: 'canAdmin',
+  //   component: './Admin',
+  //   routes: [
+  //     {
+  //       path: '/admin/sub-page',
+  //       name: 'sub-page',
+  //       icon: 'smile',
+  //       component: './Welcome',
+  //     },
+  //     {
+  //       component: './404',
+  //     },
+  //   ],
+  // },
+  //
+  // {
+  //   name: 'list.table-list',
+  //   icon: 'table',
+  //   path: '/list',
+  //   component: './TableList',
+  // },
   {
     path: '/',
     redirect: '/welcome',

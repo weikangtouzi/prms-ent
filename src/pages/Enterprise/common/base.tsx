@@ -2,6 +2,7 @@ import { Form, Input, Row, Col, Button, Cascader, Upload } from 'antd';
 import { useLayoutEffect, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { tailFormItemLayout, formItemLayout } from '@/common/js/config';
+import {ProFormText} from "@ant-design/pro-form";
 
 const residences = [
   {
@@ -130,9 +131,7 @@ const Base = () => {
         }}
         scrollToFirstError
       >
-        <Form.Item name="fullName" label="全称">
-          <Input className="bold" disabled />
-        </Form.Item>
+        <ProFormText name="fullName" label="全称" readonly={true}/>
         <Form.Item
           name="logo"
           label="logo"
@@ -200,7 +199,7 @@ const Base = () => {
           <Input />
         </Form.Item>
 
-        <Form.Item label="公司地址" style={{ marginBottom: '6px' }}>
+        <Form.Item label="公司地址" style={{ marginBottom: '0' }}>
           <Form.Item name="region" rules={[{ required: true }]}>
             <Cascader options={residences} />
           </Form.Item>

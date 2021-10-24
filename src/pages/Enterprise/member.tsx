@@ -128,7 +128,7 @@ export default () => {
           pageSize: 5,
         }}
         dateFormatter="string"
-        headerTitle="高级表格"
+        headerTitle="成员管理"
         options={false}
         toolBarRender={() => [
           <Button key="button" icon={<PlusOutlined/>} type="primary">
