@@ -6,7 +6,7 @@ import { request } from 'umi';
 export async function currentUser(options?: { [key: string]: any }) {
   return request<{
     data: API.CurrentUser;
-  }>('/api/currentUser', {
+  }>('https://www.fastmock.site/mock/4c7c7304de92ebad44f20a8890307bc2/way/currentUser', {
     method: 'GET',
     ...(options || {}),
   });
@@ -14,7 +14,7 @@ export async function currentUser(options?: { [key: string]: any }) {
 
 /** 退出登录接口 POST /api/login/outLogin */
 export async function outLogin(options?: { [key: string]: any }) {
-  return request<Record<string, any>>('/api/login/outLogin', {
+  return request<Record<string, any>>('https://www.fastmock.site/mock/4c7c7304de92ebad44f20a8890307bc2/way/login/outLogin', {
     method: 'POST',
     ...(options || {}),
   });
@@ -22,7 +22,7 @@ export async function outLogin(options?: { [key: string]: any }) {
 
 /** 登录接口 POST /api/login/account */
 export async function login(body: API.LoginParams, options?: { [key: string]: any }) {
-  return request<API.LoginResult>('/api/login/account', {
+  return request<API.LoginResult>('https://www.fastmock.site/mock/4c7c7304de92ebad44f20a8890307bc2/way/login/account', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

@@ -18,12 +18,12 @@
       },
     ],
   },
-  {
-    path: '/welcome',
-    name: 'welcome',
-    icon: 'smile',
-    component: './Welcome',
-  },
+  // {
+  //   path: '/welcome',
+  //   name: 'welcome',
+  //   icon: 'smile',
+  //   component: './Welcome',
+  // },
   {
     name: 'enterprise',
     icon: 'audit',
@@ -144,6 +144,19 @@
       },
     ],
   },
+  {
+    name: 'valueAdd',
+    icon: 'transaction',
+    path: '/value-add',
+    routes: [
+      {
+        path: '/value-add/set-meal',
+        name: 'setMeal',
+        icon: 'transaction',
+        component: './ValueAdd/setMeal.tsx',
+      }
+    ],
+  },
   // {
   //   path: '/admin',
   //   name: 'admin',
@@ -171,7 +184,7 @@
   // },
   {
     path: '/',
-    redirect: '/welcome',
+    redirect: '/enterprise/info',
   },
   {
     component: './404',
