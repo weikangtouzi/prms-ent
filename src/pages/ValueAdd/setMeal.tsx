@@ -2,6 +2,7 @@ import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { useState } from 'react';
 import RestMoney from '@/pages/ValueAdd/parts/RestMoney';
 import BuyDetail from '@/pages/ValueAdd/parts/buyDetail';
+import VipCenter from "@/pages/ValueAdd/parts/vip";
 
 const hasAuthTab = [
   {
@@ -32,6 +33,7 @@ const SetMeal = () => {
     >
         {tabKey === 'restMoney' && <RestMoney />}
         {tabKey === 'buyDetail' && <BuyDetail />}
+        {tabKey === 'vipCenter' && <VipCenter />}
     </PageHeaderWrapper>
   );
 };
