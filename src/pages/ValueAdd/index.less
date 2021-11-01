@@ -1,0 +1,54 @@
+.banner {
+  background: #00da8a;
+  width: 100%;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  p{
+    color:white;
+    font-size: 30px;
+    margin: 0;
+    padding-left: 100px;
+
+  }
+  img{
+    height: 200px;
+    position: absolute;
+    bottom:10px;
+    right: 30px;
+  }
+}
+.content{
+  margin-top: 16px;
+  :global{
+    .ant-col{
+      width: 0;
+    }
+    .ant-card-meta-description{
+      min-height: 44px;
+      margin-bottom: 12px;
+    }
+    .ant-statistic{
+      margin-top: 8px;
+      .ant-statistic-content{
+        font-size: 20px;
+      }
+      .ant-statistic-content-value{
+        color:#00da8a;
+      }
+    }
+  }
+  .icon{
+    text-align: center;
+    margin: 5px 0 24px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    img{
+      width: 70px;
+      display: inline-block;
+    }
+  }
+}
