@@ -14,12 +14,7 @@ export default defineConfig({
   dva: {
     hmr: true,
   },
-  layout: {
-    // https://umijs.org/zh-CN/plugins/plugin-layout
-    locale: true,
-    siderWidth: 208,
-    ...defaultSettings,
-  },
+  layout: false,
   // https://umijs.org/zh-CN/plugins/plugin-locale
   locale: {
     // default zh-CN
@@ -33,6 +28,9 @@ export default defineConfig({
   },
   targets: {
     ie: 11,
+  },
+  history:{
+    type:'hash'
   },
   // umi routes: https://umijs.org/docs/routing
   routes:routes,
