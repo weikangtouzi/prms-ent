@@ -5,10 +5,16 @@
     name: 'base',
     routes: [
       {
-        name: '企业中心',
-        icon: 'icon-xuefenjichaxun-01',
+        name: '首页',
+        icon: 'icon-icon_qiyeguanli',
         path: '/',
-        redirect: '/enterprise/info',
+        redirect: '/index',
+      },
+      {
+        name: '首页',
+        icon: 'icon-icon_qiyeguanli',
+        path: '/index',
+        component: './Index/index',
       },
       {
         path: '/user',
@@ -30,7 +36,7 @@
       },
       {
         name: '企业管理',
-        icon: 'icon-kongjiaoshichaxun-01',
+        icon: 'icon-a-icon_qiyeguanli2',
         path: '/enterprise',
         routes: [
           {
@@ -62,7 +68,7 @@
       },
       {
         name: '个人信息',
-        icon: 'icon-kongjiaoshichaxun-01',
+        icon: 'icon-icon_gerenxinxi',
         path: '/userinfo',
         routes: [
           {
@@ -75,7 +81,7 @@
       },
       {
         name: '系统通知',
-        icon: 'icon-yixuankecheng-01',
+        icon: 'icon-icon_xitongtongzhi',
         path: '/message',
         routes: [
           {
@@ -88,7 +94,7 @@
       },
       {
         name: '招聘管理',
-        icon: 'icon-ershoushichang-01',
+        icon: 'icon-icon_zhaopinguanli',
         path: '/employ',
         routes: [
           {
@@ -140,13 +146,13 @@
         ],
       },
       {
-        name: '增值服务',
-        icon: 'icon-ershoushichang-01',
-        path: '/value-add',
+        name: '套餐管理',
+        icon: 'icon-icon_taocanguanli',
+        path: '/set-meal',
         routes: [
           {
-            path: '/value-add/set-meal',
-            name: '套餐管理',
+            path: '/value-add/value-add',
+            name: '增值服务',
             icon: 'transaction',
             component: './ValueAdd/setMeal.tsx',
           },

@@ -1,0 +1,50 @@
+.index{
+  height: 100%;
+  .gutterRow{
+    display: flex;
+    flex-direction: column;
+    :global{
+      .ant-card-head{
+        .ant-card-head-title{
+          .card_title{
+            margin-left: 8px;
+          }
+          >span{
+            display: flex;
+            align-items: center;
+            line-height: 25px;
+          }
+        }
+        svg{
+          width: 23px;
+          height: 23px;
+          vertical-align: middle;
+        }
+      }
+    }
+  }
+    .leftTop{
+      height: 244px;
+      margin-bottom: 16px;
+      display: flex;
+      .leftTop1{
+        flex: 4;
+      }
+      .leftTop2{
+        flex: 7;
+        margin-left: 16px;
+      }
+    }
+    .leftBottom{
+      flex: 1;
+    }
+    .rightTop{
+      height: 350px;
+      background: #00da8a;
+      margin-bottom: 16px;
+    }
+    .rightBottom{
+      flex:1;
+      background: #00da8a;
+    }
+}

@@ -37,7 +37,7 @@ const Layouts = (props: PropsWithChildren<any>) => {
       waterMarkProps={{
         content: '',
       }}
-      iconfontUrl={'//at.alicdn.com/t/font_2919337_sj4tdunigw.js'}
+      iconfontUrl={'//at.alicdn.com/t/font_2919626_sgku75qiwh.js'}
       layout={'side'}
       logo={'/images/login/logo.png'}
       primaryColor={'#00DA8A'}
@@ -48,7 +48,7 @@ const Layouts = (props: PropsWithChildren<any>) => {
       colorWeak={false}
       title={''}
       rightContentRender={() => <RightContent />}
-      footerRender={() => <Footer />}
+      // footerRender={() => <Footer />}
       disableContentMargin={false}
       menuItemRender={(item, dom) => (
         <a

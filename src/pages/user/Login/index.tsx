@@ -56,8 +56,8 @@ const Login = () => {
     setSubmitting(true);
     try {
       // 登录
-      loadLogin()
-      return;
+      // loadLogin()
+      // return;
       const msg = await login({...values, type: 'account'});
       if (msg.status === 'ok') {
         const defaultLoginSuccessMessage = '登录成功';
