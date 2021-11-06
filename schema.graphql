@@ -1,0 +1,706 @@
+# This file was generated based on ".graphqlconfig". Do not edit manually.
+
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
+}
+
+"make it available when different thing happens in same query"
+union InterviewData = EnterpriseUserSideInterviewData | PersonalUserSideInterviewData
+
+type ApplicantData {
+  age: Int!
+  applicantName: String!
+  "checkout Education type for value options"
+  education: String!
+  experience: Int!
+  "same as last field"
+  lastEnterpriseName: String
+  "null when not had job before"
+  lastJobName: String
+  "also same as last field"
+  lastJobTime: String
+  personalAdvantage: String!
+  salaryExpected: String!
+}
+
+type CensorData {
+  _id: String!
+  charter: String
+  enterpriseName: String
+}
+
+type City {
+  city_id: String!
+  name: String!
+}
+
+type CityWithChildren {
+  Counties: [CountyWithChildren]!
+  city_id: String!
+  name: String!
+}
+
+type County {
+  county_id: String!
+  name: String!
+}
+
+type CountyWithChildren {
+  Towns: [Town]!
+  county_id: String!
+  name: String!
+}
+
+"if the status is Failed, will get the other three fields"
+type EnterpriseIdentification {
+  charter: String
+  enterpriseName: String
+  phoneNumber: String
+  status: EnterpriseIdentificationStatus
+}
+
+"for enterprise user interview data will be like this"
+type EnterpriseUserSideInterviewData {
+  jobExpectation: String!
+  jobName: String!
+  salary: String!
+  targetName: String!
+}
+
+type FileLink {
+  link: String!
+}
+
+type InterviewDetail {
+  address: String!
+  attachments: String!
+  enterpriseName: String!
+  hrName: String!
+  hrPosition: String!
+  isOutline: Boolean!
+  jobContractedNumer: String!
+  jobContractor: String!
+  jobName: String!
+  jobSalary: String!
+  "checkout InterviewProcess type for value options"
+  process: String!
+  time: String!
+}
+
+type InterviewSchedule {
+  schedul: [InterviewData]!
+}
+
+"a job always contains these datas. these are formatted data, not exactly what is in database"
+type JobData {
+  "this data is a json data, to use it just parse json by this string"
+  JobDetail: String!
+  JobTitle: String!
+  WorkingAddress: String!
+  createdAt: String!
+  education: String!
+  experience: String!
+  isFullTime: Boolean!
+  requiredNum: Int!
+  tags: [String]!
+  updatedAt: String!
+}
+
+"for list query"
+type JobDataBriefly {
+  JobTitle: String!
+  WorkingAddress: String!
+  createdAt: String!
+  education: String!
+  experience: String!
+  id: Int!
+  isFullTime: Boolean!
+  requiredNum: Int!
+}
+
+type JobExpectation {
+  aimedCity: String!
+  jobCategory: [String]!
+  salary: String!
+}
+
+"contains a array of jobid, and a cache id"
+type JobQueryResult {
+  cacheId: String!
+  "just job ids"
+  data: [JobDataBriefly]!
+}
+
+"logInResult: the result of the login operation"
+type LoginResult {
+  "the very first time the user is created"
+  createdAt: String!
+  "jwt token for the user, expiresIn 60 minutes"
+  token: String!
+  "maybe become nullable in the future"
+  username: String!
+}
+
+type Message {
+  "0 for system message"
+  from: Int!
+  messageContent: String!
+  messageType: MessageType!
+  to: Int!
+  uuid: String!
+}
+
+"most of mutations needed token for authorization"
+type Mutation {
+  AdminSetCensoredForAnItem(_id: String!, description: String, isPassed: Boolean): Void
+  "accept or reject an interview by id"
+  CandidateAcceptOrRejectInterview(accept: Boolean!, interviewId: Int!): Void
+  "insert or edit a education experience"
+  CandidateEditEduExp(info: EduExp): Void
+  "insert or edit a personal advantage"
+  CandidateEditPersonalAdvantage(advantage: String!): Void
+  "insert or edit a project experience"
+  CandidateEditProExp(info: ProExp): Void
+  "insert or edit a work experience"
+  CandidateEditWorkExprience(info: WorkExperience!): Void
+  CandidateRecruitmentApply(recruitmentId: Int!): Void
+  "if wanted to send the online one, then don't need to pass resumeId"
+  CandidateSendResume(resumeId: Int, targetUser: Int): Void
+  "leave extraAttributes null for default upload options"
+  CommonSingleUpload(extraAttributes: UploadExtraAttributes, file: Upload!): FileLink!
+  "cancel a interview, both side will have this authority, may failed when time is close to the appointed time"
+  CommoncancelInterview(interviewId: Int!): Void
+  "enterprise certificate required, if not will return error"
+  ENTEditEnterpriseBasicInfo(info: EditEnterpriseBasicInfo!): Void
+  ENTEditEnterpriseExtraData(info: String!): Void
+  ENTEditEnterpriseWorkTimeAndWelfare(info: EnterpriseWorkTimeAndWelfare!): Void
+  ENTEnterpriseWorkerRegister(info: EnterpriseWorkerInfo!): Void
+  ENTInsertEnterpriseBasicInfo(info: EnterpriseBasicInfo!): Void
+  ENTInviteWorkMate(phoneNumber: String!, pos: String, role: String): Void
+  "end a iterview with the description, need to tell the interview is passed or not, most of time the description is about some special situation"
+  HREndIterview(description: String!, interviewId: Int!, ispassed: Boolean!): Void
+  "will create a interview data and set it to waiting, may return the interview id for dev version"
+  HRInviteInterview(jobId: Int!, time: Int!, userId: Int!): Void
+  HRPostJob(info: JobPost): Void
+  "this api need you to pass the provider's phone number as the authorization header"
+  QNInsertPersonalData(info: PersonalData!): Int!
+  "switch to another indentity if exists, should pass indetity and role, Identity and role types are enums, checkout their type definitions, return token"
+  UserChooseOrSwitchIdentity(role: String, targetIdentity: String!): Void
+  "insert or edit a personal data"
+  UserEditPersonalData(info: BasicData): Void
+  "enterprise certification need censor"
+  UserEnterpriseIdentify(info: EnterpriseCharterSencorRequest!): Void
+  "only availiable when token is expired and not dead"
+  UserRefreshToken: String!
+  "api for register"
+  UserRegister(info: Register!): Void
+  "use phone number to reset password"
+  UserResetPassword(info: ResetPassword!): Void
+  UserSendMessage(info: SendMessage!): Void
+}
+
+type PersonalDataDetail {
+  city: String!
+  education: Education!
+  idCardNum: String!
+  name: String!
+  number: String!
+  skills: [String]!
+}
+
+type PersonalDataView {
+  _id: String!
+  "real name"
+  data: PersonalDataDetail
+}
+
+"for personal user the interview data will be like this"
+type PersonalUserSideInterviewData {
+  enterpriseName: String!
+  hrName: String!
+  hrPosition: String!
+  jobName: String!
+  salary: String!
+}
+
+"the data of province, usually contains name and id"
+type Province {
+  name: String!
+  "this id is = require(the official data, so don't trying to change it"
+  province_id: String!
+}
+
+type ProvinceWithChildren {
+  Cities: [CityWithChildren]!
+  name: String!
+  province_id: String!
+}
+
+"for most of get query needed token for authorization"
+type Query {
+  AdminGetCensorList(lastIndex: String, pageSize: Int): [CensorData]
+  CandidateCheckResumeCompletion: Boolean!
+  "get job data by id"
+  CandidateGetJob(jobid: Int): JobData!
+  "tags are those tags that hr added to a job. keyword stands for the input at search page. tags and keyword are not required. pageNumber and pageSize default value are 1 and 10"
+  CandidateGetJobs(filter: JobFilter): JobQueryResult!
+  "using cached jobid, need to query at least once before calling this"
+  CandidateGetJobsFromCache(cacheId: String): [JobDataBriefly]!
+  "detail page for interview"
+  CommonGetIterviewDetail(interviewId: Int!): InterviewDetail
+  "gets InterviewSchedule"
+  CommonGetIterviewSchedule: InterviewSchedule!
+  "get resume data, if cache id exists then will return the cache data, cache expired every 30 minutes"
+  CommonGetResume(cacheId: String, resumeId: Int): ResumeData!
+  ENTCheckEnterpriseIdentification: EnterpriseIdentification!
+  ENTPrecheckForInviteWorkMate(phoneNumber: String): WorkerMatePrecheckResult!
+  "get applicant by conditions, null for no limitation, null when no matched data"
+  HRGetApplicants(filter: ApplicantFilter): SearchApplicantsResult
+  "true means already inserted"
+  QNCheckIdCardNumber(idCardNum: String!): Boolean!
+  QNPhoneNumberCheck(phoneNumber: String, verifyCode: String): Int!
+  StaticGetAllRegion: RegionList!
+  "get all cities of the given province"
+  StaticGetCities(provinceId: String!): [City]!
+  "get all counties of the given city"
+  StaticGetCounties(cityId: String!): [County]!
+  "get Province data"
+  StaticGetProvinces: [Province]
+  "get all town of the given county"
+  StaticGetTowns(countyId: String!): [Town]!
+  "send a verify code to the given number, if phoneNumber not provider and has token in header, will send to the user's phone number"
+  StaticSendSms(phoneNumber: String): String!
+  "just tests"
+  TestShowDatas(lastIndex: String, pageSize: Int): [PersonalDataView]!
+  "api for login"
+  UserLogIn(info: Login!): LoginResult!
+  "check if the input num is availiable or not"
+  UserNumberCheck(num: String!): Boolean!
+}
+
+type RegionList {
+  data: [ProvinceWithChildren]!
+}
+
+type ResumeData {
+  educationExperience: [ResumeEduExp]
+  "checkout ResumeEmployNature type for value options"
+  employmentNature: String!
+  jobExpectation: JobExpectation!
+  "checkout ResumeJobStatus type for value options"
+  jobStatus: String!
+  personalData: ResumePersonalData!
+  projectExperience: [ResumeProExp]
+  workExperience: [ResumeWorkExp]
+}
+
+type ResumeEduExp {
+  detail: String!
+  "check out Education type for value options"
+  education: String!
+  major: String!
+  schoolName: String!
+}
+
+type ResumePersonalData {
+  WorkExperienceTime: Int!
+  age: Int!
+  education: Education!
+  gender: Boolean!
+  "a link to the file"
+  logo: String!
+  name: String!
+  phoneNumber: String!
+}
+
+type ResumeProExp {
+  detail: String!
+  projectName: String!
+  "maybe not needed to send when showing the whole resume at a page"
+  project_performance: String
+  role: String!
+  time: String!
+}
+
+type ResumeWorkExp {
+  departmentName: String!
+  detail: String!
+  enterpriseName: String!
+  positionName: String!
+  time: String!
+}
+
+type SearchApplicantsResult {
+  data: [ApplicantData]
+}
+
+type Subscription {
+  newMessage: Message!
+}
+
+type Town {
+  name: String!
+  town_id: String!
+}
+
+"the return type of getUsers api, not stable now, just because the api not implement yet"
+type User {
+  "username: the username of the user stored in the database"
+  username: String!
+}
+
+enum ActiveTime {
+  LastDay
+  MoreThanOneWeek
+  RecentlyOneWeek
+  RecentlyThreeDays
+  Today
+}
+
+enum CustomFileType {
+  Charter
+  Other
+  Photo
+  Resume
+}
+
+"education for extra_data api"
+enum Education {
+  Doctor
+  High
+  Junior
+  JuniorCollege
+  LessThanPrime
+  Postgraduate
+  Primary
+  RegularCollege
+}
+
+"min education required for the job"
+enum EducationRequired {
+  Doctor
+  High
+  JuniorCollege
+  Postgraduate
+  RegularCollege
+}
+
+enum EnterpriseFinancing {
+  A
+  AngelFinancing
+  B
+  C
+  D
+  Listed
+  NoNeed
+  NotYet
+}
+
+enum EnterpriseNature {
+  Extra
+  ForeignFundedEnterprises
+  ForeignVentures
+  PrivateEnterprise
+  StateOwnedEnterprises
+}
+
+enum EnterpriseOvertimeDegree {
+  None
+  Occasionally
+  Usually
+}
+
+enum EnterpriseRestRule {
+  OneDayOffPerWeekend
+  StaggerWeekends
+  TwoDayOffPerWeekend
+}
+
+enum EnterpriseSize {
+  FifteenToFifty
+  FiftyToOneHundredFifty
+  FiveHundredsToTwoThousands
+  LessThanFifteen
+  MoreThanTwoThousands
+  OneHundredFiftyToFiveHundreds
+}
+
+enum Identity {
+  Administrator
+  Counselor
+  "not only hr"
+  EnterpriseUser
+  "could be any personal user"
+  PersonalUser
+}
+
+enum InterviewProcess {
+  "whatnever this is canceled the status will be set to Canceled, when status is like this, return value will contains a description of the canceled status"
+  Canceled
+  "Only HR could set this, means this applicant is not the one their company is looking for"
+  Failed
+  "means this applicant get that offer, but may not choose to work there"
+  Passed
+  "means this interview is not able to be canceled now, but may not be started yet"
+  Started
+  "Waiting is a status that stands for waiting applicant to accept this invitation"
+  Waiting
+}
+
+enum ResumeEmployNature {
+  "随时待命"
+  Anytime
+  "一月内"
+  LessThanOneMonth
+  "一周之内"
+  LessThanOneWeek
+  "两天之内"
+  LessThanTwoDays
+  "两周内"
+  LessThanTwoWeeks
+  "大于一个月"
+  MoreThanOneMonth
+}
+
+enum ResumeJobStatus {
+  "应届生"
+  GraduatingStudent
+  "不想找工作的无业游民"
+  NoJobButNoJob
+  "离职状态的求职者"
+  NoJobButWantJob
+  "有工作，但无求职意向"
+  OnTheJob
+  "准备跳槽下家的在职者"
+  OnTheJobButLookingForAJob
+}
+
+input ApplicantFilter {
+  "checkout ActiveTime type for value options"
+  activeTime: String
+  age: Int
+  category: String
+  city: String
+  "checkout Education type for value options"
+  education: String
+  experience: Int
+  "true means male, sorry for female people"
+  gender: Boolean
+  "checkout ResumeJobStatus type for value options"
+  jobStatus: String
+  max_salary: Int
+  min_salary: Int
+  token: String!
+}
+
+"because the personal data is already exists, I choos this for the name"
+input BasicData {
+  birthday: Int!
+  currentCity: String!
+  education: Education!
+  firstTimeWorking: Int!
+  gender: Boolean!
+  "a link to the file"
+  logo: String!
+  name: String!
+  phoneNumber: String!
+}
+
+"same datas as the Insert one, but are all not required"
+input EditEnterpriseBasicInfo {
+  abbreviation: String
+  "checkout EnterpriseIndustry type for value options"
+  enterpriseFinancing: String
+  enterpriseIndustry: [String]
+  "pass the whole adress information in this array"
+  enterpriseLocation: [String]
+  enterpriseName: String
+  "checkout EnterpriseNature type for value options"
+  enterpriseNature: String
+  enterpriseProfile: String
+  "checkout EnterpriseSize type for value options"
+  enterpriseSize: String
+  "longtitude and latitude"
+  enterprisecCoordinate: [Float]
+  establishedDate: String
+  homepage: String
+  logo: String
+  tel: String
+}
+
+input EduExp {
+  education: Education!
+  exp_at_school: String!
+  "for edit you need pass this data"
+  id: Int
+  isFullTime: Boolean!
+  major: String!
+  schoolName: String!
+  time: String!
+}
+
+input EnterpriseBasicInfo {
+  abbreviation: String!
+  "checkout EnterpriseIndustry type for value options"
+  enterpriseFinancing: String!
+  enterpriseIndustry: [String]!
+  "pass the whole adress information in this array"
+  enterpriseLocation: [String]!
+  enterpriseName: String!
+  "checkout EnterpriseNature type for value options"
+  enterpriseNature: String!
+  enterpriseProfile: String!
+  "checkout EnterpriseSize type for value options"
+  enterpriseSize: String!
+  "longtitude and latitude"
+  enterprisecCoordinate: [Float]!
+  establishedDate: String
+  homepage: String
+  logo: String
+  tel: String
+}
+
+input EnterpriseCharterSencorRequest {
+  charter: String!
+  enterpriseName: String!
+  "just a phone number for notification"
+  phoneNumber: String
+}
+
+input EnterpriseWorkTimeAndWelfare {
+  customTags: [String]
+  overtimeWorkDegree: String
+  restRule: String
+  welfare: [String]
+  workRule: String
+}
+
+input EnterpriseWorkerInfo {
+  pos: String!
+  role: EnterpriseRole!
+}
+
+input JobFilter {
+  keyword: String
+  pageNumber: Int
+  pageSize: Int
+  tags: [String]
+}
+
+input JobPost {
+  JobTitle: String!
+  adress: String!
+  coordinates: [Float]!
+  description: String!
+  education: EducationRequired!
+  experience: Int!
+  isFullTime: Boolean!
+  requiredNum: Int!
+  "just a two value array which first value means the min one, second means the max"
+  salary: [Int]!
+  tags: [String]!
+  workingAddress: String!
+}
+
+"just data needed to login"
+input Login {
+  "could be username, email, phone number"
+  account: String!
+  password: Password!
+}
+
+"sometime password may not be password only, for very situation in one api, we need this"
+input Password {
+  "if this is true, the value will be judge as verifyCode, or as password, one more thing, only will work when account is phoneNumber"
+  isVerifyCode: Boolean!
+  value: String
+}
+
+"the data = require(the providers?"
+input PersonalData {
+  city: String!
+  education: Education!
+  idCardNum: String!
+  "real name"
+  name: String!
+  number: String!
+  skills: [String]!
+}
+
+input ProExp {
+  description: String!
+  endAt: String!
+  "for edit you need pass this data"
+  id: Int
+  performance: String
+  projectName: String!
+  role: String!
+  startAt: String!
+}
+
+input Register {
+  "confirmPassword: required, exactly same as password"
+  confirmPassword: String!
+  "email: not required in this version, unique, make sense by the name"
+  email: String
+  "password: required, rule not set up yet"
+  password: String!
+  "phoneNumber: required, unique, make sense by the name"
+  phoneNumber: String!
+  "username: required, unique, make sense by the name"
+  username: String!
+  "verifyCode: required, expiresIn 5 minutes, make sense by the name"
+  verifyCode: String!
+}
+
+"reset password means that user forget password"
+input ResetPassword {
+  confirmPassword: String!
+  password: String!
+  verifyCode: String!
+}
+
+input SendMessage {
+  messageContent: String!
+  messageType: MessageType!
+  to: Int!
+}
+
+input UploadExtraAttributes {
+  customFileName: String
+  "checkout CustomFileType for value options"
+  customFileType: String
+  customUploadPath: String
+}
+
+input WorkExperience {
+  compName: String!
+  department: String!
+  endAt: String!
+  hideFromThisCompany: Boolean!
+  "for edit you need pass this data"
+  id: Int
+  posName: String!
+  startAt: String!
+  workDetail: String!
+}
+
+
+"The `Upload` scalar type represents a file upload."
+scalar Upload
+
+scalar Void
+
+"enum {None, Failed, Passed, Waiting}"
+scalar EnterpriseIdentificationStatus
+
+"enum Role {    HR,    Teacher,    Admin,    None  }"
+scalar EnterpriseRole
+
+"enum WorkerMatePrecheckResult {    OK    NotAUser    AlreadyWorkMate    WorkingInAnotherCompany  }"
+scalar WorkerMatePrecheckResult
+
+"enum {    Normal,    System,    Resume,    InterviewInvitation,    Other    }"
+scalar MessageType

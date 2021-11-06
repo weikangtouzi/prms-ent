@@ -16,6 +16,17 @@ body,
 .ant-pro-sider.ant-layout-sider.ant-pro-sider-fixed {
   left: unset;
 }
+.ant-pro-sider-logo{
+  margin: 0 auto;
+  opacity: 1;
+  transition: opacity ease .2s;
+}
+.ant-layout-sider-collapsed{
+  .ant-pro-sider-logo{
+    opacity: 0;
+    transition: opacity ease .2s;
+  }
+}
 
 canvas {
   display: block;

@@ -39,13 +39,14 @@ const Layouts = (props: PropsWithChildren<any>) => {
       }}
       iconfontUrl={'//at.alicdn.com/t/font_2919337_sj4tdunigw.js'}
       layout={'side'}
+      logo={'/images/login/logo.png'}
       primaryColor={'#00DA8A'}
       siderWidth={208}
       navTheme={'light'}
       fixedHeader={true}
       fixSiderbar={true}
       colorWeak={false}
-      title={'趁早找-企业端'}
+      title={''}
       rightContentRender={() => <RightContent />}
       footerRender={() => <Footer />}
       disableContentMargin={false}
