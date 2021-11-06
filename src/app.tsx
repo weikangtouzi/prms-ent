@@ -2,6 +2,8 @@ import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
 import { history } from 'umi';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import React from 'react';
 
 const loginPath = '/user/login';
 
@@ -65,3 +67,12 @@ export async function getInitialState(): Promise<{
 //     ...initialState?.settings,
 //   };
 // };
+const client = new ApolloClient({
+  uri: 'https://be.chenzaozhao.com/graphql',
+  cache: new InMemoryCache(),
+});
+export function rootContainer(
+  container: React.ReactChild | React.ReactFragment | React.ReactPortal,
+) {
+  return React.createElement(ApolloProvider, { client } as any, container);
+}

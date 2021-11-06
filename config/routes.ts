@@ -1,15 +1,14 @@
-﻿
-export default [
+﻿export default [
   {
     path: '/',
     component: '@/layouts/index',
-    name:'base',
+    name: 'base',
     routes: [
       {
-        name:'企业中心',
-        icon:'audit',
+        name: '企业中心',
+        icon: 'icon-xuefenjichaxun-01',
         path: '/',
-        redirect:'/enterprise/info'
+        redirect: '/enterprise/info',
       },
       {
         path: '/user',
@@ -31,7 +30,7 @@ export default [
       },
       {
         name: '企业管理',
-        icon: 'audit',
+        icon: 'icon-kongjiaoshichaxun-01',
         path: '/enterprise',
         routes: [
           {
@@ -56,14 +55,14 @@ export default [
             path: '/enterprise/account',
             name: '账户信息',
             icon: 'smile',
-            fastRefresh:true,
+            fastRefresh: true,
             component: './Enterprise/account.tsx',
           },
         ],
       },
       {
         name: '个人信息',
-        icon: 'solution',
+        icon: 'icon-kongjiaoshichaxun-01',
         path: '/userinfo',
         routes: [
           {
@@ -71,12 +70,12 @@ export default [
             name: '我的资料',
             icon: 'smile',
             component: './user/info/index.tsx',
-          }
+          },
         ],
       },
       {
         name: '系统通知',
-        icon: 'message',
+        icon: 'icon-yixuankecheng-01',
         path: '/message',
         routes: [
           {
@@ -84,12 +83,12 @@ export default [
             name: '消息中心',
             icon: 'smile',
             component: './message/index.tsx',
-          }
+          },
         ],
       },
       {
         name: '招聘管理',
-        icon: 'alert',
+        icon: 'icon-ershoushichang-01',
         path: '/employ',
         routes: [
           {
@@ -98,27 +97,27 @@ export default [
             icon: 'smile',
             routes: [
               {
-                path:'/employ/position',
+                path: '/employ/position',
                 name: '职位管理',
                 icon: 'smile',
-                hideInMenu:true,
+                hideInMenu: true,
                 component: './Employ/index.tsx',
               },
               {
-                path:'/employ/position/publish',
+                path: '/employ/position/publish',
                 name: '发布职位',
                 icon: 'smile',
-                hideInMenu:true,
+                hideInMenu: true,
                 component: './Employ/publish.tsx',
               },
               {
-                path:'/employ/position/edit',
+                path: '/employ/position/edit',
                 name: '职位详情',
                 icon: 'smile',
-                hideInMenu:true,
+                hideInMenu: true,
                 component: './Employ/edit.tsx',
-              }
-            ]
+              },
+            ],
           },
           {
             path: '/employ/people',
@@ -142,7 +141,7 @@ export default [
       },
       {
         name: '增值服务',
-        icon: 'transaction',
+        icon: 'icon-ershoushichang-01',
         path: '/value-add',
         routes: [
           {
@@ -150,10 +149,10 @@ export default [
             name: '套餐管理',
             icon: 'transaction',
             component: './ValueAdd/setMeal.tsx',
-          }
+          },
         ],
       },
-    ]
+    ],
   },
   {
     component: './404',
