@@ -1,16 +1,36 @@
 import type {PropsWithChildren} from "react";
 import ProLayout from '@ant-design/pro-layout';
+import type { MenuDataItem } from '@ant-design/pro-layout';
 import Footer from '@/components/Footer';
 import RightContent from '@/components/RightContent';
 import route from '../../config/routes'
+import {history} from "umi";
+import {SolutionOutlined,AuditOutlined,MessageOutlined,AlertOutlined,TranslationOutlined} from "@ant-design/icons";
+import {useState} from "react";
 
+
+const IconMap = {
+  audit: <AuditOutlined />,
+  solution: <SolutionOutlined />,
+  message: <MessageOutlined />,
+  alert: <AlertOutlined />,
+  transaction: <TranslationOutlined />,
+};
+
+const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] =>
+  menus.map(({ icon, children, ...item }) => ({
+    ...item,
+    icon: icon && IconMap[icon as string],
+    children: children && loopMenuItem(children),
+  }));
 const Layouts = (props: PropsWithChildren<any>)=>{
+  const [pathname, setPathname] = useState(history.location.pathname);
   if (props.location.pathname === '/user/login') {
     return <>{ props.children }</>
   }
   return <ProLayout
-    // location='/'
-    route={route[0]}
+    location={{pathname}}
+    menu={{ request: async () => loopMenuItem((route[0]?.routes as MenuDataItem[]).filter(r=>!r.redirect)) }}
     waterMarkProps={{
       content: '',
     }}
@@ -25,6 +45,16 @@ const Layouts = (props: PropsWithChildren<any>)=>{
     rightContentRender={()=><RightContent/>}
     footerRender={()=><Footer />}
     disableContentMargin={false}
+    menuItemRender={(item, dom) => (
+      <a
+        onClick={() => {
+          setPathname(item.path || '/enterprise/info');
+          history.push(item.path as string);
+        }}
+      >
+        {dom}
+      </a>
+    )}
     onMenuHeaderClick={(e) => console.log(e)}
   >
     {props.children}

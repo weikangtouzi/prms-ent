@@ -1,5 +1,4 @@
-﻿import { SmileOutlined} from '@ant-design/icons';
-
+﻿
 export default [
   {
     path: '/',
@@ -7,7 +6,7 @@ export default [
     name:'base',
     routes: [
       {
-        name:'enterprise',
+        name:'企业中心',
         icon:'audit',
         path: '/',
         redirect:'/enterprise/info'
@@ -19,7 +18,7 @@ export default [
             path: '/user',
             routes: [
               {
-                name: 'login',
+                name: '用户登录',
                 path: '/user/login',
                 component: './user/Login',
               },
@@ -31,98 +30,90 @@ export default [
         ],
       },
       {
-        name: 'enterprise',
-        icon: <SmileOutlined/>,
+        name: '企业管理',
+        icon: 'audit',
         path: '/enterprise',
         routes: [
           {
             path: '/enterprise/info',
-            name: 'info',
+            name: '企业信息',
             icon: 'smile',
             component: './Enterprise/index.tsx',
           },
           {
             path: '/enterprise/member',
-            name: 'member',
+            name: '成员管理',
             icon: 'smile',
             component: './Enterprise/member.tsx',
           },
           {
             path: '/enterprise/asset',
-            name: 'asset',
+            name: '资产信息',
             icon: 'smile',
-            fastRefresh:true,
             component: './Enterprise/assets.tsx',
           },
           {
             path: '/enterprise/account',
-            name: 'account',
+            name: '账户信息',
             icon: 'smile',
             fastRefresh:true,
             component: './Enterprise/account.tsx',
           },
-          {
-            path: '/enterprise/withdraw',
-            name: 'asset',
-            icon: 'smile',
-            hideInMenu:true,
-            component: './Enterprise/withDraw.tsx',
-          },
         ],
       },
       {
-        name: 'userinfo',
+        name: '个人信息',
         icon: 'solution',
         path: '/userinfo',
         routes: [
           {
             path: '/userinfo/index',
-            name: 'index',
+            name: '我的资料',
             icon: 'smile',
             component: './user/info/index.tsx',
           }
         ],
       },
       {
-        name: 'message',
+        name: '系统通知',
         icon: 'message',
         path: '/message',
         routes: [
           {
             path: '/message/index',
-            name: 'index',
+            name: '消息中心',
             icon: 'smile',
             component: './message/index.tsx',
           }
         ],
       },
       {
-        name: 'employ',
+        name: '招聘管理',
         icon: 'alert',
         path: '/employ',
         routes: [
           {
             path: '/employ/position',
-            name: 'position',
+            name: '职位管理',
             icon: 'smile',
             routes: [
               {
                 path:'/employ/position',
-                name: 'position',
+                name: '职位管理',
                 icon: 'smile',
                 hideInMenu:true,
                 component: './Employ/index.tsx',
               },
               {
                 path:'/employ/position/publish',
-                name: 'publish',
+                name: '发布职位',
                 icon: 'smile',
                 hideInMenu:true,
                 component: './Employ/publish.tsx',
               },
               {
                 path:'/employ/position/edit',
-                name: 'edit',
+                name: '职位详情',
                 icon: 'smile',
                 hideInMenu:true,
                 component: './Employ/edit.tsx',
@@ -131,32 +122,32 @@ export default [
           },
           {
             path: '/employ/people',
-            name: 'people',
+            name: '人才管理',
             icon: 'smile',
             component: './Employ/people.tsx',
           },
           {
             path: '/employ/search',
-            name: 'search',
+            name: '寻找人才',
             icon: 'smile',
             component: './Employ/search.tsx',
           },
           {
             path: '/employ/recruitment',
-            name: 'recruitment',
+            name: '招聘会记录',
             icon: 'smile',
             component: './Employ/recruitment.tsx',
           },
         ],
       },
       {
-        name: 'valueAdd',
+        name: '增值服务',
         icon: 'transaction',
         path: '/value-add',
         routes: [
           {
             path: '/value-add/set-meal',
-            name: 'setMeal',
+            name: '套餐管理',
             icon: 'transaction',
             component: './ValueAdd/setMeal.tsx',
           }
