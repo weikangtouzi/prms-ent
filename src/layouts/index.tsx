@@ -1,7 +1,6 @@
 import type { PropsWithChildren } from 'react';
 import ProLayout from '@ant-design/pro-layout';
 import type { MenuDataItem } from '@ant-design/pro-layout';
-import Footer from '@/components/Footer';
 import RightContent from '@/components/RightContent';
 import route from '../../config/routes';
 import { history } from 'umi';

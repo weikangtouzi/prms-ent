@@ -1,18 +1,19 @@
 import styles from './index.less';
-import ProForm, {ProFormCheckbox, ProFormText} from '@ant-design/pro-form';
-import {Alert, message} from 'antd';
-import {LockOutlined, UserOutlined} from '@ant-design/icons';
-import {FormattedMessage} from '@@/plugin-locale/localeExports';
-import React, {useState} from 'react';
-import {useModel} from '@@/plugin-model/useModel';
-import {login} from '@/services/ant-design-pro/api';
-import {history} from '@@/core/history';
-import {useLazyQuery} from '@apollo/client'
-import {GET_LOGIN} from "@/services/gqls/login";
+import ProForm, { ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
+import { Alert, message } from 'antd';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { FormattedMessage } from '@@/plugin-locale/localeExports';
+import React, { useState } from 'react';
+import { useModel } from '@@/plugin-model/useModel';
+import { login } from '@/services/ant-design-pro/api';
+import { history } from '@@/core/history';
+import { useLazyQuery } from '@apollo/client';
+import type { UserData, UserNameLoginVar } from '@/services/gqls/login';
+import { GET_LOGIN } from '@/services/gqls/login';
 
 const LoginMessage: React.FC<{
   content: string;
-}> = ({content}) => (
+}> = ({ content }) => (
   <Alert
     style={{
       marginBottom: 24,
@@ -25,23 +26,23 @@ const LoginMessage: React.FC<{
 const Login = () => {
   const [submitting, setSubmitting] = useState(false);
   const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
-  const {initialState, setInitialState} = useModel('@@initialState');
+  const { initialState, setInitialState } = useModel('@@initialState');
 
-  const [loadLogin, {called, loading, data}] = useLazyQuery(
-    GET_LOGIN,
-    {
-      variables:
-        {
-          info: {
-            account: '123',
-            password: {
-              isVerifyCode: false,
-              value: '123'
-            }
-          }
+  // const [loadLogin, {called, loading, data}] = useLazyQuery<UserData,UserNameLoginVar>(
+  useLazyQuery<UserData, UserNameLoginVar>(GET_LOGIN, {
+    variables: {
+      info: {
+        account: '123',
+        password: {
+          isVerifyCode: false,
+          value: '123',
         },
-    }
-  );
+      },
+    },
+    onCompleted: (userData) => {
+      console.log(userData.createdAt);
+    },
+  });
   const fetchUserInfo = async () => {
     const userInfo = await initialState?.fetchUserInfo?.();
     if (userInfo) {
@@ -58,15 +59,15 @@ const Login = () => {
       // 登录
       // loadLogin()
       // return;
-      const msg = await login({...values, type: 'account'});
+      const msg = await login({ ...values, type: 'account' });
       if (msg.status === 'ok') {
         const defaultLoginSuccessMessage = '登录成功';
         message.success(defaultLoginSuccessMessage);
         await fetchUserInfo();
         /** 此方法会跳转到 redirect 参数所在的位置 */
         if (!history) return;
-        const {query} = history.location;
-        const {redirect} = query as { redirect: string };
+        const { query } = history.location;
+        const { redirect } = query as { redirect: string };
         history.push(redirect || '/');
         return;
       }
@@ -78,16 +79,16 @@ const Login = () => {
     }
     setSubmitting(false);
   };
-  const {status, type: loginType} = userLoginState;
+  const { status, type: loginType } = userLoginState;
 
   return (
     <div className={styles.login}>
       <div className={styles.left}>
-        <img src="/images/login/login.png" alt="login"/>
+        <img src="/images/login/login.png" alt="login" />
       </div>
       <div className={styles.right}>
         <div className={styles.formContainer}>
-          <img src="/images/login/logo.png" alt="logo" className={styles.logo}/>
+          <img src="/images/login/logo.png" alt="logo" className={styles.logo} />
           <h3>
             欢迎使用<span>趁早找企业端</span>
           </h3>
@@ -114,14 +115,14 @@ const Login = () => {
               }}
             >
               {status === 'error' && loginType === 'account' && (
-                <LoginMessage content="账户或密码错误(admin/ant.design)"/>
+                <LoginMessage content="账户或密码错误(admin/ant.design)" />
               )}
               <>
                 <ProFormText
                   name="username"
                   fieldProps={{
                     size: 'large',
-                    prefix: <UserOutlined className={styles.prefixIcon}/>,
+                    prefix: <UserOutlined className={styles.prefixIcon} />,
                   }}
                   placeholder="用户名: admin or user"
                   rules={[
@@ -140,7 +141,7 @@ const Login = () => {
                   name="password"
                   fieldProps={{
                     size: 'large',
-                    prefix: <LockOutlined className={styles.prefixIcon}/>,
+                    prefix: <LockOutlined className={styles.prefixIcon} />,
                   }}
                   placeholder="密码: ant.design"
                   rules={[
@@ -158,7 +159,7 @@ const Login = () => {
               </>
 
               {status === 'error' && loginType === 'mobile' && (
-                <LoginMessage content="验证码错误"/>
+                <LoginMessage content="验证码错误" />
               )}
               <div
                 style={{
@@ -166,14 +167,14 @@ const Login = () => {
                 }}
               >
                 <ProFormCheckbox noStyle name="autoLogin">
-                  <FormattedMessage id="pages.login.rememberMe" defaultMessage="自动登录"/>
+                  <FormattedMessage id="pages.login.rememberMe" defaultMessage="自动登录" />
                 </ProFormCheckbox>
                 <a
                   style={{
                     float: 'right',
                   }}
                 >
-                  <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码"/>
+                  <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" />
                 </a>
               </div>
             </ProForm>
