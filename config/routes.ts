@@ -27,10 +27,12 @@
                 path: '/user/login',
                 component: './user/Login',
               },
+              {
+                name: '用户注册',
+                path: '/user/register',
+                component: './user/Login/register',
+              },
             ],
-          },
-          {
-            component: './404',
           },
         ],
       },

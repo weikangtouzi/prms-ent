@@ -26,6 +26,24 @@ const Layouts = (props: PropsWithChildren<any>) => {
   if (props.location.pathname === '/user/login') {
     return <>{props.children}</>;
   }
+  if (props.location.pathname === '/user/register') {
+    return <ProLayout
+      menuRender={false}
+      iconfontUrl={'//at.alicdn.com/t/font_2919626_sgku75qiwh.js'}
+      layout={'mix'}
+      logo={'/images/login/logo.png'}
+      primaryColor={'#00DA8A'}
+      navTheme={'light'}
+      fixedHeader={true}
+      fixSiderbar={true}
+      colorWeak={false}
+      title={''}
+      rightContentRender={() => <RightContent />}
+      disableContentMargin={false}
+    >
+      {props.children}
+    </ProLayout>;
+  }
   return (
     <ProLayout
       location={{ pathname }}
@@ -37,7 +55,7 @@ const Layouts = (props: PropsWithChildren<any>) => {
         content: '',
       }}
       iconfontUrl={'//at.alicdn.com/t/font_2919626_sgku75qiwh.js'}
-      layout={'side'}
+      layout={'mix'}
       logo={'/images/login/logo.png'}
       primaryColor={'#00DA8A'}
       siderWidth={208}
