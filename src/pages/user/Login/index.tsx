@@ -1,15 +1,15 @@
 import styles from './index.less';
-import ProForm, {ProFormCaptcha, ProFormText} from '@ant-design/pro-form';
+import ProForm, { ProFormCaptcha, ProFormText } from '@ant-design/pro-form';
 import { Alert, message, Tabs } from 'antd';
-import {LockOutlined, MobileOutlined, UserOutlined} from '@ant-design/icons';
+import { LockOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons';
 import { FormattedMessage } from '@@/plugin-locale/localeExports';
 import React, { useState } from 'react';
 import { useModel } from '@@/plugin-model/useModel';
 import { login } from '@/services/ant-design-pro/api';
 import { history } from '@@/core/history';
 import { useLazyQuery } from '@apollo/client';
-import type {FakeCodeParams, UserData, UserNameLoginVar} from '@/services/gqls/login';
-import { GET_LOGIN,Get_Fake_Captcha } from '@/services/gqls/login';
+import type { FakeCodeParams, UserData, UserNameLoginVar } from '@/services/gqls/login';
+import { GET_LOGIN, Get_Fake_Captcha } from '@/services/gqls/login';
 
 const LoginMessage: React.FC<{
   content: string;
@@ -31,9 +31,9 @@ const Login = () => {
   const [loginAction] = useLazyQuery<UserData, UserNameLoginVar>(GET_LOGIN, {
     variables: {
       info: {
-        account: '18800000002',
-        password: 'word_002',
-        deviceId: '123'
+        account: '1880000011',
+        password: 'pass_11',
+        deviceId: '123',
       },
     },
     onCompleted: (userData) => {
@@ -42,14 +42,14 @@ const Login = () => {
   });
 
   // 发送验证码
-  const [get_sms_code] = useLazyQuery<void,FakeCodeParams>(Get_Fake_Captcha,{
+  const [get_sms_code] = useLazyQuery<void, FakeCodeParams>(Get_Fake_Captcha, {
     onCompleted: () => {
       message.success('验证码发送成功').then();
     },
-    onError:(e)=>{
-      const msg =  (e.graphQLErrors[0].extensions as any).error.phoneNumber
-      message.error('发送失败'+msg).then()
-    }
+    onError: (e) => {
+      const msg = (e.graphQLErrors[0].extensions as any).error.phoneNumber;
+      message.error('发送失败' + msg).then();
+    },
   });
   const fetchUserInfo = async () => {
     const userInfo = await initialState?.fetchUserInfo?.();
@@ -65,7 +65,7 @@ const Login = () => {
     setSubmitting(true);
     try {
       // 登录
-      loginAction()
+      loginAction();
       return;
       const msg = await login({ ...values, type: 'account' });
       if (msg.status === 'ok') {
@@ -123,14 +123,8 @@ const Login = () => {
               }}
             >
               <Tabs activeKey={type} onChange={setType}>
-                <Tabs.TabPane
-                  key="account"
-                  tab='账户密码登录'
-                />
-                <Tabs.TabPane
-                  key="mobile"
-                  tab='手机号登录'
-                />
+                <Tabs.TabPane key="account" tab="账户密码登录" />
+                <Tabs.TabPane key="mobile" tab="手机号登录" />
               </Tabs>
               {status === 'error' && loginType === 'account' && (
                 <LoginMessage content="账户或密码错误(admin/ant.design)" />
@@ -144,7 +138,7 @@ const Login = () => {
                       prefix: <MobileOutlined className={styles.prefixIcon} />,
                     }}
                     name="phone"
-                    placeholder='手机号'
+                    placeholder="手机号"
                     rules={[
                       {
                         required: true,
@@ -169,7 +163,7 @@ const Login = () => {
                     captchaProps={{
                       size: 'large',
                     }}
-                    placeholder='请输入验证码'
+                    placeholder="请输入验证码"
                     captchaTextRender={(timing, count) => {
                       if (timing) {
                         return `${count} 获取验证码`;
@@ -191,13 +185,13 @@ const Login = () => {
                     ]}
                     onGetCaptcha={async (phone) => {
                       // 判断phone是否合法
-                      try{
+                      try {
                         await get_sms_code({
                           variables: {
                             phoneNumber: phone,
-                          }
+                          },
                         });
-                      }catch (e){
+                      } catch (e) {
                         message.error('发送失败!');
                       }
                     }}
@@ -205,55 +199,55 @@ const Login = () => {
                 </>
               )}
               {/*账号密码登录*/}
-              {type === 'account' &&
-              <>
-                <ProFormText
-                  name="username"
-                  fieldProps={{
-                    size: 'large',
-                    prefix: <UserOutlined className={styles.prefixIcon} />,
-                  }}
-                  placeholder="用户名: admin or user"
-                  rules={[
-                    {
-                      required: true,
-                      message: (
-                        <FormattedMessage
-                          id="pages.login.username.required"
-                          defaultMessage="请输入用户名!"
-                        />
-                      ),
-                    },
-                  ]}
-                />
-                <ProFormText.Password
-                  name="password"
-                  fieldProps={{
-                    size: 'large',
-                    prefix: <LockOutlined className={styles.prefixIcon} />,
-                  }}
-                  placeholder="密码: ant.design"
-                  rules={[
-                    {
-                      required: true,
-                      message: (
-                        <FormattedMessage
-                          id="pages.login.password.required"
-                          defaultMessage="请输入密码！"
-                        />
-                      ),
-                    },
-                  ]}
-                />
-              </>
-              }
+              {type === 'account' && (
+                <>
+                  <ProFormText
+                    name="username"
+                    fieldProps={{
+                      size: 'large',
+                      prefix: <UserOutlined className={styles.prefixIcon} />,
+                    }}
+                    placeholder="用户名: admin or user"
+                    rules={[
+                      {
+                        required: true,
+                        message: (
+                          <FormattedMessage
+                            id="pages.login.username.required"
+                            defaultMessage="请输入用户名!"
+                          />
+                        ),
+                      },
+                    ]}
+                  />
+                  <ProFormText.Password
+                    name="password"
+                    fieldProps={{
+                      size: 'large',
+                      prefix: <LockOutlined className={styles.prefixIcon} />,
+                    }}
+                    placeholder="密码: ant.design"
+                    rules={[
+                      {
+                        required: true,
+                        message: (
+                          <FormattedMessage
+                            id="pages.login.password.required"
+                            defaultMessage="请输入密码！"
+                          />
+                        ),
+                      },
+                    ]}
+                  />
+                </>
+              )}
               {status === 'error' && loginType === 'mobile' && (
                 <LoginMessage content="验证码错误" />
               )}
             </ProForm>
             <a
               style={{
-                marginTop:'8px',
+                marginTop: '8px',
                 float: 'right',
               }}
             >
