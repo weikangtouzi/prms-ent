@@ -1,10 +1,9 @@
 import {
-  ProFormCheckbox,
   ProFormInstance,
   StepsForm
 } from "@ant-design/pro-form";
 import styles from './index.less'
-import ProForm, { ProFormSelect, ProFormText} from "@ant-design/pro-form";
+import ProForm, {ProFormText} from "@ant-design/pro-form";
 import {Card, Form, Input, Upload} from "antd";
 import {useRef, useState} from "react";
 import {PlusOutlined} from "@ant-design/icons";

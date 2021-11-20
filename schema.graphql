@@ -145,11 +145,26 @@ type LoginResult {
 
 type Message {
   "0 for system message"
-  from: Int!
+  from: String!
   messageContent: String!
   messageType: MessageType!
-  to: Int!
+  to: String!
   uuid: String!
+}
+
+type MessageEntitySelectionInt {
+  value: Int
+}
+
+type MessageEntitySelectionString {
+  value: String
+}
+
+type MessagePage {
+  count: Int!
+  messages: [Message]!
+  page: Int!
+  pageSize: Int!
 }
 
 "most of mutations needed token for authorization"
@@ -179,17 +194,21 @@ type Mutation {
   ENTEnterpriseWorkerRegister(info: EnterpriseWorkerInfo!): Void
   ENTInsertEnterpriseBasicInfo(info: EnterpriseBasicInfo!): Void
   ENTInviteWorkMate(phoneNumber: String!, pos: String, role: String): Void
+  ENTRecruitmentApply(recruitmentId: Int!, size: String): Void
+  HREndInterview(interviewId: Int!, ispassed: Boolean!): Void
   "end a iterview with the description, need to tell the interview is passed or not, most of time the description is about some special situation"
-  HREndIterview(description: String!, interviewId: Int!, ispassed: Boolean!): Void
+  HREndIterview(description: String, interviewId: Int!, ispassed: Boolean!): Void
   "will create a interview data and set it to waiting, may return the interview id for dev version"
-  HRInviteInterview(jobId: Int!, time: Int!, userId: Int!): Void
+  HRInviteInterview(jobId: Int!, time: [String]!, userId: Int!): Void
   HRPostJob(info: JobPost): Void
+  HRRecruitmentApply(recruitmentId: Int!): Void
+  HRRemoveJob(jobId: Int!): Void
   "this api need you to pass the provider's phone number as the authorization header"
   QNInsertPersonalData(info: PersonalData!): Int!
   "switch to another indentity if exists, should pass indetity and role, Identity and role types are enums, checkout their type definitions, return token"
   UserChooseOrSwitchIdentity(role: String, targetIdentity: String!): Void
   "insert or edit a personal data"
-  UserEditPersonalData(info: BasicData): Void
+  UserEditBasicInfo(info: BasicData): Void
   "enterprise certification need censor"
   UserEnterpriseIdentify(info: EnterpriseCharterSencorRequest!): Void
   "only availiable when token is expired and not dead"
@@ -274,10 +293,13 @@ type Query {
   StaticSendSms(phoneNumber: String): String!
   "just tests"
   TestShowDatas(lastIndex: String, pageSize: Int): [PersonalDataView]!
+  "if page not provided it will be 0,for pageSize it will be 10"
+  UserGetMessages(page: Int, pageSize: Int, targetId: Int!): MessagePage
   "api for login"
-  UserLogIn(info: Login!): LoginResult!
+  UserLogIn(info: LogIn!): LoginResult!
   "check if the input num is availiable or not"
   UserNumberCheck(num: String!): Boolean!
+  UserVerifyCodeConsume(info: VerifyInfo): Void
 }
 
 type RegionList {
@@ -311,8 +333,8 @@ type ResumePersonalData {
   gender: Boolean!
   "a link to the file"
   logo: String!
-  name: String!
   phoneNumber: String!
+  realName: String!
 }
 
 type ResumeProExp {
@@ -500,12 +522,13 @@ input BasicData {
   birthday: Int!
   currentCity: String!
   education: Education!
-  firstTimeWorking: Int!
+  firstTimeWorking: String!
   gender: Boolean!
   "a link to the file"
   logo: String!
-  name: String!
   phoneNumber: String!
+  realName: String!
+  username: String!
 }
 
 "same datas as the Insert one, but are all not required"
@@ -591,12 +614,11 @@ input JobFilter {
 
 input JobPost {
   JobTitle: String!
-  adress: String!
   coordinates: [Float]!
   description: String!
   education: EducationRequired!
   experience: Int!
-  isFullTime: Boolean!
+  isFullTime: FullTime!
   requiredNum: Int!
   "just a two value array which first value means the min one, second means the max"
   salary: [Int]!
@@ -604,18 +626,10 @@ input JobPost {
   workingAddress: String!
 }
 
-"just data needed to login"
-input Login {
-  "could be username, email, phone number"
+input LogIn {
   account: String!
-  password: Password!
-}
-
-"sometime password may not be password only, for very situation in one api, we need this"
-input Password {
-  "if this is true, the value will be judge as verifyCode, or as password, one more thing, only will work when account is phoneNumber"
-  isVerifyCode: Boolean!
-  value: String
+  deviceId: String
+  password: String
 }
 
 "the data = require(the providers?"
@@ -651,15 +665,13 @@ input Register {
   phoneNumber: String!
   "username: required, unique, make sense by the name"
   username: String!
-  "verifyCode: required, expiresIn 5 minutes, make sense by the name"
-  verifyCode: String!
 }
 
 "reset password means that user forget password"
 input ResetPassword {
   confirmPassword: String!
   password: String!
-  verifyCode: String!
+  phoneNumber: String!
 }
 
 input SendMessage {
@@ -673,6 +685,12 @@ input UploadExtraAttributes {
   "checkout CustomFileType for value options"
   customFileType: String
   customUploadPath: String
+}
+
+input VerifyInfo {
+  operation: String!
+  phoneNumber: String!
+  verifyCode: String!
 }
 
 input WorkExperience {
@@ -692,6 +710,9 @@ input WorkExperience {
 scalar Upload
 
 scalar Void
+
+"enum {FullTime,        PartTime,        InternShip}"
+scalar FullTime
 
 "enum {None, Failed, Passed, Waiting}"
 scalar EnterpriseIdentificationStatus

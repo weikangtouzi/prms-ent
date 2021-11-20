@@ -1,15 +1,15 @@
 import styles from './index.less';
-import ProForm, { ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
-import { Alert, message } from 'antd';
-import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import ProForm, {ProFormCaptcha, ProFormText} from '@ant-design/pro-form';
+import { Alert, message, Tabs } from 'antd';
+import {LockOutlined, MobileOutlined, UserOutlined} from '@ant-design/icons';
 import { FormattedMessage } from '@@/plugin-locale/localeExports';
 import React, { useState } from 'react';
 import { useModel } from '@@/plugin-model/useModel';
 import { login } from '@/services/ant-design-pro/api';
 import { history } from '@@/core/history';
 import { useLazyQuery } from '@apollo/client';
-import type { UserData, UserNameLoginVar } from '@/services/gqls/login';
-import { GET_LOGIN } from '@/services/gqls/login';
+import type {FakeCodeParams, UserData, UserNameLoginVar} from '@/services/gqls/login';
+import { GET_LOGIN,Get_Fake_Captcha } from '@/services/gqls/login';
 
 const LoginMessage: React.FC<{
   content: string;
@@ -27,21 +27,29 @@ const Login = () => {
   const [submitting, setSubmitting] = useState(false);
   const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
   const { initialState, setInitialState } = useModel('@@initialState');
-
-  // const [loadLogin, {called, loading, data}] = useLazyQuery<UserData,UserNameLoginVar>(
-  useLazyQuery<UserData, UserNameLoginVar>(GET_LOGIN, {
+  const [type, setType] = useState<string>('account');
+  const [loginAction] = useLazyQuery<UserData, UserNameLoginVar>(GET_LOGIN, {
     variables: {
       info: {
-        account: '123',
-        password: {
-          isVerifyCode: false,
-          value: '123',
-        },
+        account: '18800000002',
+        password: 'word_002',
+        deviceId: '123'
       },
     },
     onCompleted: (userData) => {
       console.log(userData.createdAt);
     },
+  });
+
+  // 发送验证码
+  const [get_sms_code] = useLazyQuery<void,FakeCodeParams>(Get_Fake_Captcha,{
+    onCompleted: () => {
+      message.success('验证码发送成功').then();
+    },
+    onError:(e)=>{
+      const msg =  (e.graphQLErrors[0].extensions as any).error.phoneNumber
+      message.error('发送失败'+msg).then()
+    }
   });
   const fetchUserInfo = async () => {
     const userInfo = await initialState?.fetchUserInfo?.();
@@ -57,8 +65,8 @@ const Login = () => {
     setSubmitting(true);
     try {
       // 登录
-      // loadLogin()
-      // return;
+      loginAction()
+      return;
       const msg = await login({ ...values, type: 'account' });
       if (msg.status === 'ok') {
         const defaultLoginSuccessMessage = '登录成功';
@@ -114,9 +122,90 @@ const Login = () => {
                 await handleSubmit(values as API.LoginParams);
               }}
             >
+              <Tabs activeKey={type} onChange={setType}>
+                <Tabs.TabPane
+                  key="account"
+                  tab='账户密码登录'
+                />
+                <Tabs.TabPane
+                  key="mobile"
+                  tab='手机号登录'
+                />
+              </Tabs>
               {status === 'error' && loginType === 'account' && (
                 <LoginMessage content="账户或密码错误(admin/ant.design)" />
               )}
+              {/*手机号登录*/}
+              {type === 'mobile' && (
+                <>
+                  <ProFormText
+                    fieldProps={{
+                      size: 'large',
+                      prefix: <MobileOutlined className={styles.prefixIcon} />,
+                    }}
+                    name="phone"
+                    placeholder='手机号'
+                    rules={[
+                      {
+                        required: true,
+                        message: '请输入手机号！',
+                      },
+                      {
+                        pattern: /^1\d{10}$/,
+                        message: (
+                          <FormattedMessage
+                            id="pages.login.phoneNumber.invalid"
+                            defaultMessage="手机号格式错误！"
+                          />
+                        ),
+                      },
+                    ]}
+                  />
+                  <ProFormCaptcha
+                    fieldProps={{
+                      size: 'large',
+                      prefix: <LockOutlined className={styles.prefixIcon} />,
+                    }}
+                    captchaProps={{
+                      size: 'large',
+                    }}
+                    placeholder='请输入验证码'
+                    captchaTextRender={(timing, count) => {
+                      if (timing) {
+                        return `${count} 获取验证码`;
+                      }
+                      return '获取验证码';
+                    }}
+                    phoneName="phone"
+                    name="captcha"
+                    rules={[
+                      {
+                        required: true,
+                        message: (
+                          <FormattedMessage
+                            id="pages.login.captcha.required"
+                            defaultMessage="请输入验证码！"
+                          />
+                        ),
+                      },
+                    ]}
+                    onGetCaptcha={async (phone) => {
+                      // 判断phone是否合法
+                      try{
+                        await get_sms_code({
+                          variables: {
+                            phoneNumber: phone,
+                          }
+                        });
+                      }catch (e){
+                        message.error('发送失败!');
+                      }
+                    }}
+                  />
+                </>
+              )}
+              {/*账号密码登录*/}
+              {type === 'account' &&
               <>
                 <ProFormText
                   name="username"
@@ -157,27 +246,19 @@ const Login = () => {
                   ]}
                 />
               </>
-
+              }
               {status === 'error' && loginType === 'mobile' && (
                 <LoginMessage content="验证码错误" />
               )}
-              <div
-                style={{
-                  marginBottom: 24,
-                }}
-              >
-                <ProFormCheckbox noStyle name="autoLogin">
-                  <FormattedMessage id="pages.login.rememberMe" defaultMessage="自动登录" />
-                </ProFormCheckbox>
-                <a
-                  style={{
-                    float: 'right',
-                  }}
-                >
-                  <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" />
-                </a>
-              </div>
             </ProForm>
+            <a
+              style={{
+                marginTop:'8px',
+                float: 'right',
+              }}
+            >
+              <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" />
+            </a>
           </div>
         </div>
       </div>
