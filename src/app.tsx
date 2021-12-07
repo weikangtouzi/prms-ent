@@ -2,6 +2,7 @@ import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
 import { history } from 'umi';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
+import {message} from "antd";
 import { ApolloClient, InMemoryCache, ApolloProvider,HttpLink} from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
 import React from 'react';
@@ -72,7 +73,8 @@ const httpLink = new HttpLink({ uri: 'https://be.chenzaozhao.com/graphql' });
 
 const logoutLink = onError((err) => {
   // 错误处理
-  console.error(err)
+  console.error('发生错误了(定位app:75):',err)
+  message.warn(err.graphQLErrors?.[0].message).then()
 })
 
 const client = new ApolloClient({
