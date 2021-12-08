@@ -1,17 +1,17 @@
 import styles from './index.less';
-import ProForm, {ProFormCaptcha, ProFormText} from '@ant-design/pro-form';
-import {Alert, message, Tabs} from 'antd';
-import {LockOutlined, MobileOutlined, UserOutlined} from '@ant-design/icons';
-import {FormattedMessage} from '@@/plugin-locale/localeExports';
-import React, {useState} from 'react';
-// import {useModel} from '@@/plugin-model/useModel';
-import {history} from '@@/core/history';
-import {useLazyQuery} from '@apollo/client';
-import {GET_LOGIN, Get_Fake_Captcha} from '@/services/gqls/user/login';
+import ProForm, { ProFormCaptcha, ProFormText } from '@ant-design/pro-form';
+import { Alert, message, Tabs } from 'antd';
+import { LockOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons';
+import { FormattedMessage } from '@@/plugin-locale/localeExports';
+import React, { useState } from 'react';
+import { useModel } from '@@/plugin-model/useModel';
+import { history } from '@@/core/history';
+import { useLazyQuery } from '@apollo/client';
+import { GET_LOGIN, Get_Fake_Captcha, Login_By_Phone } from '@/services/gqls/user/login';
 
 const LoginMessage: React.FC<{
   content: string;
-}> = ({content}) => (
+}> = ({ content }) => (
   <Alert
     style={{
       marginBottom: 24,
@@ -22,30 +22,44 @@ const LoginMessage: React.FC<{
   />
 );
 const Login = () => {
+  const loginSuccess = () => {
+    /** 此方法会跳转到 redirect 参数所在的位置 */
+    if (!history) return;
+    const { query } = history.location;
+    const { redirect } = query as { redirect: string };
+    history.push(redirect || '/');
+  };
   const [submitting, setSubmitting] = useState(false);
   const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
-  // const {initialState, setInitialState} = useModel('@@initialState');
+  const { setInitialState } = useModel('@@initialState');
   const [type, setType] = useState<string>('account');
-  const [loginAction] = useLazyQuery<ResultDataType<'UserLogIn', User.UserData>, User.UserNameLoginVar>(GET_LOGIN, {
+  const [loginAction] = useLazyQuery<
+    ResultDataType<'UserLogIn', User.UserData>,
+    User.UserNameLoginVar
+  >(GET_LOGIN, {
     onCompleted: (resData) => {
-      setSubmitting(false)
-      const {UserLogIn} = resData
-      localStorage.setItem('token', UserLogIn.token)
-      localStorage.setItem('username', UserLogIn.username)
-      message.success('登录成功');
-      /** 此方法会跳转到 redirect 参数所在的位置 */
-      if (!history) return;
-      const {query} = history.location;
-      const {redirect} = query as { redirect: string };
-      history.push(redirect || '/');
+      setSubmitting(false);
+      const { UserLogIn } = resData;
+      localStorage.setItem('token', UserLogIn.token);
+      localStorage.setItem('username', UserLogIn.username);
+      message.success('登录成功').then();
+      setInitialState(() => ({
+        currentUser: {
+          avatar: 'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png',
+          country: 'China',
+          name: '测试用户',
+          userid: '00000001',
+        },
+      })).then();
+      loginSuccess();
     },
     onError: () => {
       setUserLoginState({
-        status:'error',
-        type:'account'
-      })
-      setSubmitting(false)
-    }
+        status: 'error',
+        type: 'account',
+      });
+      setSubmitting(false);
+    },
   });
 
   // 发送验证码
@@ -58,37 +72,69 @@ const Login = () => {
       message.error('发送失败' + msg).then();
     },
   });
-  // const fetchUserInfo = async () => {
-  //   const userInfo = await initialState?.fetchUserInfo?.();
-  //   if (userInfo) {
-  //     await setInitialState((s) => ({
-  //       ...s,
-  //       currentUser: userInfo,
-  //     }));
-  //   }
-  // };
+
+  // 验证码登录
+  const [login_by_code, { variables }] = useLazyQuery<void, User.VerifyCode>(Login_By_Phone, {
+    onCompleted: () => {
+      // 校验成功后
+      const { info } = variables as User.VerifyCode;
+      loginAction({
+        variables: {
+          info: {
+            account: info.phoneNumber,
+          },
+        },
+      });
+    },
+    onError: () => {
+      message.error('验证码校验不通过').then();
+    },
+  });
+  const { status, type: loginType } = userLoginState;
 
   const handleSubmit = async (values: API.LoginParams) => {
-    setSubmitting(true);
-    loginAction({
-      variables: {
-        info: {
-          account: values.username,
-          password: values.password
-        }
-      },
-    });
+    if (type === 'mobile') {
+      console.log(values);
+      // 手机号登录
+      login_by_code({
+        variables: {
+          info: {
+            phoneNumber: values.phone || '',
+            verifyCode: values.captcha || '',
+            operation: 'UserLogIn',
+          },
+        },
+      });
+    } else {
+      // 用户名密码登录
+      loginAction({
+        variables: {
+          info: {
+            account: values.username,
+            password: values.password,
+          },
+        },
+      });
+      // const fetchUserInfo = async () => {
+      //   const userInfo = await initialState?.fetchUserInfo?.();
+      //   if (userInfo) {
+      //     await setInitialState((s) => ({
+      //       ...s,
+      //       currentUser: userInfo,
+      //     }));
+      //   }
+      // };
+    }
   };
-  const {status, type: loginType} = userLoginState;
 
   return (
     <div className={styles.login}>
       <div className={styles.left}>
-        <img src="/images/login/login.png" alt="login"/>
+        <img src={'/images/login/login.png'} alt="login" />
       </div>
       <div className={styles.right}>
         <div className={styles.formContainer}>
-          <img src="/images/login/logo.png" alt="logo" className={styles.logo}/>
+          {/*<img src={"/images/login/logo.png"} alt="logo" className={styles.logo}/>*/}
           <h3>
             欢迎使用<span>趁早找企业端</span>
           </h3>
@@ -115,11 +161,11 @@ const Login = () => {
               }}
             >
               <Tabs activeKey={type} onChange={setType}>
-                <Tabs.TabPane key="account" tab="账户密码登录"/>
-                <Tabs.TabPane key="mobile" tab="手机号登录"/>
+                <Tabs.TabPane key="account" tab="账户密码登录" />
+                <Tabs.TabPane key="mobile" tab="手机号登录" />
               </Tabs>
               {status === 'error' && loginType === 'account' && (
-                <LoginMessage content="账户或密码错误"/>
+                <LoginMessage content="账户或密码错误" />
               )}
               {/*手机号登录*/}
               {type === 'mobile' && (
@@ -127,7 +173,7 @@ const Login = () => {
                   <ProFormText
                     fieldProps={{
                       size: 'large',
-                      prefix: <MobileOutlined className={styles.prefixIcon}/>,
+                      prefix: <MobileOutlined className={styles.prefixIcon} />,
                     }}
                     name="phone"
                     placeholder="手机号"
@@ -150,7 +196,7 @@ const Login = () => {
                   <ProFormCaptcha
                     fieldProps={{
                       size: 'large',
-                      prefix: <LockOutlined className={styles.prefixIcon}/>,
+                      prefix: <LockOutlined className={styles.prefixIcon} />,
                     }}
                     captchaProps={{
                       size: 'large',
@@ -197,7 +243,7 @@ const Login = () => {
                     name="username"
                     fieldProps={{
                       size: 'large',
-                      prefix: <UserOutlined className={styles.prefixIcon}/>,
+                      prefix: <UserOutlined className={styles.prefixIcon} />,
                     }}
                     placeholder="用户名: admin or user"
                     rules={[
@@ -216,7 +262,7 @@ const Login = () => {
                     name="password"
                     fieldProps={{
                       size: 'large',
-                      prefix: <LockOutlined className={styles.prefixIcon}/>,
+                      prefix: <LockOutlined className={styles.prefixIcon} />,
                     }}
                     placeholder="密码: ant.design"
                     rules={[
@@ -234,7 +280,7 @@ const Login = () => {
                 </>
               )}
               {status === 'error' && loginType === 'mobile' && (
-                <LoginMessage content="验证码错误"/>
+                <LoginMessage content="验证码错误" />
               )}
             </ProForm>
             <a
@@ -243,7 +289,7 @@ const Login = () => {
                 float: 'right',
               }}
             >
-              <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码"/>
+              <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" />
             </a>
           </div>
         </div>

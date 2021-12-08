@@ -66,6 +66,8 @@ declare namespace API {
     password: string;
     autoLogin?: boolean;
     type?: string;
+    captcha?: string;
+    phone?: string;
   };
 
   type ErrorResponse = {
