@@ -43,15 +43,17 @@ const Login = () => {
       localStorage.setItem('token', UserLogIn.token);
       localStorage.setItem('username', UserLogIn.username);
       message.success('登录成功').then();
-      setInitialState(() => ({
+      setInitialState((s) => ({
+        ...s,
         currentUser: {
           avatar: 'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png',
           country: 'China',
           name: '测试用户',
           userid: '00000001',
         },
-      })).then();
-      loginSuccess();
+      })).then(() => {
+        loginSuccess();
+      });
     },
     onError: () => {
       setUserLoginState({
@@ -134,7 +136,7 @@ const Login = () => {
       </div>
       <div className={styles.right}>
         <div className={styles.formContainer}>
-          {/*<img src={"/images/login/logo.png"} alt="logo" className={styles.logo}/>*/}
+          <img src={'/images/login/logo.png'} alt="logo" className={styles.logo} />
           <h3>
             欢迎使用<span>趁早找企业端</span>
           </h3>
