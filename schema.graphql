@@ -42,6 +42,27 @@ type CityWithChildren {
   name: String!
 }
 
+type CompInfoForJobDetailPage {
+  address_coordinates: [Float]!
+  address_description: [String]!
+  business_nature: EnterpriseNature!
+  enterprise_logo: String!
+  enterprise_size: EnterpriseSize!
+  id: Int!
+  industry_involved: [String]!
+  name: String!
+}
+
+type Contract {
+  ent: String
+  id: Int!
+  last_msg: String!
+  last_msg_time: String!
+  logo: String!
+  name: String!
+  pos: String
+}
+
 type County {
   county_id: String!
   name: String!
@@ -61,6 +82,36 @@ type EnterpriseIdentification {
   status: EnterpriseIdentificationStatus
 }
 
+type EnterpriseInfoForEntDetail {
+  business_nature: EnterpriseNature!
+  createdAt: String!
+  enterprise_coordinates: [Float]!
+  enterprise_financing: EnterpriseFinancing!
+  enterprise_loc_detail: [String]!
+  enterprise_logo: String
+  enterprise_name: String!
+  enterprise_profile: String!
+  enterprise_size: EnterpriseSize
+  enterprise_welfare: [String]
+  established_time: Int
+  extra_attribute: String
+  homepage: String
+  industry_involved: [String]!
+  job_counter: Int
+  overtime_work_degree: String
+  rest_rule: String
+  tags: String
+  tel: Int
+  work_time: Int
+}
+
+type EnterpriseQAForEntDetail {
+  answer: String!
+  answerCount: Int!
+  question: String!
+  questionCount: Int!
+}
+
 "for enterprise user interview data will be like this"
 type EnterpriseUserSideInterviewData {
   jobExpectation: String!
@@ -71,6 +122,29 @@ type EnterpriseUserSideInterviewData {
 
 type FileLink {
   link: String!
+}
+
+type HRInfoForEntDetail {
+  id: Int!
+  logo: String!
+  name: String!
+  pos: String!
+}
+
+type HRInfoForHRDetailPage {
+  company_belonged: String!
+  last_log_out_time: String
+  logo: String!
+  name: String!
+  pos: String!
+}
+
+type HRInfoForJobDetailPage {
+  id: Int!
+  last_log_out_time: String
+  logo: String!
+  name: String!
+  pos: String!
 }
 
 type InterviewDetail {
@@ -89,48 +163,108 @@ type InterviewDetail {
   time: String!
 }
 
+type InterviewRecommentInfoForEntDetail {
+  content: String!
+  createdAt: String!
+  id: Int!
+  job_name: String!
+  logo: String!
+  score: Float!
+  tags: [String]!
+  thumbs: Int!
+  user_name: String!
+}
+
+type InterviewRecommentListForEntDetail {
+  HR: Float!
+  comp_env: Float!
+  count: Int!
+  description: Float!
+  recommends: [InterviewRecommentInfoForEntDetail]!
+  total: Float!
+}
+
 type InterviewSchedule {
   schedul: [InterviewData]!
 }
 
-"a job always contains these datas. these are formatted data, not exactly what is in database"
-type JobData {
-  "this data is a json data, to use it just parse json by this string"
-  JobDetail: String!
-  JobTitle: String!
-  WorkingAddress: String!
-  createdAt: String!
-  education: String!
-  experience: String!
-  isFullTime: Boolean!
-  requiredNum: Int!
+"for list query"
+type JobDataBriefly {
+  address_coordinate: String!
+  category: [String]!
+  comp_financing: EnterpriseFinancing!
+  comp_name: String!
+  comp_size: EnterpriseSize!
+  emergency: Boolean!
+  expired_at: String!
+  full_time_job: FullTime!
+  hr_name: String!
+  hr_pos: String!
+  id: Int!
+  job_id: Int!
+  logo: String!
+  max_salary: Int!
+  min_education: Education!
+  min_experience: Int!
+  min_salary: Int!
+  ontop: Boolean!
   tags: [String]!
+  title: String!
+}
+
+type JobDataForHRDetailPageOrEntJobList {
+  createdAt: String!
+  education: Education!
+  experience: Int!
+  id: Int!
+  loc: String!
+  salary: [Int]!
+  title: String!
+}
+
+"a job always contains these datas. these are formatted data, not exactly what is in database"
+type JobDataForJobDetailPage {
+  address_coordinate: [Float]!
+  address_description: [String]!
+  category: [String]!
+  detail: String!
+  education: Education
+  experience: Int
+  full_time_job: FullTime!
+  id: Int!
+  required_num: Int!
+  salaryExpected: [Int]!
+  tags: [String]
+  title: String!
   updatedAt: String!
 }
 
-"for list query"
-type JobDataBriefly {
-  JobTitle: String!
-  WorkingAddress: String!
-  createdAt: String!
-  education: String!
-  experience: String!
-  id: Int!
-  isFullTime: Boolean!
-  requiredNum: Int!
+type JobDetailPageReply {
+  company: CompInfoForJobDetailPage!
+  hr: HRInfoForJobDetailPage!
+  job: JobDataForJobDetailPage!
 }
 
 type JobExpectation {
   aimedCity: String!
+  aimed_city: String!
   jobCategory: [String]!
+  job_category: [String]!
+  max_salary_expectation: Int!
+  min_salary_expectation: Int!
   salary: String!
 }
 
-"contains a array of jobid, and a cache id"
-type JobQueryResult {
-  cacheId: String!
-  "just job ids"
+type JobListForHRDetailPageOrEntJobList {
+  count: Int!
+  data: [JobDataForHRDetailPageOrEntJobList]!
+}
+
+type JobSimpifiedDataPageView {
+  count: Int!
   data: [JobDataBriefly]!
+  page: Int!
+  pageSize: Int!
 }
 
 "logInResult: the result of the login operation"
@@ -178,6 +312,7 @@ type Mutation {
   CandidateEditPersonalAdvantage(advantage: String!): Void
   "insert or edit a project experience"
   CandidateEditProExp(info: ProExp): Void
+  CandidateEditSkills(resumeId: Int!, skills: [String]!): Void
   "insert or edit a work experience"
   CandidateEditWorkExprience(info: WorkExperience!): Void
   CandidateRecruitmentApply(recruitmentId: Int!): Void
@@ -195,9 +330,8 @@ type Mutation {
   ENTInsertEnterpriseBasicInfo(info: EnterpriseBasicInfo!): Void
   ENTInviteWorkMate(phoneNumber: String!, pos: String, role: String): Void
   ENTRecruitmentApply(recruitmentId: Int!, size: String): Void
-  HREndInterview(interviewId: Int!, ispassed: Boolean!): Void
   "end a iterview with the description, need to tell the interview is passed or not, most of time the description is about some special situation"
-  HREndIterview(description: String, interviewId: Int!, ispassed: Boolean!): Void
+  HREndInterview(description: String, interviewId: Int!, ispassed: Boolean!): Void
   "will create a interview data and set it to waiting, may return the interview id for dev version"
   HRInviteInterview(jobId: Int!, time: [String]!, userId: Int!): Void
   HRPostJob(info: JobPost): Void
@@ -206,9 +340,9 @@ type Mutation {
   "this api need you to pass the provider's phone number as the authorization header"
   QNInsertPersonalData(info: PersonalData!): Int!
   "switch to another indentity if exists, should pass indetity and role, Identity and role types are enums, checkout their type definitions, return token"
-  UserChooseOrSwitchIdentity(role: String, targetIdentity: String!): Void
+  UserChooseOrSwitchIdentity(role: String, targetIdentity: String!): String
   "insert or edit a personal data"
-  UserEditBasicInfo(info: BasicData): Void
+  UserEditBasicInfo(info: BasicData!): Void
   "enterprise certification need censor"
   UserEnterpriseIdentify(info: EnterpriseCharterSencorRequest!): Void
   "only availiable when token is expired and not dead"
@@ -261,12 +395,18 @@ type ProvinceWithChildren {
 type Query {
   AdminGetCensorList(lastIndex: String, pageSize: Int): [CensorData]
   CandidateCheckResumeCompletion: Boolean!
+  CandidateGetAllJobCategoriesByEntId(entId: Int): [String]!
+  CandidateGetAllJobExpectations: [JobExpectation]!
+  CandidateGetEnterpriseDetail_HRList(entId: Int): [HRInfoForEntDetail]!
+  CandidateGetEnterpriseDetail_InterviewRecomment(entId: Int): InterviewRecommentListForEntDetail!
+  CandidateGetEnterpriseDetail_QA(entId: Int): EnterpriseQAForEntDetail!
+  CandidateGetHRDetail_HRInfo(hrId: Int): HRInfoForHRDetailPage!
+  CandidateGetHRDetail_JobListPageView(hrId: Int!, page: Int, pageSize: Int): JobListForHRDetailPageOrEntJobList!
+  CandidateGetHRDetail_RecommendationsList(hrId: Int!): RecommendationsListForHRDetailPage!
   "get job data by id"
-  CandidateGetJob(jobid: Int): JobData!
-  "tags are those tags that hr added to a job. keyword stands for the input at search page. tags and keyword are not required. pageNumber and pageSize default value are 1 and 10"
-  CandidateGetJobs(filter: JobFilter): JobQueryResult!
-  "using cached jobid, need to query at least once before calling this"
-  CandidateGetJobsFromCache(cacheId: String): [JobDataBriefly]!
+  CandidateGetJob(jobid: Int): JobDetailPageReply!
+  CandidateGetJobList(filter: JobFilter): JobSimpifiedDataPageView!
+  CandidateGetJobListByEntId(category: String, entId: Int!): JobListForHRDetailPageOrEntJobList!
   "detail page for interview"
   CommonGetIterviewDetail(interviewId: Int!): InterviewDetail
   "gets InterviewSchedule"
@@ -293,6 +433,9 @@ type Query {
   StaticSendSms(phoneNumber: String): String!
   "just tests"
   TestShowDatas(lastIndex: String, pageSize: Int): [PersonalDataView]!
+  UserGetBasicInfo: UserBasicInfo!
+  UserGetContractList: [Contract]!
+  UserGetEnterpriseDetail_EntInfo(entId: Int): EnterpriseInfoForEntDetail!
   "if page not provided it will be 0,for pageSize it will be 10"
   UserGetMessages(page: Int, pageSize: Int, targetId: Int!): MessagePage
   "api for login"
@@ -300,6 +443,11 @@ type Query {
   "check if the input num is availiable or not"
   UserNumberCheck(num: String!): Boolean!
   UserVerifyCodeConsume(info: VerifyInfo): Void
+}
+
+type RecommendationsListForHRDetailPage {
+  count: Int!
+  data: [JobDataForHRDetailPageOrEntJobList]!
 }
 
 type RegionList {
@@ -327,7 +475,6 @@ type ResumeEduExp {
 }
 
 type ResumePersonalData {
-  WorkExperienceTime: Int!
   age: Int!
   education: Education!
   gender: Boolean!
@@ -335,6 +482,7 @@ type ResumePersonalData {
   logo: String!
   phoneNumber: String!
   realName: String!
+  workExperienceTime: Int!
 }
 
 type ResumeProExp {
@@ -359,6 +507,7 @@ type SearchApplicantsResult {
 }
 
 type Subscription {
+  newContract: Contract!
   newMessage: Message!
 }
 
@@ -370,6 +519,16 @@ type Town {
 "the return type of getUsers api, not stable now, just because the api not implement yet"
 type User {
   "username: the username of the user stored in the database"
+  username: String!
+}
+
+type UserBasicInfo {
+  birth_date: String
+  current_city: String
+  education: Education
+  first_time_working: String
+  gender: Boolean
+  image_url: String!
   username: String!
 }
 
@@ -388,18 +547,6 @@ enum CustomFileType {
   Resume
 }
 
-"education for extra_data api"
-enum Education {
-  Doctor
-  High
-  Junior
-  JuniorCollege
-  LessThanPrime
-  Postgraduate
-  Primary
-  RegularCollege
-}
-
 "min education required for the job"
 enum EducationRequired {
   Doctor
@@ -407,25 +554,6 @@ enum EducationRequired {
   JuniorCollege
   Postgraduate
   RegularCollege
-}
-
-enum EnterpriseFinancing {
-  A
-  AngelFinancing
-  B
-  C
-  D
-  Listed
-  NoNeed
-  NotYet
-}
-
-enum EnterpriseNature {
-  Extra
-  ForeignFundedEnterprises
-  ForeignVentures
-  PrivateEnterprise
-  StateOwnedEnterprises
 }
 
 enum EnterpriseOvertimeDegree {
@@ -438,24 +566,6 @@ enum EnterpriseRestRule {
   OneDayOffPerWeekend
   StaggerWeekends
   TwoDayOffPerWeekend
-}
-
-enum EnterpriseSize {
-  FifteenToFifty
-  FiftyToOneHundredFifty
-  FiveHundredsToTwoThousands
-  LessThanFifteen
-  MoreThanTwoThousands
-  OneHundredFiftyToFiveHundreds
-}
-
-enum Identity {
-  Administrator
-  Counselor
-  "not only hr"
-  EnterpriseUser
-  "could be any personal user"
-  PersonalUser
 }
 
 enum InterviewProcess {
@@ -517,34 +627,32 @@ input ApplicantFilter {
   token: String!
 }
 
-"because the personal data is already exists, I choos this for the name"
+"because the personal data is already exists, I choose this for the name"
 input BasicData {
-  birthday: Int!
-  currentCity: String!
-  education: Education!
-  firstTimeWorking: String!
-  gender: Boolean!
+  birthday: Int
+  currentCity: String
+  education: Education
+  firstTimeWorking: String
+  gender: Boolean
   "a link to the file"
-  logo: String!
-  phoneNumber: String!
-  realName: String!
-  username: String!
+  logo: String
+  username: String
 }
 
 "same datas as the Insert one, but are all not required"
 input EditEnterpriseBasicInfo {
   abbreviation: String
   "checkout EnterpriseIndustry type for value options"
-  enterpriseFinancing: String
+  enterpriseFinancing: EnterpriseFinancing
   enterpriseIndustry: [String]
   "pass the whole adress information in this array"
   enterpriseLocation: [String]
   enterpriseName: String
   "checkout EnterpriseNature type for value options"
-  enterpriseNature: String
+  enterpriseNature: EnterpriseNature
   enterpriseProfile: String
   "checkout EnterpriseSize type for value options"
-  enterpriseSize: String
+  enterpriseSize: EnterpriseSize
   "longtitude and latitude"
   enterprisecCoordinate: [Float]
   establishedDate: String
@@ -554,29 +662,30 @@ input EditEnterpriseBasicInfo {
 }
 
 input EduExp {
-  education: Education!
+  education: Education
   exp_at_school: String!
   "for edit you need pass this data"
   id: Int
-  isFullTime: Boolean!
-  major: String!
-  schoolName: String!
-  time: String!
+  isFullTime: Boolean
+  major: String
+  resumeId: Int
+  schoolName: String
+  time: String
 }
 
 input EnterpriseBasicInfo {
   abbreviation: String!
   "checkout EnterpriseIndustry type for value options"
-  enterpriseFinancing: String!
+  enterpriseFinancing: EnterpriseFinancing!
   enterpriseIndustry: [String]!
   "pass the whole adress information in this array"
   enterpriseLocation: [String]!
   enterpriseName: String!
   "checkout EnterpriseNature type for value options"
-  enterpriseNature: String!
+  enterpriseNature: EnterpriseNature!
   enterpriseProfile: String!
   "checkout EnterpriseSize type for value options"
-  enterpriseSize: String!
+  enterpriseSize: EnterpriseSize!
   "longtitude and latitude"
   enterprisecCoordinate: [Float]!
   establishedDate: String
@@ -606,10 +715,16 @@ input EnterpriseWorkerInfo {
 }
 
 input JobFilter {
-  keyword: String
-  pageNumber: Int
+  category: [String]
+  education: Education
+  enterpriseFinancing: EnterpriseFinancing
+  enterpriseSize: EnterpriseSize
+  experience: Int
+  full_time_job: FullTime
+  page: Int
   pageSize: Int
-  tags: [String]
+  salaryExpected: [Int]
+  sortWithDistance: [Float]
 }
 
 input JobPost {
@@ -644,14 +759,15 @@ input PersonalData {
 }
 
 input ProExp {
-  description: String!
-  endAt: String!
+  description: String
+  endAt: String
   "for edit you need pass this data"
   id: Int
   performance: String
-  projectName: String!
-  role: String!
-  startAt: String!
+  projectName: String
+  resumeId: Int
+  role: String
+  startAt: String
 }
 
 input Register {
@@ -694,15 +810,16 @@ input VerifyInfo {
 }
 
 input WorkExperience {
-  compName: String!
-  department: String!
-  endAt: String!
+  compName: String
+  department: String
+  endAt: String
   hideFromThisCompany: Boolean!
   "for edit you need pass this data"
   id: Int
-  posName: String!
-  startAt: String!
-  workDetail: String!
+  posName: String
+  resumeId: Int
+  startAt: String
+  workDetail: String
 }
 
 
@@ -711,8 +828,23 @@ scalar Upload
 
 scalar Void
 
-"enum {FullTime,        PartTime,        InternShip}"
+"enum Education {    LessThanPrime,    Primary,    Junior,    High,    JuniorCollege,    RegularCollege,    Postgraduate,    Doctor  }"
+scalar Education
+
+"enum {Full,        Part,        InternShip}"
 scalar FullTime
+
+"enum {    PersonalUser,    EnterpriseUser,    Administrator,    Counselor,  }"
+scalar Identity
+
+"enum EnterpriseNature {    ForeignVentures,    ForeignFundedEnterprises,     PrivateEnterprise,     StateOwnedEnterprises,     Extra  }"
+scalar EnterpriseNature
+
+"enum EnterpriseFinancing {    NotYet,    AngelFinancing,    A,    B,    C,    D,    Listed,    NoNeed  }"
+scalar EnterpriseFinancing
+
+"enum EnterpriseSize {    LessThanFifteen,     FifteenToFifty,     FiftyToOneHundredFifty,     OneHundredFiftyToFiveHundreds,     FiveHundredsToTwoThousands,     MoreThanTwoThousands  }"
+scalar EnterpriseSize
 
 "enum {None, Failed, Passed, Waiting}"
 scalar EnterpriseIdentificationStatus

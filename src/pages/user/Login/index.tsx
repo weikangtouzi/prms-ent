@@ -6,8 +6,9 @@ import { FormattedMessage } from '@@/plugin-locale/localeExports';
 import React, { useState } from 'react';
 import { useModel } from '@@/plugin-model/useModel';
 import { history } from '@@/core/history';
-import { useLazyQuery } from '@apollo/client';
-import { GET_LOGIN, Get_Fake_Captcha, Login_By_Phone } from '@/services/gqls/user/login';
+import { useLazyQuery,useMutation} from '@apollo/client';
+import { GET_LOGIN, Get_Fake_Captcha, Login_By_Phone,Choose_Identity } from '@/services/gqls/user/login';
+import {GET_ENTERPRISE_INFO} from '@/services/gqls/enterprise'
 
 const LoginMessage: React.FC<{
   content: string;
@@ -33,6 +34,39 @@ const Login = () => {
   const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
   const { setInitialState } = useModel('@@initialState');
   const [type, setType] = useState<string>('account');
+
+
+
+  // 获取账户信息
+  const [get_enterprise_info] = useLazyQuery<ResultDataType<'UserGetEnterpriseDetail_EntInfo', Enterprise.BaseInfo>>(GET_ENTERPRISE_INFO, {
+    onCompleted: (res) => {
+      // 切换身份
+      setInitialState((s) => ({
+        ...s,
+        currentUser: {
+          avatar: res.UserGetEnterpriseDetail_EntInfo.enterprise_logo||'',
+          name: res.UserGetEnterpriseDetail_EntInfo.enterprise_name,
+          userid: res.UserGetEnterpriseDetail_EntInfo.enterprise_name,
+        },
+      })).then(() => {
+        loginSuccess();
+      });
+    },
+    onError: () => {
+      message.error('获取账户信息失败').then();
+    },
+    fetchPolicy:'network-only'
+  });
+
+  const [choose_identify] = useMutation<ResultDataType<'UserChooseOrSwitchIdentity', string>>(Choose_Identity,{
+    onCompleted:(res)=>{
+      localStorage.setItem('token',res.UserChooseOrSwitchIdentity)
+      get_enterprise_info()
+    },
+    onError:()=>{
+      message.error('切换身份失败').then();
+    }
+  })
   const [loginAction] = useLazyQuery<
     ResultDataType<'UserLogIn', User.UserData>,
     User.UserNameLoginVar
@@ -42,18 +76,8 @@ const Login = () => {
       const { UserLogIn } = resData;
       localStorage.setItem('token', UserLogIn.token);
       localStorage.setItem('username', UserLogIn.username);
-      message.success('登录成功').then();
-      setInitialState((s) => ({
-        ...s,
-        currentUser: {
-          avatar: 'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png',
-          country: 'China',
-          name: '测试用户',
-          userid: '00000001',
-        },
-      })).then(() => {
-        loginSuccess();
-      });
+      // 切换身份
+      choose_identify().then()
     },
     onError: () => {
       setUserLoginState({
@@ -62,6 +86,7 @@ const Login = () => {
       });
       setSubmitting(false);
     },
+    fetchPolicy:'network-only'
   });
 
   // 发送验证码
@@ -91,6 +116,7 @@ const Login = () => {
     onError: () => {
       message.error('验证码校验不通过').then();
     },
+    fetchPolicy:'network-only'
   });
   const { status, type: loginType } = userLoginState;
 
@@ -136,9 +162,9 @@ const Login = () => {
       </div>
       <div className={styles.right}>
         <div className={styles.formContainer}>
-          <img src={'/images/login/logo.png'} alt="logo" className={styles.logo} />
+          {/*<img src={'/images/login/logo.png'} alt="logo" className={styles.logo} />*/}
           <h3>
-            欢迎使用<span>趁早找企业端</span>
+            {/*欢迎使用<span>趁早找企业端</span>*/}
           </h3>
           <div className={styles.main}>
             <ProForm

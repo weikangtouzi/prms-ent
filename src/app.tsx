@@ -5,6 +5,9 @@ import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
 import {message} from "antd";
 import { ApolloClient, InMemoryCache, ApolloProvider,HttpLink} from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
+import { setContext } from '@apollo/client/link/context';
+
+
 import React from 'react';
 
 const loginPath = '/user/login';
@@ -76,9 +79,19 @@ const logoutLink = onError((err) => {
   console.error('发生错误了(定位app:75):',err)
   message.warn(err.graphQLErrors?.[0].message).then()
 })
-
+const authLink = setContext((_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  const token = localStorage.getItem('token');
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      Authorization: token ? token : "",
+    }
+  }
+});
 const client = new ApolloClient({
-  link: logoutLink.concat(httpLink),
+  link: authLink.concat(logoutLink.concat(httpLink)),
   cache: new InMemoryCache(),
 });
 export function rootContainer(
