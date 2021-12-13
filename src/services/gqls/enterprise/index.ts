@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 
-// 登录
+// 获取企业信息
 export const GET_ENTERPRISE_INFO = gql`
   query get_enterprise_info {
     UserGetEnterpriseDetail_EntInfo {
@@ -27,3 +27,15 @@ export const GET_ENTERPRISE_INFO = gql`
     }
   }
 `;
+
+// 检测企业是否完成企业认证
+export const Check_Enterprise_Identification = gql`
+  query check_enterprise_identification {
+    ENTCheckEnterpriseIdentification{
+      status,
+      enterpriseName,
+      charter,
+      phoneNumber
+    }
+  }
+`

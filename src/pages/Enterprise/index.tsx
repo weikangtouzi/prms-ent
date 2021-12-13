@@ -1,6 +1,4 @@
-import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { Card } from 'antd';
-import { useState } from 'react';
+import {Spin, Tabs} from 'antd';
 import Base from '@/pages/Enterprise/common/base';
 import Intro from '@/pages/Enterprise/common/intro';
 import Bonus from '@/pages/Enterprise/common/bonus';
@@ -8,6 +6,9 @@ import Team from '@/pages/Enterprise/common/team';
 import Experience from '@/pages/Enterprise/common/experience';
 import ProIntro from '@/pages/Enterprise/common/proIntro';
 import Ip from '@/pages/Enterprise/common/ip';
+import {useQuery} from "@apollo/client";
+import {Check_Enterprise_Identification} from "@/services/gqls/enterprise";
+import {useState} from "react";
 import Auth from '@/pages/Enterprise/common/auth';
 
 const hasAuthTab = [
@@ -40,36 +41,39 @@ const hasAuthTab = [
     key: 'experience',
   },
 ];
-
-const noAuth = [
-  {
-    tab: '企业认证',
-    key: 'auth',
-  },
-];
+const {TabPane} = Tabs;
 
 const Enterprise = () => {
   const [tabKey, setTabKey] = useState('base');
-  const [authed] = useState(true);
+  const {loading, data} = useQuery<ResultDataType<'ENTCheckEnterpriseIdentification',Enterprise.Check_Identification >>(Check_Enterprise_Identification);
   return (
-    <PageHeaderWrapper
-      tabList={authed ? hasAuthTab : noAuth}
-      tabActiveKey={tabKey}
-      onTabChange={(key) => {
-        setTabKey(key);
-      }}
-    >
-      <Card>
-        {tabKey === 'base' && <Base />}
-        {tabKey === 'introduction' && <Intro />}
-        {tabKey === 'bonus' && <Bonus />}
-        {tabKey === 'team' && <Team />}
-        {tabKey === 'experience' && <Experience />}
-        {tabKey === 'production-introduction' && <ProIntro />}
-        {tabKey === 'ip' && <Ip />}
-        {tabKey === 'auth' && <Auth />}
-      </Card>
-    </PageHeaderWrapper>
+    <>
+      {loading?<Spin />: <Tabs onChange={(t)=>setTabKey(t)}>
+
+          <>
+            {
+              data?.ENTCheckEnterpriseIdentification?.status==='Passed' && hasAuthTab.map(tab=>{
+                return  <TabPane tab={tab.tab} key={tab.key}>
+                  {tabKey === 'base' && <Base />}
+                  {tabKey === 'introduction' && <Intro />}
+                  {tabKey === 'bonus' && <Bonus />}
+                  {tabKey === 'team' && <Team />}
+                  {tabKey === 'experience' && <Experience />}
+                  {tabKey === 'production-introduction' && <ProIntro />}
+                  {tabKey === 'ip' && <Ip />}
+                  {tabKey === 'auth' && <Auth />}
+                </TabPane>
+              })
+            }
+            {
+              data?.ENTCheckEnterpriseIdentification?.status==='None' && <TabPane tab='企业认证' key='auth'>
+                <Auth/>
+              </TabPane>
+            }
+          </>
+      </Tabs>
+      }
+    </>
   );
 };
 

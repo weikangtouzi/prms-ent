@@ -1,0 +1,3 @@
+interface fileRes {
+  link: string
+}

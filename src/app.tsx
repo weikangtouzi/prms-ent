@@ -6,6 +6,7 @@ import {message} from "antd";
 import { ApolloClient, InMemoryCache, ApolloProvider,HttpLink} from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
 import { setContext } from '@apollo/client/link/context';
+import { createUploadLink } from 'apollo-upload-client'
 
 
 import React from 'react';
@@ -72,7 +73,8 @@ export async function getInitialState(): Promise<{
 //     ...initialState?.settings,
 //   };
 // };
-const httpLink = new HttpLink({ uri: 'https://be.chenzaozhao.com/graphql' });
+// const httpLink = new HttpLink({ uri: 'https://be.chenzaozhao.com/graphql' });
+const uploadLink = createUploadLink({ uri: 'https://be.chenzaozhao.com/graphql' });
 
 const logoutLink = onError((err) => {
   // 错误处理
@@ -91,7 +93,7 @@ const authLink = setContext((_, { headers }) => {
   }
 });
 const client = new ApolloClient({
-  link: authLink.concat(logoutLink.concat(httpLink)),
+  link: authLink.concat(logoutLink.concat(uploadLink)),
   cache: new InMemoryCache(),
 });
 export function rootContainer(

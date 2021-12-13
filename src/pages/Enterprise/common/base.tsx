@@ -1,4 +1,4 @@
-import { Form, Input, Row, Col, Button, Cascader, Upload } from 'antd';
+import {Form, Input, Row, Col, Button, Cascader, Upload, Card} from 'antd';
 import { useLayoutEffect, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { tailFormItemLayout, formItemLayout } from '@/common/js/config';
@@ -118,6 +118,7 @@ const Base = () => {
   });
 
   return (
+    <Card>
     <div className="mx560">
       <Form
         {...formItemLayout}
@@ -247,6 +248,7 @@ const Base = () => {
         </Form.Item>
       </Form>
     </div>
+    </Card>
   );
 };
 

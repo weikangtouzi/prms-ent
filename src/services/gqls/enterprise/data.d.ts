@@ -21,4 +21,10 @@ declare namespace Enterprise {
     tel: number
     work_time: number
   }
+  interface Check_Identification{
+    charter: string
+    enterpriseName: string
+    phoneNumber: string
+    status: "None"|"Failed"|"Passed"|"Waiting"
+  }
 }
