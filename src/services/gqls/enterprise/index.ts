@@ -39,3 +39,9 @@ export const Check_Enterprise_Identification = gql`
     }
   }
 `
+
+export const EnterpriseIdentify = gql`
+  mutation enterprise_identify($info:EnterpriseCharterSencorRequest!) {
+    UserEnterpriseIdentify(info: $info)
+  }
+`

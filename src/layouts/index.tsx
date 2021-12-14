@@ -56,7 +56,7 @@ const Layouts = (props: PropsWithChildren<any>) => {
       }}
       iconfontUrl={'//at.alicdn.com/t/font_2919626_sgku75qiwh.js'}
       layout={'mix'}
-      logo={'/images/login/logo.png'}
+      // logo={'/images/login/logo.png'}
       primaryColor={'#00DA8A'}
       siderWidth={208}
       navTheme={'light'}

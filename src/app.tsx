@@ -3,9 +3,10 @@ import { PageLoading } from '@ant-design/pro-layout';
 import { history } from 'umi';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
 import {message} from "antd";
-import { ApolloClient, InMemoryCache, ApolloProvider,HttpLink} from '@apollo/client';
+import { ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
 import { setContext } from '@apollo/client/link/context';
+// @ts-ignore
 import { createUploadLink } from 'apollo-upload-client'
 
 

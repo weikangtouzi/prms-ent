@@ -27,4 +27,9 @@ declare namespace Enterprise {
     phoneNumber: string
     status: "None"|"Failed"|"Passed"|"Waiting"
   }
+  interface Identification_Content{
+    charter: string
+    enterpriseName: string
+    phoneNumber?: string
+  }
 }
