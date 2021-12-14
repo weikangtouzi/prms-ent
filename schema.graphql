@@ -9,6 +9,11 @@ schema {
 "make it available when different thing happens in same query"
 union InterviewData = EnterpriseUserSideInterviewData | PersonalUserSideInterviewData
 
+type AdminLogInResult {
+  rights: String!
+  token: String!
+}
+
 type ApplicantData {
   age: Int!
   applicantName: String!
@@ -118,10 +123,6 @@ type EnterpriseUserSideInterviewData {
   jobName: String!
   salary: String!
   targetName: String!
-}
-
-type FileLink {
-  link: String!
 }
 
 type HRInfoForEntDetail {
@@ -319,7 +320,7 @@ type Mutation {
   "if wanted to send the online one, then don't need to pass resumeId"
   CandidateSendResume(resumeId: Int, targetUser: Int): Void
   "leave extraAttributes null for default upload options"
-  CommonSingleUpload(extraAttributes: UploadExtraAttributes, file: Upload!): FileLink!
+  CommonSingleUpload(extraAttributes: UploadExtraAttributes, file: Upload!): String!
   "cancel a interview, both side will have this authority, may failed when time is close to the appointed time"
   CommoncancelInterview(interviewId: Int!): Void
   "enterprise certificate required, if not will return error"
@@ -340,7 +341,7 @@ type Mutation {
   "this api need you to pass the provider's phone number as the authorization header"
   QNInsertPersonalData(info: PersonalData!): Int!
   "switch to another indentity if exists, should pass indetity and role, Identity and role types are enums, checkout their type definitions, return token"
-  UserChooseOrSwitchIdentity(role: String, targetIdentity: String!): String
+  UserChooseOrSwitchIdentity(role: EnterpriseRole, targetIdentity: Identity!): Void
   "insert or edit a personal data"
   UserEditBasicInfo(info: BasicData!): Void
   "enterprise certification need censor"
@@ -394,6 +395,8 @@ type ProvinceWithChildren {
 "for most of get query needed token for authorization"
 type Query {
   AdminGetCensorList(lastIndex: String, pageSize: Int): [CensorData]
+  AdminGetUserList(info: UserListFilter, page: Int, pageSize: Int): [UserBasicInfo]!
+  AdminLogIn(account: String!, password: String!): AdminLogInResult!
   CandidateCheckResumeCompletion: Boolean!
   CandidateGetAllJobCategoriesByEntId(entId: Int): [String]!
   CandidateGetAllJobExpectations: [JobExpectation]!
@@ -801,6 +804,15 @@ input UploadExtraAttributes {
   "checkout CustomFileType for value options"
   customFileType: String
   customUploadPath: String
+}
+
+input UserListFilter {
+  currentCity: String
+  id: Int
+  isAvaliable: Boolean
+  keyword: String
+  phoneNumber: String
+  registerTime: [String]
 }
 
 input VerifyInfo {

@@ -74,7 +74,7 @@ export async function getInitialState(): Promise<{
 //   };
 // };
 // const httpLink = new HttpLink({ uri: 'https://be.chenzaozhao.com/graphql' });
-const uploadLink = createUploadLink({ uri: 'https://be.chenzaozhao.com/graphql' });
+const uploadLink = createUploadLink({ uri: 'https://be.chenzaozhao.com/graphql',credentials:'' });
 
 const logoutLink = onError((err) => {
   // 错误处理
