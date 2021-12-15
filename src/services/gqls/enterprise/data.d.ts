@@ -32,4 +32,6 @@ declare namespace Enterprise {
     enterpriseName: string
     phoneNumber?: string
   }
+
+  type InfoProps =  Partial<BaseInfo>
 }

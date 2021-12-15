@@ -2,7 +2,6 @@ import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
 import { history } from 'umi';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
-import {message} from "antd";
 import { ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
 import { setContext } from '@apollo/client/link/context';
@@ -80,7 +79,11 @@ const uploadLink = createUploadLink({ uri: 'https://be.chenzaozhao.com/graphql',
 const logoutLink = onError((err) => {
   // 错误处理
   console.error('发生错误了(定位app:75):',err)
-  message.warn(err.graphQLErrors?.[0].message).then()
+  // token 过期
+  if(err?.graphQLErrors?.[0].message==='token expired'){
+    history.push('/user/login')
+  }
+  // message.warn(err.graphQLErrors?.[0].message).then()
 })
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists

@@ -1,5 +1,6 @@
 import styles from '../index.less';
 import banner from './banner.png'
+import logo from './logo.png'
 import { Card, Col, Row, Statistic} from "antd";
 
 const { Meta } = Card;
@@ -7,7 +8,8 @@ const RestMoney = ()=>{
   return <div>
     <div className={styles.banner}>
       <p>趁早找提供招聘增值服务</p>
-      <img src={banner} alt='banner'/>
+      <img src={banner} alt='banner' className={styles.img}/>
+      <img src={logo} alt='logo' className={styles.word}/>
     </div>
     <Row gutter={12} className={styles.content}>
       <Col flex={1}>
