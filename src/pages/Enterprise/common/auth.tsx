@@ -9,15 +9,17 @@ import {EnterpriseIdentify} from "@/services/gqls/enterprise";
 const Auth = () => {
   const [form] = Form.useForm();
   const [inCheck] = useState(false);
-  const [enterpriseIdentify] = useMutation<void,Enterprise.Identification_Content>(EnterpriseIdentify)
+  const [enterpriseIdentify] = useMutation<void,{info: Enterprise.Identification_Content}>(EnterpriseIdentify)
 
   const onFinish = (values: any) => {
     // 企业认证提交
     console.log('Received values of form: ', values);
     enterpriseIdentify({
       variables:{
-        charter:values.charter,
-        enterpriseName:values.enterpriseName
+       info:{
+         charter:values.charter,
+         enterpriseName:values.enterpriseName
+       }
       }
     }).then(res=>{
       console.log(res)
