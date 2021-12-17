@@ -88,6 +88,7 @@ type EnterpriseIdentification {
 }
 
 type EnterpriseInfoForEntDetail {
+  abbreviation: String!
   business_nature: EnterpriseNature!
   createdAt: String!
   enterprise_coordinates: [Float]!
@@ -247,13 +248,12 @@ type JobDetailPageReply {
 }
 
 type JobExpectation {
-  aimedCity: String!
   aimed_city: String!
-  jobCategory: [String]!
+  full_time_job: FullTime!
+  industry_involved: [String]!
   job_category: [String]!
   max_salary_expectation: Int!
   min_salary_expectation: Int!
-  salary: String!
 }
 
 type JobListForHRDetailPageOrEntJobList {
@@ -309,6 +309,7 @@ type Mutation {
   CandidateAcceptOrRejectInterview(accept: Boolean!, interviewId: Int!): Void
   "insert or edit a education experience"
   CandidateEditEduExp(info: EduExp): Void
+  CandidateEditJobExpectations(info: EditJobExpectation!): Void
   "insert or edit a personal advantage"
   CandidateEditPersonalAdvantage(advantage: String!): Void
   "insert or edit a project experience"
@@ -331,11 +332,13 @@ type Mutation {
   ENTInsertEnterpriseBasicInfo(info: EnterpriseBasicInfo!): Void
   ENTInviteWorkMate(phoneNumber: String!, pos: String, role: String): Void
   ENTRecruitmentApply(recruitmentId: Int!, size: String): Void
+  ENTRemoveWorker(workerId: Int!): Void
   "end a iterview with the description, need to tell the interview is passed or not, most of time the description is about some special situation"
   HREndInterview(description: String, interviewId: Int!, ispassed: Boolean!): Void
+  HRHideJob(jobId: Int!): Void
   "will create a interview data and set it to waiting, may return the interview id for dev version"
   HRInviteInterview(jobId: Int!, time: [String]!, userId: Int!): Void
-  HRPostJob(info: JobPost): Void
+  HRPostJob(info: JobPost!): Void
   HRRecruitmentApply(recruitmentId: Int!): Void
   HRRemoveJob(jobId: Int!): Void
   "this api need you to pass the provider's phone number as the authorization header"
@@ -398,9 +401,8 @@ type Query {
   AdminGetUserList(info: UserListFilter, page: Int, pageSize: Int): [UserBasicInfo]!
   AdminLogIn(account: String!, password: String!): AdminLogInResult!
   CandidateCheckResumeCompletion: Boolean!
-  CandidateGetAllJobCategoriesByEntId(entId: Int): [String]!
+  CandidateGetAllJobCategoriesByEntId(entId: Int): [[String]]!
   CandidateGetAllJobExpectations: [JobExpectation]!
-  CandidateGetEnterpriseDetail_HRList(entId: Int): [HRInfoForEntDetail]!
   CandidateGetEnterpriseDetail_InterviewRecomment(entId: Int): InterviewRecommentListForEntDetail!
   CandidateGetEnterpriseDetail_QA(entId: Int): EnterpriseQAForEntDetail!
   CandidateGetHRDetail_HRInfo(hrId: Int): HRInfoForHRDetailPage!
@@ -409,7 +411,6 @@ type Query {
   "get job data by id"
   CandidateGetJob(jobid: Int): JobDetailPageReply!
   CandidateGetJobList(filter: JobFilter): JobSimpifiedDataPageView!
-  CandidateGetJobListByEntId(category: String, entId: Int!): JobListForHRDetailPageOrEntJobList!
   "detail page for interview"
   CommonGetIterviewDetail(interviewId: Int!): InterviewDetail
   "gets InterviewSchedule"
@@ -439,6 +440,8 @@ type Query {
   UserGetBasicInfo: UserBasicInfo!
   UserGetContractList: [Contract]!
   UserGetEnterpriseDetail_EntInfo(entId: Int): EnterpriseInfoForEntDetail!
+  UserGetEnterpriseDetail_WorkerList(entId: Int, role: EnterpriseRole!): [HRInfoForEntDetail]!
+  UserGetJobListByEntId(category: [String], entId: Int, page: Int, pageSize: Int): JobListForHRDetailPageOrEntJobList!
   "if page not provided it will be 0,for pageSize it will be 10"
   UserGetMessages(page: Int, pageSize: Int, targetId: Int!): MessagePage
   "api for login"
@@ -664,6 +667,15 @@ input EditEnterpriseBasicInfo {
   tel: String
 }
 
+input EditJobExpectation {
+  aimed_city: String
+  full_time_job: FullTime
+  industry_involved: [String]
+  job_category: [String]
+  max_salary_expectation: Int
+  min_salary_expectation: Int
+}
+
 input EduExp {
   education: Education
   exp_at_school: String!
@@ -674,6 +686,14 @@ input EduExp {
   resumeId: Int
   schoolName: String
   time: String
+}
+
+input EntListFilter {
+  fullName: String
+  id: Int
+  identitifyTime: [String]
+  isAvaliable: Boolean
+  phoneNumber: String
 }
 
 input EnterpriseBasicInfo {
