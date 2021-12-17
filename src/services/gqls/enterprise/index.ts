@@ -33,7 +33,8 @@ export const GET_ENTERPRISE_FULL_INFO = gql`
       tel,
       work_time,
       createdAt,
-      job_counter
+      job_counter,
+      abbreviation
     }
   }
 `;
