@@ -150,7 +150,7 @@
       {
         name: '套餐管理',
         icon: 'icon-icon_taocanguanli',
-        path: '/set-meal',
+        path: '/value-add',
         routes: [
           {
             path: '/value-add/value-add',
