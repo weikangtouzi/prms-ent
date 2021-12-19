@@ -13,7 +13,7 @@ const Enterprise = () => {
       {loading?<Spin />:<>
         {/*已通过认证*/}
         {
-          data?.ENTCheckEnterpriseIdentification?.status!=='Passed' && <BaseEntry/>
+          data?.ENTCheckEnterpriseIdentification?.status=='Passed' && <BaseEntry/>
         }
         {/*未通过认证*/}
         {/*{*/}

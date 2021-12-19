@@ -1,145 +1,193 @@
 import {useRef, useState} from 'react';
-import {PlusOutlined, SendOutlined} from '@ant-design/icons';
-import {Button, Tag, Space} from 'antd';
+import {PlusOutlined} from '@ant-design/icons';
+import {Button, Image, message, Popconfirm} from 'antd';
 import type {ProColumns, ActionType} from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import OptionModal from './memberParts/optionalModal'
-import request from 'umi-request';
-
-type GithubIssueItem = {
-  url: string;
-  id: number;
-  number: number;
-  title: string;
-  labels: {
-    name: string;
-    color: string;
-  }[];
-  state: string;
-  comments: number;
-  created_at: string;
-  updated_at: string;
-  closed_at?: string;
-};
-
+import InviteModal from "@/pages/Enterprise/memberParts/inviteModal";
+import {useQuery, useMutation} from "@apollo/client";
+import {get_enterprise_member, invite_member, del_member} from "@/services/gqls/enterprise";
+import {defaultImage} from "@/common/js/const";
+import Moment from "moment";
 
 export default () => {
   const actionRef = useRef<ActionType>();
-  const  [modalShow,setModalShow] = useState(false)
+  const [modalShow, setModalShow] = useState(false)
+  const [visible, setVisible] = useState<boolean>(false);
+  const [invite_enterprise_member] = useMutation<void, Enterprise.invite_data>(invite_member)
+  const [del_enterprise_member] = useMutation<void, Enterprise.del_member_param>(del_member)
+  const {refetch} = useQuery<ResultDataType<'UserGetEnterpriseDetail_WorkerList', Enterprise.member_info[]>>(get_enterprise_member, {skip: true})
 
-  const columns: ProColumns<GithubIssueItem>[] = [
+  const inviteMember = () => {
+    setVisible(true)
+  }
+
+  const inviteSubmit = (values: Enterprise.invite_data) => {
+    invite_enterprise_member({
+      variables: {
+        phoneNumber: values.phoneNumber,
+        role: values.role
+      }
+    }).then(() => {
+      message.success('邀请成功').then()
+    }).catch(e => {
+      message.error(e.graphQLErrors?.[0].message).then()
+    })
+  }
+
+  const columns: ProColumns<Enterprise.member_info>[] = [
     {
       dataIndex: 'index',
       valueType: 'indexBorder',
       width: 48,
     },
     {
+      title: '头像',
+      dataIndex: 'logo',
+      hideInSearch: true,
+      render: (_, r) => {
+        return <Image
+          width={35}
+          src={r.logo}
+          fallback={defaultImage}
+        />
+      }
+    },
+    {
       title: '成员姓名',
-      dataIndex: 'title',
-      ellipsis: true,
-      formItemProps: {
-        rules: [
+      dataIndex: 'name',
+    },
+    {
+      title: '职位',
+      dataIndex: 'pos',
+      hideInSearch: true
+    },
+    {
+      title: '角色',
+      dataIndex: 'role',
+      hideInSearch: true
+    },
+    {
+      title: '状态',
+      dataIndex: 'disabled',
+      valueType: 'select',
+      fieldProps: {
+        options: [
           {
-            required: true,
-            message: '此项为必填项',
+            label: '全部',
+            value: 'all',
+            status: 'error'
+          },
+          {
+            label: '已禁用',
+            value: true,
+          },
+          {
+            label: '生效中',
+            value: false,
+            status: 'error'
           },
         ],
       },
     },
     {
-      title: '状态',
-      dataIndex: 'state',
-      valueType: 'select',
-      valueEnum: {
-        all: {text: '全部', status: 'Default'},
-        open: {
-          text: '未解决',
-          status: 'Error',
-        },
-        closed: {
-          text: '已解决',
-          status: 'Success',
-          disabled: true,
-        },
-        processing: {
-          text: '解决中',
-          status: 'Processing',
-        },
-      },
-    },
-    {
-      title: '标签',
-      dataIndex: 'labels',
-      search: false,
-      renderFormItem: (_, {defaultRender}) => {
-        return defaultRender(_);
-      },
-      render: (_, record) => (
-        <Space>
-          {record.labels.map(({name, color}) => (
-            <Tag color={color} key={name}>
-              {name}
-            </Tag>
-          ))}
-        </Space>
-      ),
+      title: '入驻时间',
+      dataIndex: 'createdAt',
+      hideInSearch: true,
+      render: (_, r) => {
+        return Moment(Number(r.createdAt)).format('YYYY-MM-DD HH:mm:ss')
+      }
     },
     {
       title: '操作',
       valueType: 'option',
-      render: (text, record, ) => [
-        <a
-          key="editable"
-          onClick={() => {
-            setModalShow(true)
+      render: (text, record,) => [
+        <Popconfirm
+          key='action'
+          onConfirm={() => {
+
           }}
+          onCancel={() => {
+          }}
+          title={`确认要${record.disabled ? '解封' : '禁用'}这个用户吗`}
         >
-          编辑
-        </a>,
-        <a href={record.url} target="_blank" rel="noopener noreferrer" key="view">
-          查看
-        </a>
+          {record.disabled ? (
+            <a type={'link'} key='recover'>解封</a>
+          ) : (
+            <a type={'link'} style={{color: 'red'}} key={'ban'}>
+              禁用
+            </a>
+          )}
+        </Popconfirm>,
+        <Popconfirm
+          key='del'
+          onConfirm={() => {
+            del_enterprise_member({
+              variables:{
+                workerId:record.id
+              }
+            }).then(()=>{
+              message.success('删除该用户成功').then()
+              actionRef.current?.reload()
+            }).catch(e => {
+              message.error(e.graphQLErrors?.[0].message).then()
+            })
+          }}
+          onCancel={() => {
+          }}
+          title='确定要删除这个用户吗'
+        >
+          <a type={'link'} style={{color: 'red'}} key={'del'}>
+            删除
+          </a>
+        </Popconfirm>
       ],
     },
   ];
 
   return (
     <div>
-      <ProTable<GithubIssueItem>
+      <ProTable<Enterprise.member_info>
         columns={columns}
         actionRef={actionRef}
-        request={async (params = {}, sort, filter) => {
-          console.log(sort, filter);
-          return request<{
-            data: GithubIssueItem[];
-          }>('https://proapi.azurewebsites.net/github/issues', {
-            params,
-          });
-        }}
-        columnsState={{
-          persistenceKey: 'pro-table-singe-demos',
-          persistenceType: 'localStorage',
+        request={async (
+          params,
+        ) => {
+          const res = await refetch();
+          const list = res.data.UserGetEnterpriseDetail_WorkerList
+          const filterList = list.filter(item => {
+            const name = params?.name?.trim() || ''
+            const disabled = params?.disabled || 'all'
+            return (item.name.indexOf(name) > -1 || !name) && (item.disabled === disabled || disabled === 'all')
+          })
+          return {
+            data: filterList,
+            success: true,
+            total: filterList.length,
+          };
         }}
         rowKey="id"
         search={{
           labelWidth: 'auto',
         }}
         pagination={{
-          pageSize: 5,
+          pageSize: 10,
         }}
         dateFormatter="string"
         headerTitle="成员管理"
         options={false}
         toolBarRender={() => [
-          <Button key="button" icon={<PlusOutlined/>} type="primary">
+          <Button key="button" icon={<PlusOutlined/>} type="primary" onClick={() => {
+            inviteMember()
+          }}>
             邀请成员
-          </Button>,
-          <Button key="button" icon={<SendOutlined/>} type="primary">
-            添加成员
           </Button>
         ]}
       />
-      <OptionModal modalShow={modalShow} setModalVisible={(flag: boolean)=>setModalShow(flag)}/>
+      <OptionModal modalShow={modalShow} setModalVisible={(flag: boolean) => setModalShow(flag)}/>
+      <InviteModal onCancel={() => {
+        setVisible(false)
+      }} onSubmit={inviteSubmit} visible={visible}/>
     </div>
   );
 };

@@ -51,8 +51,44 @@ export const Check_Enterprise_Identification = gql`
   }
 `
 
+// 进行企业认证
 export const EnterpriseIdentify = gql`
   mutation enterprise_identify($info:EnterpriseCharterSencorRequest!) {
     UserEnterpriseIdentify(info: $info)
+  }
+`
+// 修改企业基本信息
+export const editEnterpriseBaseInfo   = gql`
+  mutation edit_enterprise_baseInfo($info:EditEnterpriseBasicInfo!) {
+    ENTEditEnterpriseBasicInfo(info: $info)
+  }
+`
+
+// 获取成员列表
+export const get_enterprise_member   = gql`
+  query get_enterprise_members {
+    UserGetEnterpriseDetail_WorkerList{
+      createdAt,
+      disabled,
+      id,
+      logo,
+      name,
+      pos,
+      role
+    }
+  }
+`
+
+// 邀请成员
+export const invite_member = gql`
+  mutation invite_member($phoneNumber:String!,$role:String!) {
+    ENTInviteWorkMate(phoneNumber: $phoneNumber,role:$role)
+  }
+`
+
+// 删除成员
+export const del_member = gql`
+  mutation del_member($workerId:Int!) {
+    ENTRemoveWorker(workerId: $workerId)
   }
 `

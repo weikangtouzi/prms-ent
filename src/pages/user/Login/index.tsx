@@ -162,9 +162,9 @@ const Login = () => {
       </div>
       <div className={styles.right}>
         <div className={styles.formContainer}>
-          {/*<img src={'/images/login/logo.png'} alt="logo" className={styles.logo} />*/}
+          <img src={'/images/login/logo.png'} alt="logo" className={styles.logo} />
           <h3>
-            {/*欢迎使用<span>趁早找企业端</span>*/}
+            欢迎使用<span>趁早找企业端</span>
           </h3>
           <div className={styles.main}>
             <ProForm

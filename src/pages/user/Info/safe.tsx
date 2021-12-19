@@ -1,5 +1,4 @@
-import {Button, message, Space} from "antd";
-import {PageHeaderWrapper} from "@ant-design/pro-layout";
+import {Button, Card, message, Space} from "antd";
 import ProForm, {ProFormText, ModalForm, ProFormCaptcha} from "@ant-design/pro-form";
 import {useState} from "react";
 import {LockOutlined} from "@ant-design/icons";
@@ -13,7 +12,7 @@ const Title = ()=>{
   const [passwordUpdateShow, setPasswordUpdateShow] = useState(false);
   const [phoneUpdateShow, setPhoneUpdateShow] = useState(false);
 
-  return  <PageHeaderWrapper>
+  return  <Card>
     <ProForm<{
       name: string;
       company?: string;
@@ -137,7 +136,7 @@ const Title = ()=>{
         />
       </div>
     </ModalForm>
-  </PageHeaderWrapper>
+  </Card>
 }
 
 export default Title

@@ -23,6 +23,22 @@ declare namespace Enterprise {
     abbreviation: string
   }
 
+  interface EditEnterpriseBasicInfo{
+    abbreviation?: string
+    enterpriseName?: string
+    enterpriseFinancing?: string
+    enterpriseIndustry?: string[]
+    enterpriseLocation?: string[]
+    enterpriseNature?: string
+    enterpriseProfile?: string
+    enterpriseSize?: string
+    enterprisecCoordinate?: number
+    establishedDate?: string
+    homepage?: string
+    logo?: string
+    tel?: string
+  }
+
   interface Check_Identification {
     charter: string
     enterpriseName: string
@@ -34,6 +50,25 @@ declare namespace Enterprise {
     charter: string
     enterpriseName: string
     phoneNumber?: string
+  }
+
+  interface member_info {
+    createdAt: string,
+    disabled: boolean
+    id: number
+    logo: string,
+    name: string,
+    pos: string
+    role: 'HR'| 'Teacher'|'Admin'|'None'
+  }
+
+  interface invite_data {
+    phoneNumber: string,
+    role: 'HR'| 'Teacher'|'Admin'|'None'
+  }
+
+  interface del_member_param{
+    workerId: number
   }
 
   type InfoProps = Partial<BaseInfo>

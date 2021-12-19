@@ -6,6 +6,7 @@ import route from '../../config/routes';
 import { history } from 'umi';
 // import {SolutionOutlined,AuditOutlined,MessageOutlined,AlertOutlined,TranslationOutlined} from "@ant-design/icons";
 import { useState } from 'react';
+import {Button, Space} from "antd";
 
 // const IconMap = {
 //   audit: <AuditOutlined />,
@@ -21,6 +22,14 @@ import { useState } from 'react';
 //     icon: icon && IconMap[icon as string],
 //     children: children && loopMenuItem(children),
 //   }));
+const Header = ()=>{
+  return <Space>
+    <Button type="text" style={{fontWeight:'bold'}}>首页</Button>
+    <Button type="text" style={{fontWeight:'bold'}}>找工作</Button>
+    <Button type="text" style={{fontWeight:'bold'}}>招聘会</Button>
+    <Button type="text" style={{fontWeight:'bold'}}>找企业</Button>
+  </Space>
+}
 const Layouts = (props: PropsWithChildren<any>) => {
   const [pathname, setPathname] = useState(history.location.pathname);
   if (props.location.pathname === '/user/login') {
@@ -30,7 +39,7 @@ const Layouts = (props: PropsWithChildren<any>) => {
     return <ProLayout
       menuRender={false}
       iconfontUrl={'//at.alicdn.com/t/font_2919626_sgku75qiwh.js'}
-      layout={'mix'}
+      layout={'side'}
       logo={'/images/login/logo.png'}
       primaryColor={'#00DA8A'}
       navTheme={'light'}
@@ -55,14 +64,15 @@ const Layouts = (props: PropsWithChildren<any>) => {
         content: '',
       }}
       iconfontUrl={'//at.alicdn.com/t/font_2919626_sgku75qiwh.js'}
-      layout={'mix'}
-      // logo={'/images/login/logo.png'}
+      layout={'side'}
+      logo={'/images/login/logo.png'}
       primaryColor={'#00DA8A'}
       siderWidth={208}
       navTheme={'light'}
       fixedHeader={true}
       fixSiderbar={true}
       colorWeak={false}
+      headerContentRender={() => <Header/>}
       title={''}
       rightContentRender={() => <RightContent />}
       // footerRender={() => <Footer />}

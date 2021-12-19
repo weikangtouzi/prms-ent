@@ -53,19 +53,19 @@
             icon: 'smile',
             component: './Enterprise/member.tsx',
           },
-          {
-            path: '/enterprise/asset',
-            name: '资产信息',
-            icon: 'smile',
-            component: './Enterprise/assets.tsx',
-          },
-          {
-            path: '/enterprise/account',
-            name: '账户信息',
-            icon: 'smile',
-            fastRefresh: true,
-            component: './Enterprise/account.tsx',
-          },
+          // {
+          //   path: '/enterprise/asset',
+          //   name: '资产信息',
+          //   icon: 'smile',
+          //   component: './Enterprise/assets.tsx',
+          // },
+          // {
+          //   path: '/enterprise/account',
+          //   name: '账户信息',
+          //   icon: 'smile',
+          //   fastRefresh: true,
+          //   component: './Enterprise/account.tsx',
+          // },
         ],
       },
       {
@@ -147,19 +147,19 @@
           },
         ],
       },
-      {
-        name: '套餐管理',
-        icon: 'icon-icon_taocanguanli',
-        path: '/value-add',
-        routes: [
-          {
-            path: '/value-add/value-add',
-            name: '增值服务',
-            icon: 'transaction',
-            component: './ValueAdd/setMeal.tsx',
-          },
-        ],
-      },
+      // {
+      //   name: '套餐管理',
+      //   icon: 'icon-icon_taocanguanli',
+      //   path: '/value-add',
+      //   routes: [
+      //     {
+      //       path: '/value-add/value-add',
+      //       name: '增值服务',
+      //       icon: 'transaction',
+      //       component: './ValueAdd/setMeal.tsx',
+      //     },
+      //   ],
+      // },
     ],
   },
   {

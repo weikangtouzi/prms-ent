@@ -1,12 +1,11 @@
-import {PageHeaderWrapper} from "@ant-design/pro-layout";
 import {Button, Modal, Space, Tag} from "antd";
 import type {ActionType, ProColumns} from "@ant-design/pro-table";
 import ProTable from "@ant-design/pro-table";
-import request from "umi-request";
 import {ExclamationCircleOutlined, PlusOutlined} from "@ant-design/icons";
 import {useRef, useState} from "react";
 import {history} from "umi";
-import ShareModal from "@/pages/Employ/shareModal";
+import {useQuery} from "@apollo/client";
+import {GET_JOB_LIST} from "@/services/gqls/employ";
 
 type GithubIssueItem = {
   url: string;
@@ -23,10 +22,11 @@ type GithubIssueItem = {
   updated_at: string;
   closed_at?: string;
 };
-const { confirm } = Modal;
+const {confirm} = Modal;
 
 const Employ = () => {
   const actionRef = useRef<ActionType>();
+  const {refetch} = useQuery(GET_JOB_LIST)
   const [modalShow, setModalShow] = useState(false)
   const showConfirm = () => {
     confirm({
@@ -158,40 +158,43 @@ const Employ = () => {
         </Space>
     },
   ];
-  return <PageHeaderWrapper>
-    <ProTable<GithubIssueItem>
-      columns={columns}
-      actionRef={actionRef}
-      request={async (params = {}, sort, filter) => {
-        console.log(sort, filter);
-        return request<{
-          data: GithubIssueItem[];
-        }>('https://proapi.azurewebsites.net/github/issues', {
-          params,
-        });
-      }}
-      columnsState={{
-        persistenceKey: 'pro-table-singe-demos',
-        persistenceType: 'localStorage',
-      }}
-      rowKey="id"
-      search={{
-        labelWidth: 'auto',
-      }}
-      pagination={{
-        pageSize: 5,
-      }}
-      dateFormatter="string"
-      headerTitle="职位管理"
-      options={false}
-      toolBarRender={() => [
-        <Button key="button" icon={<PlusOutlined/>} type="primary" onClick={()=>{history.push('/employ/position/publish')}}>
-          发布职位
-        </Button>
-      ]}
-    />
-    <ShareModal modalShow={modalShow} setModalVisible={(flag: boolean)=>setModalShow(flag)} />
-  </PageHeaderWrapper>
+  return<ProTable<GithubIssueItem>
+    columns={columns}
+    actionRef={actionRef}
+    request={async (
+      params,
+    ) => {
+      const res = await refetch();
+      const list = res.data.UserGetEnterpriseDetail_WorkerList
+      const filterList = list.filter(item => {
+        const name = params?.name?.trim() || ''
+        const disabled = params?.disabled || 'all'
+        return (item.name.indexOf(name) > -1 || !name) && (item.disabled === disabled || disabled === 'all')
+      })
+      return {
+        data: filterList,
+        success: true,
+        total: filterList.length,
+      };
+    }}
+    rowKey="id"
+    search={{
+      labelWidth: 'auto',
+    }}
+    pagination={{
+      pageSize: 5,
+    }}
+    dateFormatter="string"
+    headerTitle="职位管理"
+    options={false}
+    toolBarRender={() => [
+      <Button key="button" icon={<PlusOutlined/>} type="primary" onClick={() => {
+        history.push('/employ/position/publish')
+      }}>
+        发布职位
+      </Button>
+    ]}
+  />
 }
 
 export default Employ;

@@ -126,13 +126,6 @@ type EnterpriseUserSideInterviewData {
   targetName: String!
 }
 
-type HRInfoForEntDetail {
-  id: Int!
-  logo: String!
-  name: String!
-  pos: String!
-}
-
 type HRInfoForHRDetailPage {
   company_belonged: String!
   last_log_out_time: String
@@ -440,7 +433,7 @@ type Query {
   UserGetBasicInfo: UserBasicInfo!
   UserGetContractList: [Contract]!
   UserGetEnterpriseDetail_EntInfo(entId: Int): EnterpriseInfoForEntDetail!
-  UserGetEnterpriseDetail_WorkerList(entId: Int, role: EnterpriseRole!): [HRInfoForEntDetail]!
+  UserGetEnterpriseDetail_WorkerList(entId: Int, role: EnterpriseRole): [WorkerInfoForWorkerList]!
   UserGetJobListByEntId(category: [String], entId: Int, page: Int, pageSize: Int): JobListForHRDetailPageOrEntJobList!
   "if page not provided it will be 0,for pageSize it will be 10"
   UserGetMessages(page: Int, pageSize: Int, targetId: Int!): MessagePage
@@ -536,6 +529,16 @@ type UserBasicInfo {
   gender: Boolean
   image_url: String!
   username: String!
+}
+
+type WorkerInfoForWorkerList {
+  createdAt: String
+  disabled: Boolean
+  id: Int!
+  logo: String!
+  name: String!
+  pos: String!
+  role: EnterpriseRole
 }
 
 enum ActiveTime {

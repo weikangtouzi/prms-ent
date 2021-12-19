@@ -28,6 +28,6 @@ export const Login_By_Phone = gql`
 // 切换身份
 export const Choose_Identity = gql`
   mutation choose_identity{
-    UserChooseOrSwitchIdentity(targetIdentity: "EnterpriseUser",role: "HR")
+    UserChooseOrSwitchIdentity(targetIdentity: "EnterpriseUser",role: "Admin")
   }
 `;

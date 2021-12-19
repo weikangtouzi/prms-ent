@@ -34,4 +34,25 @@ declare namespace User {
       verifyCode: string;
     };
   }
+
+  // 个人信息页获取的个人信息
+  interface UserInfo{
+    birth_date: string
+    current_city: string
+
+    first_time_working: string
+    gender: boolean
+    image_url: string
+    username: string
+  }
+  // 更新个人信息的时候的参数
+  interface UserInfo_Update{
+    birthday: number
+    currentCity: string
+    education:  'LessThanPrime'|'Primary'|'Junior'|'High'|'JuniorCollege'|'RegularCollege'|'Postgraduate'|'Doctor'
+    firstTimeWorking: string
+    gender: boolean
+    logo: string
+    username: string
+  }
 }

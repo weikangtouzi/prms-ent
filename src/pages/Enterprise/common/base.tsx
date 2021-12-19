@@ -1,71 +1,34 @@
-import {Form, Input, Row, Col, Button, Cascader, Upload, Card} from 'antd';
-import {useLayoutEffect, useState} from 'react';
-import {PlusOutlined} from '@ant-design/icons';
+import {Form, Input, Row, Col, Button, Card} from 'antd';
+import {useLayoutEffect} from 'react';
 import {tailFormItemLayout, formItemLayout} from '@/common/js/config';
-import {ProFormText} from "@ant-design/pro-form";
+import {ProFormDatePicker, ProFormSelect, ProFormText, ProFormTextArea} from "@ant-design/pro-form";
+import FormCascade from "@/components/formCascade";
+import UpButton from "@/components/Upload";
+import {enterpriseIndustry} from "@/common/js/const";
+import FormSelectTree from "@/components/formSelectTree";
+import {useMutation} from "@apollo/client";
+import {editEnterpriseBaseInfo} from "@/services/gqls/enterprise";
 
-const residences = [
-  {
-    value: 'zhejiang',
-    label: '浙江',
-    children: [
-      {
-        value: 'hangzhou',
-        label: '杭州',
-        children: [
-          {
-            value: 'xihu',
-            label: '西湖区',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    value: 'jiangsu',
-    label: '江苏',
-    children: [
-      {
-        value: 'nanjing',
-        label: '南京',
-        children: [
-          {
-            value: 'zhonghuamen',
-            label: '建邺区',
-          },
-        ],
-      },
-    ],
-  },
-];
-
-const normFile = (e: any) => {
-  console.log('Upload event:', e);
-  if (Array.isArray(e)) {
-    return e;
-  }
-  return e && e.fileList;
-};
 const Base = (props: Enterprise.InfoProps) => {
   const {enterprise_name} = props
   const [form] = Form.useForm();
 
-  const [fileList, setFileList] = useState([]);
+  const [Edit_Enterprise_BaseInfo] = useMutation<void,{info: Enterprise.EditEnterpriseBasicInfo}>(editEnterpriseBaseInfo)
 
-  const uploadButton = (
-    <div>
-      <PlusOutlined/>
-      <div style={{marginTop: 8}}>点击上传</div>
-    </div>
-  );
+  const onFinish = (values: Enterprise.InfoProps) => {
+    console.log(values)
+    Edit_Enterprise_BaseInfo({
+      variables:{
+        info:{
+          enterpriseName:enterprise_name,
+          abbreviation:values.abbreviation
+        }
+      }
+    }).then(res=>{
 
-  const onFinish = (values: any) => {
-    console.log('Received values of form: ', values);
+    })
   };
 
-  const handleChange = (e: any) => {
-    setFileList(e.fileList);
-  };
 
   useLayoutEffect(() => {
     // 由于Chrome、iOS10等已不再支持非安全域的浏览器定位请求，为保证定位成功率和精度
@@ -93,6 +56,7 @@ const Base = (props: Enterprise.InfoProps) => {
     function showInfoClick(e: any) {
       const lng = e.lnglat.getLng();
       const lat = e.lnglat.getLat();
+      console.log(lng,lat)
       form.setFieldsValue({
         longitude: lng,
         latitude: lat,
@@ -138,30 +102,18 @@ const Base = (props: Enterprise.InfoProps) => {
             name="logo"
             label="logo"
             valuePropName="fileList"
-            getValueFromEvent={normFile}
             extra="只支持.jpg/.png格式(单张)"
           >
-            <Upload
-              action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-              listType="picture-card"
-              fileList={fileList}
-              onChange={handleChange}
-            >
-              {fileList.length >= 1 ? null : uploadButton}
-            </Upload>
+           <UpButton/>
           </Form.Item>
           <Form.Item
-            name="shortName"
+            name="abbreviation"
             label="简称"
             tooltip="简称只能选择全称里面的文字"
             rules={[
-              {
-                required: true,
-                message: '请输入简称!',
-              },
               ({getFieldValue}) => ({
                 validator(_, value) {
-                  const fullName = getFieldValue('fullName');
+                  const fullName = getFieldValue('enterprise_name');
                   if (value) {
                     const texts = value.split('');
                     for (let i = 0; i < texts.length; i++) {
@@ -176,36 +128,110 @@ const Base = (props: Enterprise.InfoProps) => {
               }),
             ]}
           >
-            <Input/>
+            <Input placeholder={'请输入简称'}/>
           </Form.Item>
 
           <Form.Item
             name="industry"
             label="所在行业"
-            rules={[{required: true, message: '请输入所属行业!'}]}
           >
-            <Input/>
+            <FormSelectTree treeData={enterpriseIndustry}/>
           </Form.Item>
-
-          <Form.Item
-            name="properties"
-            label="行业性质"
-            rules={[{required: true, message: '请输入行业性质!'}]}
-          >
-            <Input/>
-          </Form.Item>
-          <Form.Item name="step" label="融资阶段">
-            <Input/>
-          </Form.Item>
-          <Form.Item name="employee" label="人员规模">
-            <Input/>
-          </Form.Item>
-
+          <ProFormSelect
+            options={[
+              {
+                value: 'ForeignVentures',
+                label: '外资企业',
+              },
+              {
+                value: 'ForeignFundedEnterprises',
+                label: '外商投资企业',
+              },
+              {
+                value: 'PrivateEnterprise',
+                label: '民营企业',
+              },
+              {
+                value: 'StateOwnedEnterprises',
+                label: '国有企业',
+              },
+              {
+                value: 'Extra',
+                label: '其他企业',
+              },
+            ]}
+            name="business_nature"
+            label='企业性质'
+          />
+          <ProFormSelect
+            options={[
+              {
+                value: 'A',
+                label: 'A轮',
+              },
+              {
+                value: 'B',
+                label: 'B轮',
+              },
+              {
+                value: 'C',
+                label: 'C轮',
+              },
+              {
+                value: 'D',
+                label: 'D轮',
+              },
+              {
+                value: 'Listed',
+                label: '已上市',
+              },
+              {
+                value: 'NoNeed',
+                label: '不需要融资',
+              },
+            ]}
+            name="enterprise_financing"
+            label='融资阶段'
+          />
+          <ProFormSelect
+            options={[
+              {
+                value: 'LessThanFifteen',
+                label: '15人以下',
+              },
+              {
+                value: 'FifteenToFifty',
+                label: '15-50人',
+              },
+              {
+                value: 'FiftyToOneHundredFifty',
+                label: '50-100人',
+              },
+              {
+                value: 'OneHundredFiftyToFiveHundreds',
+                label: '100-500人',
+              },
+              {
+                value: 'FiveHundredsToTwoThousands',
+                label: '500-2000人',
+              },
+              {
+                value: 'MoreThanTwoThousands ',
+                label: '2000人以上',
+              },
+            ]}
+            name="enterprise_size"
+            label='人员规模'
+          />
+          <ProFormTextArea label='基本介绍' name='enterprise_profile'/>
+          <ProFormDatePicker label='公司成立时间' name='established_time' width='lg'/>
+          <ProFormText label='公司官网' name='homepage'/>
+          <ProFormText label='座机号码' name='tel'/>
           <Form.Item label="公司地址" style={{marginBottom: '0'}}>
-            <Form.Item name="region" rules={[{required: true}]}>
-              <Cascader options={residences}/>
+            <Form.Item name="region"  >
+              <FormCascade/>
             </Form.Item>
-            <Form.Item name="address2" rules={[{required: true, message: '请输入详细地址'}]}>
+            <Form.Item name="address2" >
               <Input placeholder="请输入详细地址"/>
             </Form.Item>
           </Form.Item>
@@ -213,14 +239,12 @@ const Base = (props: Enterprise.InfoProps) => {
           <Form.Item label="公司定位">
             <Form.Item
               name="longitude"
-              rules={[{required: true}]}
               style={{display: 'inline-block', width: 'calc(50% - 8px)'}}
             >
               <Input placeholder="经度"/>
             </Form.Item>
             <Form.Item
               name="latitude"
-              rules={[{required: true}]}
               style={{display: 'inline-block', width: '50%', margin: '0 0 0 8px'}}
             >
               <Input placeholder="纬度"/>
@@ -230,7 +254,6 @@ const Base = (props: Enterprise.InfoProps) => {
                 <Form.Item
                   name="address"
                   noStyle
-                  rules={[{required: true, message: '请输入详细地址'}]}
                 >
                   <Input id="keywordAdd"/>
                 </Form.Item>

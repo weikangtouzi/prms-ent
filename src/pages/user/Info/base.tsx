@@ -1,90 +1,74 @@
-import { Form, Input, Button, Upload } from 'antd';
-import { useState } from 'react';
-import { PlusOutlined } from '@ant-design/icons';
-import { tailFormItemLayout, formItemLayout } from '@/common/js/config';
+import {Form, Input, Button, Card, message} from 'antd';
+import {tailFormItemLayout, formItemLayout} from '@/common/js/config';
+import UpButton from "@/components/Upload";
+import {ProFormText} from "@ant-design/pro-form";
+import {useMutation} from "@apollo/client";
+import {UPDATE_USERINFO} from "@/services/gqls/user/info";
 
-
-
-const normFile = (e: any) => {
-  console.log('Upload event:', e);
-  if (Array.isArray(e)) {
-    return e;
-  }
-  return e && e.fileList;
-};
-const Base = () => {
+const Base = (props: Partial<User.UserInfo>) => {
+  const {username} = props
   const [form] = Form.useForm();
 
-  const [fileList, setFileList] = useState([]);
-
-  const uploadButton = (
-    <div>
-      <PlusOutlined />
-      <div style={{ marginTop: 8 }}>点击上传</div>
-    </div>
-  );
+  const [update_userInfo] =  useMutation<void,{info: Partial<User.UserInfo_Update>}>(UPDATE_USERINFO,{
+    fetchPolicy:"network-only"
+  })
 
   const onFinish = (values: any) => {
-    console.log('Received values of form: ', values);
-  };
-
-  const handleChange = (e: any) => {
-    setFileList(e.fileList);
+    update_userInfo({
+      variables:{
+        info:{
+          username:values.username
+        }
+      }
+    }).then(()=>{
+      message.success('更新成功').then()
+    }).catch(r=>{
+      message.error(r.graphQLErrors?.[0].message).then()
+    })
   };
 
   return (
-    <div className="mx560">
-      <Form
-        {...formItemLayout}
-        form={form}
-        name="base"
-        onFinish={onFinish}
-        initialValues={{
-          residence: ['zhejiang', 'hangzhou', 'xihu'],
-          prefix: '86',
-          fullName: '深圳趁早找信息科技有限公司',
-        }}
-        scrollToFirstError
-      >
-        <Form.Item name="fullName" label="姓名">
-          <Input/>
-        </Form.Item>
-        <Form.Item name="title" label="职务">
-          <Input/>
-        </Form.Item>
-        <Form.Item
-          name="logo"
-          label="头像"
-          valuePropName="fileList"
-          getValueFromEvent={normFile}
-          extra="只支持.jpg/.png格式(单张)"
+    <Card>
+      <div className="mx560">
+        <Form
+          {...formItemLayout}
+          form={form}
+          name="base"
+          onFinish={onFinish}
+          initialValues={{
+            username:username,
+          }}
+          scrollToFirstError
         >
-          <Upload
-            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-            listType="picture-card"
-            fileList={fileList}
-            onChange={handleChange}
+          <ProFormText name="username" label="姓名" rules={[{required: true, message: '请输入姓名!'}]}/>
+          <Form.Item name="title" label="职务">
+            <Input/>
+          </Form.Item>
+          <Form.Item
+            name="image_url"
+            label="头像"
+            extra="只支持.jpg/.png格式(单张)"
           >
-            {fileList.length >= 1 ? null : uploadButton}
-          </Upload>
-        </Form.Item>
+          <UpButton/>
+          </Form.Item>
 
 
-        <Form.Item
-          name="nickname"
-          label="昵称"
-          rules={[{ required: true, message: '请输入昵称!' }]}
-        >
-          <Input />
-        </Form.Item>
+          <Form.Item
+            name="nickname"
+            label="昵称"
 
-        <Form.Item {...tailFormItemLayout}>
-          <Button type="primary" htmlType="submit">
-            提交
-          </Button>
-        </Form.Item>
-      </Form>
-    </div>
+          >
+            <Input/>
+          </Form.Item>
+
+          <Form.Item {...tailFormItemLayout}>
+            <Button type="primary" htmlType="submit">
+              提交
+            </Button>
+          </Form.Item>
+        </Form>
+      </div>
+    </Card>
   );
 };
 

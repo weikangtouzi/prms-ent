@@ -1,11 +1,12 @@
-import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { Card } from 'antd';
+import { Tabs} from 'antd';
 import { useState } from 'react';
 import Base from '@/pages/user/Info/base';
 import Safe from '@/pages/user/Info/safe';
 import Title from '@/pages/user/Info/title';
+import {useQuery} from "@apollo/client";
+import {GET_USERINFO} from "@/services/gqls/user/info";
 
-const hasAuthTab = [
+const userInfoTab = [
   {
     tab: '基本信息',
     key: 'base',
@@ -21,24 +22,22 @@ const hasAuthTab = [
 
 ];
 
-
-const Enterprise = () => {
-  const [tabKey, setTabKey] = useState('safe');
+const {TabPane} = Tabs;
+const UserInfo = () => {
+  const [tabKey, setTabKey] = useState('base');
+  const {data,loading} =  useQuery<ResultDataType<'UserGetBasicInfo', User.UserInfo>>(GET_USERINFO)
   return (
-    <PageHeaderWrapper
-      tabList={hasAuthTab}
-      tabActiveKey={tabKey}
-      onTabChange={(key) => {
-        setTabKey(key);
-      }}
-    >
-      <Card>
-        {tabKey === 'base' && <Base />}
-        {tabKey === 'safe' && <Safe />}
-        {tabKey === 'title' && <Title />}
-      </Card>
-    </PageHeaderWrapper>
+  <Tabs onChange={(t)=>setTabKey(t)}>
+    {
+      !loading && userInfoTab.map(tab=>{
+        return  <TabPane tab={tab.tab} key={tab.key}>
+          {tabKey === 'base' && <Base {...data?.UserGetBasicInfo}/>}
+           {tabKey === 'safe' && <Safe />}
+         {tabKey === 'title' && <Title />}
+        </TabPane>})
+    }
+  </Tabs>
   );
 };
 
-export default Enterprise;
+export default UserInfo;

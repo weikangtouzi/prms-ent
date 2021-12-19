@@ -1,7 +1,6 @@
 import {Button, Card, Cascader, Col, Form, Input, InputNumber, Row, Select, Space} from "antd";
 import {formItemLayout, tailFormItemLayout} from "@/common/js/config";
 import {useLayoutEffect} from "react";
-import {PageHeaderWrapper} from "@ant-design/pro-layout";
 import styles from './index.less';
 
 const residences = [
@@ -96,8 +95,7 @@ const Publish = () => {
   };
 
 
-  return <PageHeaderWrapper>
-    <Card>
+  return <Card title='发布职位' extra={<Button onClick={()=>{history.back()}}>返回</Button>}>
       <div className={[styles.publish,'mx560'].join(' ')}>
         <Form
           {...formItemLayout}
@@ -259,15 +257,14 @@ const Publish = () => {
             <Button type="primary" htmlType="submit">
               提交
             </Button>
-            <Button>
-              返回
-            </Button>
+            {/*<Button>*/}
+            {/*  返回*/}
+            {/*</Button>*/}
             </Space>
           </Form.Item>
         </Form>
       </div>
     </Card>
-  </PageHeaderWrapper>
 }
 
 export default Publish;
