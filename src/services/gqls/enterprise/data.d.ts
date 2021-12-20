@@ -72,4 +72,5 @@ declare namespace Enterprise {
   }
 
   type InfoProps = Partial<BaseInfo>
+
 }

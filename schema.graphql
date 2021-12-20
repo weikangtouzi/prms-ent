@@ -892,3 +892,4 @@ scalar WorkerMatePrecheckResult
 
 "enum {    Normal,    System,    Resume,    InterviewInvitation,    Other    }"
 scalar MessageType
+
