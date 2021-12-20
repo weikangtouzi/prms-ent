@@ -1,4 +1,4 @@
-import {Button, Modal, Space, Tag} from "antd";
+import {Button, Modal, Space} from "antd";
 import type {ActionType, ProColumns} from "@ant-design/pro-table";
 import ProTable from "@ant-design/pro-table";
 import {ExclamationCircleOutlined, PlusOutlined} from "@ant-design/icons";
@@ -6,27 +6,14 @@ import {useRef, useState} from "react";
 import {history} from "umi";
 import {useQuery} from "@apollo/client";
 import {GET_JOB_LIST} from "@/services/gqls/employ";
+import moment from "moment";
 
-type GithubIssueItem = {
-  url: string;
-  id: number;
-  number: number;
-  title: string;
-  labels: {
-    name: string;
-    color: string;
-  }[];
-  state: string;
-  comments: number;
-  created_at: string;
-  updated_at: string;
-  closed_at?: string;
-};
+
 const {confirm} = Modal;
 
 const Employ = () => {
   const actionRef = useRef<ActionType>();
-  const {refetch} = useQuery(GET_JOB_LIST)
+  const {refetch} = useQuery<ResultDataType<'UserGetJobListByEntId', Employ.JobList>,{page: number,pageSize: number}>(GET_JOB_LIST)
   const [modalShow, setModalShow] = useState(false)
   const showConfirm = () => {
     confirm({
@@ -41,7 +28,7 @@ const Employ = () => {
       },
     });
   }
-  const columns: ProColumns<GithubIssueItem>[] = [
+  const columns: ProColumns<Employ.JobDetail>[] = [
     {
       dataIndex: 'index',
       valueType: 'indexBorder',
@@ -61,50 +48,55 @@ const Employ = () => {
       },
     },
     {
-      title: '类型',
-      dataIndex: 'title',
-      ellipsis: true,
-      hideInSearch: true
-    },
-    {
       title: '地区',
-      dataIndex: 'title',
+      dataIndex: 'loc',
       ellipsis: true,
       hideInSearch: true
     },
     {
-      title: '状态',
-      dataIndex: 'state',
+      title: '学历要求',
+      dataIndex: 'education',
       valueType: 'select',
       valueEnum: {
-        all: {text: '全部', status: 'Default'},
-        open: {
-          text: '未解决',
-          status: 'Error',
+        LessThanPrime: {
+          text: '小学以下',
         },
-        closed: {
-          text: '已解决',
-          status: 'Success',
-          disabled: true,
+        Primary: {
+          text: '小学',
         },
-        processing: {
-          text: '解决中',
-          status: 'Processing',
+        Junior: {
+          text: '初中',
+        },
+        High: {
+          text: '高中',
+        },
+        JuniorCollege: {
+          text: '大专',
+        },
+        RegularCollege: {
+          text: '本科',
+        },
+        Postgraduate: {
+          text: '硕士',
+        },
+        Doctor: {
+          text: '博士',
         },
       },
     },
     {
-      title: '发布来源',
-      dataIndex: 'labels',
-      render: (_, record) => (
-        <Space>
-          {record.labels.map(({name, color}) => (
-            <Tag color={color} key={name}>
-              {name}
-            </Tag>
-          ))}
-        </Space>
-      ),
+      title: '薪资待遇',
+      dataIndex: 'salary',
+      render:(_,r)=>{
+        return `${r.salary[0]/1000}k-${r.salary[1]/1000}k`
+      }
+    },
+    {
+      title: '上线时间',
+      dataIndex: 'createdAt',
+      render:(_,r)=>{
+        return moment(Number(r.createdAt)).format('YYYY-MM-DD hh:mm:ss')
+      }
     },
     {
       title: '操作',
@@ -158,23 +150,21 @@ const Employ = () => {
         </Space>
     },
   ];
-  return<ProTable<GithubIssueItem>
+  return<ProTable<Employ.JobDetail>
     columns={columns}
     actionRef={actionRef}
     request={async (
       params,
     ) => {
-      const res = await refetch();
-      const list = res.data.UserGetEnterpriseDetail_WorkerList
-      const filterList = list.filter(item => {
-        const name = params?.name?.trim() || ''
-        const disabled = params?.disabled || 'all'
-        return (item.name.indexOf(name) > -1 || !name) && (item.disabled === disabled || disabled === 'all')
-      })
+      const res = await refetch({
+        page:params.current===undefined?0:params.current-1,
+        pageSize:params.pageSize
+      });
+      const list = res.data.UserGetJobListByEntId?.data
       return {
-        data: filterList,
+        data: list,
         success: true,
-        total: filterList.length,
+        total: res.data.UserGetJobListByEntId?.count
       };
     }}
     rowKey="id"
@@ -182,7 +172,7 @@ const Employ = () => {
       labelWidth: 'auto',
     }}
     pagination={{
-      pageSize: 5,
+      pageSize: 10,
     }}
     dateFormatter="string"
     headerTitle="职位管理"

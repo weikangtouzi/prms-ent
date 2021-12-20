@@ -1,7 +1,9 @@
-import {Button, Card, message, Space} from "antd";
+import {Button, Card, Form, message, Space} from "antd";
 import ProForm, {ProFormText, ModalForm, ProFormCaptcha} from "@ant-design/pro-form";
 import {useState} from "react";
 import {LockOutlined} from "@ant-design/icons";
+import {useLazyQuery, useMutation, useQuery} from "@apollo/client";
+import {Get_Fake_Captcha, Login_By_Phone,reset_password} from "@/services/gqls/user/login";
 
 const formItemLayout = {
   labelCol: { span: 4 },
@@ -9,8 +11,34 @@ const formItemLayout = {
 }
 const Title = ()=>{
   const [isEditor,setIsEditor] = useState(false)
+  const [form] = Form.useForm();
   const [passwordUpdateShow, setPasswordUpdateShow] = useState(false);
   const [phoneUpdateShow, setPhoneUpdateShow] = useState(false);
+  const [reset_pass]  = useMutation<void,{info: { confirmPassword: string, password: string,phoneNumber?: string}}>(reset_password,{
+    fetchPolicy:'network-only'
+  })
+  const {refetch}  = useQuery<void, User.VerifyCode>(Login_By_Phone, {
+    skip:true,
+    fetchPolicy:'network-only'
+  });
+  const [get_sms_code] = useLazyQuery<void, User.FakeCodeParams>(Get_Fake_Captcha, {
+    onCompleted: () => {
+      message.success('验证码发送成功').then();
+    },
+    onError: (e) => {
+      const msg = (e.graphQLErrors[0].extensions as any).error.phoneNumber;
+      message.error('发送失败' + msg).then();
+    },
+    fetchPolicy:'network-only'
+  });
+
+  const checkConfirm = (_: any, value: string) => {
+    const promise = Promise;
+    if (value && value !== form.getFieldValue('password')) {
+      return promise.reject('两次输入的密码不匹配!');
+    }
+    return promise.resolve();
+  };
 
   return  <Card>
     <ProForm<{
@@ -65,35 +93,98 @@ const Title = ()=>{
         />
       </div>
     </ProForm>
+
     <ModalForm
-      title="修改密码"
+      title='修改密码'
       width={480}
+      form={form}
       visible={passwordUpdateShow}
-      onFinish={async () => {
-        message.success('提交成功');
-        return true;
+      onFinish={async (values) => {
+        refetch({
+            info:{
+              phoneNumber:values.phone,
+              operation:'UserResetPassword',
+              verifyCode:values.captcha
+            }
+        }).then(()=>{
+          reset_pass({
+            variables:{
+              info:{
+                password:values.password,
+                confirmPassword:values.password
+              }
+            }
+          })
+        }).catch(()=>{
+          message.error('校验失败')
+        })
       }}
       onVisibleChange={setPasswordUpdateShow}
     >
 
-      <ProFormText.Password name="oldPass"  label="原密码"  rules={[{ required: true, message: '请输入原密码!' }]}/>
-      <ProFormText.Password name="newPass"  label="新密码" rules={[{ required: true, message: '请输入新密码!' }]}/>
-      <ProFormText.Password name="confirmPass"  label="确认密码"
-                            rules={[
-                              { required: true, message: '请输入原密码!' },
-                              ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                  const newPass = getFieldValue('newPass');
-                                  if (value) {
-                                    if(value !== newPass){
-                                      return Promise.reject(new Error('新旧密码不一致!'));
-                                    }
-                                    return Promise.resolve();
-                                  }
-                                  return Promise.reject(new Error('新旧密码不一致!'));
-                                },
-                              }),
-                            ]}/>
+      <ProFormText name="phone"  label="手机号"  rules={[
+        {
+          required: true,
+          message: '请输入手机号！',
+        },
+        {
+          pattern: /^1\d{10}$/,
+          message:'手机号格式错误',
+        },
+      ]}/>
+      <div>
+        <ProFormCaptcha
+          fieldProps={{
+            size: 'large',
+            prefix: <LockOutlined className={'prefixIcon'} />,
+          }}
+          captchaProps={{
+            size: 'large',
+          }}
+          placeholder={'请输入验证码'}
+          captchaTextRender={(timing, count) => {
+            if (timing) {
+              return `${count} ${'获取验证码'}`;
+            }
+            return '获取验证码';
+          }}
+          phoneName="phone"
+          name="captcha"
+          rules={[
+            {
+              required: true,
+              message: '请输入验证码！',
+            },
+          ]}
+          onGetCaptcha={async (phone) => {
+            // 判断phone是否合法
+            try {
+              await get_sms_code({
+                variables: {
+                  phoneNumber: phone,
+                },
+              });
+            } catch (e) {
+              message.error('发送失败!');
+            }
+          }}
+        />
+      </div>
+      <ProFormText.Password name="password"  label="新密码"  rules={[
+        {
+          required: true,
+          message: '请输入新密码！',
+        },
+      ]}/>
+      <ProFormText.Password name="confirmPassword"  label="确认密码"  rules={[
+        {
+          required: true,
+          message: '请输入新密码！',
+        },
+        {
+          validator: checkConfirm,
+        },
+      ]}/>
     </ModalForm>
     <ModalForm
       title="修改手机号"

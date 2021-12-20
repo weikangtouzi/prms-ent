@@ -25,6 +25,7 @@ const UpButton: React.FC<{
       url: value,
     },
   ] : []);
+  console.log(value)
 
 
   const upLoad = async (options: UploadRequestOption) => {

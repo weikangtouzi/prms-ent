@@ -10,7 +10,7 @@ declare namespace Enterprise {
     enterprise_profile: string
     enterprise_size: 'LessThanFifteen' | 'FifteenToFifty' | 'FiftyToOneHundredFifty' | 'OneHundredFiftyToFiveHundreds' | 'FiveHundredsToTwoThousands' | 'MoreThanTwoThousands'
     enterprise_welfare: string[]
-    established_time: number
+    established_time: string
     extra_attribute: string
     homepage: string
     industry_involved: string[]
@@ -18,7 +18,7 @@ declare namespace Enterprise {
     overtime_work_degree: string
     rest_rule: string
     tags: string
-    tel: number
+    tel: string
     work_time: number,
     abbreviation: string
   }
@@ -32,7 +32,7 @@ declare namespace Enterprise {
     enterpriseNature?: string
     enterpriseProfile?: string
     enterpriseSize?: string
-    enterprisecCoordinate?: number
+    enterprisecCoordinate?: number[]
     establishedDate?: string
     homepage?: string
     logo?: string

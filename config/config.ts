@@ -14,6 +14,9 @@ export default defineConfig({
   dva: {
     hmr: true,
   },
+  request:{
+    dataField:''
+  },
   layout: false,
   // https://umijs.org/zh-CN/plugins/plugin-locale
   locale: {

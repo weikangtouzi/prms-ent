@@ -325,7 +325,7 @@ type Mutation {
   ENTInsertEnterpriseBasicInfo(info: EnterpriseBasicInfo!): Void
   ENTInviteWorkMate(phoneNumber: String!, pos: String, role: String): Void
   ENTRecruitmentApply(recruitmentId: Int!, size: String): Void
-  ENTRemoveWorker(workerId: Int!): Void
+  ENTRemoveWorker(role: EnterpriseRole!, workerId: Int!): Void
   "end a iterview with the description, need to tell the interview is passed or not, most of time the description is about some special situation"
   HREndInterview(description: String, interviewId: Int!, ispassed: Boolean!): Void
   HRHideJob(jobId: Int!): Void
@@ -813,7 +813,7 @@ input Register {
 input ResetPassword {
   confirmPassword: String!
   password: String!
-  phoneNumber: String!
+  phoneNumber: String
 }
 
 input SendMessage {
@@ -892,4 +892,3 @@ scalar WorkerMatePrecheckResult
 
 "enum {    Normal,    System,    Resume,    InterviewInvitation,    Other    }"
 scalar MessageType
-

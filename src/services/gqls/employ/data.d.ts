@@ -8,4 +8,9 @@ declare namespace Employ {
     salary: number[]
     title: string
   }
+
+  interface JobList {
+    count: number,
+    data: JobDetail[]
+  }
 }

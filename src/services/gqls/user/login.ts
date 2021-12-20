@@ -31,3 +31,10 @@ export const Choose_Identity = gql`
     UserChooseOrSwitchIdentity(targetIdentity: "EnterpriseUser",role: "Admin")
   }
 `;
+
+// 重置密码
+export const reset_password = gql`
+  mutation reset_user_password($info: ResetPassword!){
+    UserResetPassword(info: $info)
+  }
+`;

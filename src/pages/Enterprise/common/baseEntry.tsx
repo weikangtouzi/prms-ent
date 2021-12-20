@@ -26,10 +26,10 @@ const hasAuthTab = [
     tab: '公司形象',
     key: 'ip',
   },
-  {
-    tab: '产品介绍',
-    key: 'production-introduction',
-  },
+  // {
+  //   tab: '产品介绍',
+  //   key: 'production-introduction',
+  // },
   // {
   //   tab: '团队成员',
   //   key: 'team',

@@ -1,16 +1,27 @@
-import {Form, Input, Row, Col, Button, Card} from 'antd';
+import {Form, Input, Row, Col, Button, Card, message} from 'antd';
 import {useLayoutEffect} from 'react';
 import {tailFormItemLayout, formItemLayout} from '@/common/js/config';
 import {ProFormDatePicker, ProFormSelect, ProFormText, ProFormTextArea} from "@ant-design/pro-form";
 import FormCascade from "@/components/formCascade";
 import UpButton from "@/components/Upload";
-import {enterpriseIndustry} from "@/common/js/const";
 import FormSelectTree from "@/components/formSelectTree";
 import {useMutation} from "@apollo/client";
 import {editEnterpriseBaseInfo} from "@/services/gqls/enterprise";
 
 const Base = (props: Enterprise.InfoProps) => {
-  const {enterprise_name} = props
+  const {
+    enterprise_name,
+    abbreviation,
+    industry_involved,
+    business_nature,
+    enterprise_financing,
+    enterprise_size,
+    enterprise_profile,
+    established_time,
+    homepage,
+    enterprise_coordinates,
+    tel,enterprise_logo
+  } = props
   const [form] = Form.useForm();
 
   const [Edit_Enterprise_BaseInfo] = useMutation<void,{info: Enterprise.EditEnterpriseBasicInfo}>(editEnterpriseBaseInfo)
@@ -21,11 +32,23 @@ const Base = (props: Enterprise.InfoProps) => {
       variables:{
         info:{
           enterpriseName:enterprise_name,
-          abbreviation:values.abbreviation
+          abbreviation:values.abbreviation,
+          enterpriseIndustry:values.industry_involved,
+          enterpriseNature:values.business_nature,
+          enterpriseFinancing:values.enterprise_financing,
+          enterpriseSize:values.enterprise_size,
+          enterpriseProfile:values.enterprise_profile,
+          establishedDate:values.established_time,
+          homepage:values.homepage,
+          enterprisecCoordinate:values.enterprise_coordinates,
+          tel:values.tel,
+          logo:values.enterprise_logo
         }
       }
-    }).then(res=>{
-
+    }).then(()=>{
+      message.success('保存成功').then()
+    }).catch(e=>{
+      message.error(e.graphQLErrors?.[0].message).then()
     })
   };
 
@@ -92,16 +115,24 @@ const Base = (props: Enterprise.InfoProps) => {
           onFinish={onFinish}
           initialValues={{
             enterprise_name,
-            residence: ['zhejiang', 'hangzhou', 'xihu'],
-            prefix: '86',
+            abbreviation,
+            industry_involved,
+            business_nature,
+            enterprise_financing,
+            enterprise_size,
+            enterprise_profile,
+            established_time,
+            homepage,
+            enterprise_coordinates,
+            tel,
+            enterprise_logo
           }}
           scrollToFirstError
         >
           <ProFormText name="enterprise_name" label="全称" readonly={true}/>
           <Form.Item
-            name="logo"
-            label="logo"
-            valuePropName="fileList"
+            name="enterprise_logo"
+            label="Logo"
             extra="只支持.jpg/.png格式(单张)"
           >
            <UpButton/>
@@ -132,10 +163,10 @@ const Base = (props: Enterprise.InfoProps) => {
           </Form.Item>
 
           <Form.Item
-            name="industry"
+            name="industry_involved"
             label="所在行业"
           >
-            <FormSelectTree treeData={enterpriseIndustry}/>
+            <FormSelectTree url='/industry.json'/>
           </Form.Item>
           <ProFormSelect
             options={[
