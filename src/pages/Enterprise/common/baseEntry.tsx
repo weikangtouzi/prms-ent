@@ -56,7 +56,7 @@ const BaseEntry = ()=>{
           {/*{tabKey === 'team' && <Team />}*/}
           {tabKey === 'experience' && <Experience />}
           {tabKey === 'production-introduction' && <ProIntro />}
-          {tabKey === 'ip' && <Ip />}
+          {tabKey === 'ip' && <Ip extraData={data?.UserGetEnterpriseDetail_EntInfo.extra_attribute}/>}
         </TabPane>})
     }
   </Tabs>

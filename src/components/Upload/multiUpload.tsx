@@ -22,7 +22,7 @@ const MultipleUpload: React.FC<{
     if(!value || value.length<=0) return []
     return value.map((v)=>{
       return {
-        uid: new Date().getTime(),
+        uid: new Date().getTime()+Math.random(),
         name: v,
         status: 'done',
         url: v,

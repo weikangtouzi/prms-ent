@@ -92,3 +92,10 @@ export const del_member = gql`
     ENTRemoveWorker(workerId: $workerId)
   }
 `
+
+// 修改企业额外信息
+export const edit_enterprise_extra = gql`
+  mutation editEnterpriseExtraData($info:String!) {
+    ENTEditEnterpriseExtraData (info: $info)
+  }
+`

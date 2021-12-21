@@ -99,7 +99,7 @@ type EnterpriseInfoForEntDetail {
   enterprise_profile: String!
   enterprise_size: EnterpriseSize
   enterprise_welfare: [String]
-  established_time: Int
+  established_time: String
   extra_attribute: String
   homepage: String
   industry_involved: [String]!
@@ -107,8 +107,8 @@ type EnterpriseInfoForEntDetail {
   overtime_work_degree: String
   rest_rule: String
   tags: String
-  tel: Int
-  work_time: Int
+  tel: String
+  work_time: String
 }
 
 type EnterpriseQAForEntDetail {
@@ -426,6 +426,7 @@ type Query {
   StaticGetProvinces: [Province]
   "get all town of the given county"
   StaticGetTowns(countyId: String!): [Town]!
+  StaticSendEmail(emailAddress: String!): String
   "send a verify code to the given number, if phoneNumber not provider and has token in header, will send to the user's phone number"
   StaticSendSms(phoneNumber: String): String!
   "just tests"
@@ -525,9 +526,11 @@ type UserBasicInfo {
   birth_date: String
   current_city: String
   education: Education
+  email: String
   first_time_working: String
   gender: Boolean
   image_url: String!
+  phone_number: String!
   username: String!
 }
 

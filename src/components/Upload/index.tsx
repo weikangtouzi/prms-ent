@@ -25,7 +25,6 @@ const UpButton: React.FC<{
       url: value,
     },
   ] : []);
-  console.log(value)
 
 
   const upLoad = async (options: UploadRequestOption) => {
@@ -59,7 +58,6 @@ const UpButton: React.FC<{
       // @ts-ignore
       onSuccess?.()
       if (onChange) {
-        console.log(url)
         onChange(url)
       }
     }).catch(onError)
@@ -68,6 +66,7 @@ const UpButton: React.FC<{
   const handleChange = async ({file}: any) => {
     if (file.status == 'removed') {
       setFiles([]);
+      onChange?.('')
     }
     if (file.status === 'done') {
       message.success(`${file.name} upload success`);
