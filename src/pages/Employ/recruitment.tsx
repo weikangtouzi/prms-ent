@@ -1,6 +1,5 @@
-import {Card} from "antd";
+import {Tabs} from "antd";
 import {useState} from "react";
-import {PageHeaderWrapper} from "@ant-design/pro-layout";
 import Communicate from './parts/Communicate';
 
 const messageType = [
@@ -13,20 +12,18 @@ const messageType = [
     key: 'video',
   }
 ];
+const {TabPane} = Tabs;
 const Recruitment = ()=>{
   const [tabKey, setTabKey] = useState('offline');
-  return <PageHeaderWrapper
-    tabList={messageType}
-    tabActiveKey={tabKey}
-    onTabChange={(key) => {
-      setTabKey(key);
-    }}
-  >
-    <Card>
-      {tabKey === 'offline' && <Communicate />}
-      {tabKey === 'video' && <Communicate />}
-    </Card>
-  </PageHeaderWrapper>
+  return   <Tabs onChange={(t)=>setTabKey(t)}>
+    {
+      messageType.map(tab=>{
+        return  <TabPane tab={tab.tab} key={tab.key}>
+          {tabKey === 'offline' && <Communicate />}
+          {tabKey === 'video' && <Communicate />}
+        </TabPane>})
+    }
+  </Tabs>
 }
 
 export default Recruitment

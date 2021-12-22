@@ -1,10 +1,10 @@
-import {Card} from "antd";
+import {Tabs} from "antd";
 import {useState} from "react";
-import {PageHeaderWrapper} from "@ant-design/pro-layout";
 import AllMessage from './parts/allMessage';
 import Study from './parts/study';
 import Employee from './parts/employee';
 import System from './parts/system';
+
 
 const messageType = [
   {
@@ -24,22 +24,20 @@ const messageType = [
     key: 'system',
   },
 ];
+const {TabPane} = Tabs;
 const Index = ()=>{
   const [tabKey, setTabKey] = useState('all');
-  return <PageHeaderWrapper
-    tabList={messageType}
-    tabActiveKey={tabKey}
-    onTabChange={(key) => {
-      setTabKey(key);
-    }}
-  >
-    <Card>
-      {tabKey === 'all' && <AllMessage />}
-      {tabKey === 'employee' && <Employee />}
-      {tabKey === 'system' && <System />}
-      {tabKey === 'study' && <Study />}
-    </Card>
-  </PageHeaderWrapper>
+  return   <Tabs onChange={(t)=>setTabKey(t)}>
+    {
+       messageType.map(tab=>{
+        return  <TabPane tab={tab.tab} key={tab.key}>
+               {tabKey === 'all' && <AllMessage />}
+               {tabKey === 'employee' && <Employee />}
+              {tabKey === 'system' && <System />}
+              {tabKey === 'study' && <Study />}
+        </TabPane>})
+    }
+  </Tabs>
 }
 
 export default Index

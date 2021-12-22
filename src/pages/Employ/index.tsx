@@ -150,7 +150,7 @@ const Employ = () => {
         </Space>
     },
   ];
-  return<ProTable<Employ.JobDetail>
+  return <ProTable<Employ.JobDetail>
     columns={columns}
     actionRef={actionRef}
     request={async (
@@ -175,15 +175,12 @@ const Employ = () => {
       pageSize: 10,
     }}
     dateFormatter="string"
-    headerTitle="职位管理"
+    headerTitle={<Button key="button" icon={<PlusOutlined/>} type="primary" onClick={() => {
+      history.push('/employ/position/publish')
+    }}>
+      发布职位
+    </Button>}
     options={false}
-    toolBarRender={() => [
-      <Button key="button" icon={<PlusOutlined/>} type="primary" onClick={() => {
-        history.push('/employ/position/publish')
-      }}>
-        发布职位
-      </Button>
-    ]}
   />
 }
 

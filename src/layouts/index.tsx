@@ -24,10 +24,10 @@ import {Button, Space} from "antd";
 //   }));
 const Header = ()=>{
   return <Space>
-    <Button type="text" style={{fontWeight:'bold'}}>首页</Button>
-    <Button type="text" style={{fontWeight:'bold'}}>找工作</Button>
-    <Button type="text" style={{fontWeight:'bold'}}>招聘会</Button>
-    <Button type="text" style={{fontWeight:'bold'}}>找企业</Button>
+    <Button type="text" className='layout-h-t'>首页</Button>
+    <Button type="text" className='layout-h-t'>找工作</Button>
+    <Button type="text" className='layout-h-t'>招聘会</Button>
+    <Button type="text" className='layout-h-t'>找企业</Button>
   </Space>
 }
 const Layouts = (props: PropsWithChildren<any>) => {

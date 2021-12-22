@@ -1,6 +1,5 @@
-import {Card} from "antd";
+import {Tabs} from "antd";
 import {useState} from "react";
-import {PageHeaderWrapper} from "@ant-design/pro-layout";
 import Communicate from './parts/Communicate';
 
 const messageType = [
@@ -29,24 +28,23 @@ const messageType = [
     key: 'favorite',
   },
 ];
+const {TabPane} = Tabs;
 const Index = ()=>{
   const [tabKey, setTabKey] = useState('communicate');
-  return <PageHeaderWrapper
-    tabList={messageType}
-    tabActiveKey={tabKey}
-    onTabChange={(key) => {
-      setTabKey(key);
-    }}
-  >
-    <Card>
-      {tabKey === 'communicate' && <Communicate />}
-      {tabKey === 'wait-interview' && <Communicate />}
-      {tabKey === 'interviewed' && <Communicate />}
-      {tabKey === 'no-suit' && <Communicate />}
-      {tabKey === 'saw' && <Communicate />}
-      {tabKey === 'favorite' && <Communicate />}
-    </Card>
-  </PageHeaderWrapper>
+  return <Tabs onChange={(t)=>setTabKey(t)}>
+    {
+      messageType.map(tab=>{
+        return  <TabPane tab={tab.tab} key={tab.key}>
+          {tabKey === 'communicate' && <Communicate />}
+          {tabKey === 'wait-interview' && <Communicate />}
+          {tabKey === 'interviewed' && <Communicate />}
+          {tabKey === 'no-suit' && <Communicate />}
+          {tabKey === 'saw' && <Communicate />}
+          {tabKey === 'favorite' && <Communicate />}
+        </TabPane>})
+    }
+  </Tabs>
+
 }
 
 export default Index

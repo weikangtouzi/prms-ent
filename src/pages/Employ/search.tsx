@@ -1,8 +1,6 @@
-import {Button, Card, Space, Tag} from "antd";
-import {PageHeaderWrapper} from "@ant-design/pro-layout";
+import { Space, Tag} from "antd";
 import ProTable, {ActionType, ProColumns} from "@ant-design/pro-table";
 import request from "umi-request";
-import {PlusOutlined, SendOutlined} from "@ant-design/icons";
 import {useRef, useState} from "react";
 
 type GithubIssueItem = {
@@ -100,8 +98,7 @@ const Search = ()=>{
       ],
     },
   ];
-  return <PageHeaderWrapper>
-      <ProTable<GithubIssueItem>
+  return <ProTable<GithubIssueItem>
         columns={columns}
         actionRef={actionRef}
         request={async (params = {}, sort, filter) => {
@@ -124,10 +121,9 @@ const Search = ()=>{
           pageSize: 5,
         }}
         dateFormatter="string"
-        headerTitle="寻找人才"
         options={false}
       />
-  </PageHeaderWrapper>
+
 }
 
 export default Search

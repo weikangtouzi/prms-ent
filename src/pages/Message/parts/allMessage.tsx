@@ -144,7 +144,6 @@ const AllMessage =  () => {
         }}
         dateFormatter="string"
         options={false}
-        toolBarRender={false}
       />
     </div>
   );

@@ -2,6 +2,9 @@ import {useRef} from 'react';
 import type {ProColumns, ActionType} from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import request from 'umi-request';
+import {Button} from "antd";
+import {PlusOutlined} from "@ant-design/icons";
+import {history} from "@@/core/history";
 
 type GithubIssueItem = {
   url: string;
@@ -118,9 +121,7 @@ const Communicate =  () => {
     },
   ];
 
-  return (
-    <div>
-      <ProTable<GithubIssueItem>
+  return <ProTable<GithubIssueItem>
         columns={columns}
         actionRef={actionRef}
         request={async (params = {}, sort, filter) => {
@@ -144,9 +145,6 @@ const Communicate =  () => {
         }}
         dateFormatter="string"
         options={false}
-        toolBarRender={false}
-      />
-    </div>
-  );
+      />;
 };
 export default Communicate;
