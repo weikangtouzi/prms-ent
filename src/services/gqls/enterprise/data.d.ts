@@ -20,7 +20,8 @@ declare namespace Enterprise {
     tags: string
     tel: string
     work_time: number,
-    abbreviation: string
+    abbreviation: string,
+    detail_address?: string
   }
 
   interface EditEnterpriseBasicInfo{
@@ -69,6 +70,20 @@ declare namespace Enterprise {
 
   interface del_member_param{
     workerId: number
+  }
+
+  type overtimeWorkDegreeType = 'None'|'Paid'|'SomeTime'
+  type EnterpriseRestRuleType = 'OneDayOffPerWeekend'|'TwoDayOffPerWeekend'|'StaggerWeekends'
+
+  type welfareType = {
+    customTags: string[]
+    overtimeWorkDegree: overtimeWorkDegreeType
+    restRule: EnterpriseRestRule
+    welfare?: string[]
+    workRule: string[]
+    worktime?: 1|2
+    startTime?: any,
+    endTime?: any,
   }
 
   type InfoProps = Partial<BaseInfo>

@@ -4,7 +4,8 @@ declare namespace Region {
     name: string
     province_id?: string,
     id?: string,
-    isLeaf: boolean
+    isLeaf: boolean,
+    children?: City[]
   }
 
   // 市
@@ -12,6 +13,7 @@ declare namespace Region {
     name: string
     city_id?: string,
     id?: string,
+    children?: County[]
   }
 
   // 区
@@ -26,5 +28,13 @@ declare namespace Region {
     name: string
     town_id?: string,
     id?: string,
+  }
+
+  // region
+  interface NormalRegion {
+    name: string,
+    id: string,
+    [key: string]: string
+    children: NormalRegion[]
   }
 }

@@ -1,35 +1,43 @@
-import {Form, Button, Select, Tag, Card, Radio, Space, TimePicker } from 'antd';
+import {Form, Button, Select, Card, Radio, Space, TimePicker, message} from 'antd';
 import {tailFormItemLayout, formItemLayout} from '@/common/js/config';
+import {useMutation} from "@apollo/client";
+import {edit_enterprise_welfare} from "@/services/gqls/enterprise";
 
 const options = [
-  {value: 'green', label: '周末双休'},
-  {value: 'cyan', label: '年终奖'},
-  {value: 'xx', label: '绩效奖金'},
+  {value: '周末双休', label: '周末双休'},
+  {value: '年终奖', label: '年终奖'},
 ];
 const Bonus = () => {
   const [form] = Form.useForm();
+  const [edit_welfare] =  useMutation<void,{info: Enterprise.welfareType}>(edit_enterprise_welfare)
 
-  const onFinish = (values: any) => {
+  const onFinish = (values: Enterprise.welfareType) => {
     console.log('Received values of form: ', values);
+    edit_welfare({
+      variables:{
+        info:{
+          customTags:values.customTags,
+          restRule:values.restRule,
+          overtimeWorkDegree:values.overtimeWorkDegree,
+          welfare: [],
+          workRule:values.worktime===1?[values.startTime.format('HH:mm:ss'),values.endTime.format('HH:mm:ss')]:[]
+        }
+      }
+    }).then(()=>{
+      message.success('保存成功').then()
+    }).catch((e)=>{
+      message.error(e.graphQLErrors?.[0].message).then()
+    })
   };
 
-  const tagRender = (props: any) => {
-    const {label, closable, onClose} = props;
-    const onPreventMouseDown = (event: any) => {
-      event.preventDefault();
-      event.stopPropagation();
-    };
-    return (
-      <Tag
-        onMouseDown={onPreventMouseDown}
-        closable={closable}
-        onClose={onClose}
-        style={{marginRight: 3}}
-      >
-        {label}
-      </Tag>
-    );
+  const checkConfirm = (_: any, value: string) => {
+    const promise = Promise;
+    if (form.getFieldValue('worktime') ===1 && !value) {
+      return promise.reject('');
+    }
+    return promise.resolve();
   };
+
 
   return (
     <Card>
@@ -42,50 +50,54 @@ const Bonus = () => {
           initialValues={{}}
           scrollToFirstError
         >
-          <Form.Item label="工作时间" name='worktime'>
+          <Form.Item label="工作时间" name='worktime' rules={[{required:true}]}>
             <Radio.Group>
               <Space direction="vertical">
                 <Radio value={1}><Space>固定时间
                   <Form.Item
                     name='startTime'
                     noStyle
+                    rules={[
+                      {
+                        validator: checkConfirm,
+                      }
+                    ]}
                   >
-                    <TimePicker use12Hours size={"small"} placeholder='选择开始时间'/>
+                    <TimePicker size={"small"} placeholder='选择开始时间' showNow={false}/>
                   </Form.Item>
                   <Form.Item
                     name='endTime'
                     noStyle
                   >
-                    <TimePicker use12Hours size={"small"} placeholder='选择开始时间'/>
+                    <TimePicker size={"small"} placeholder='选择开始时间' showNow={false} />
                   </Form.Item>
                 </Space></Radio>
                 <Radio value={2}>弹性工作</Radio>
               </Space>
             </Radio.Group>
           </Form.Item>
-          <Form.Item name="schedule" label="作息时间(选填)">
+          <Form.Item name="restRule" label="作息时间(选填)">
             <Radio.Group>
-              <Radio.Button value="a">周末双休</Radio.Button>
-              <Radio.Button value="b">单休</Radio.Button>
-              <Radio.Button value="c">大小周</Radio.Button>
-              <Radio.Button value="d">排版轮休</Radio.Button>
+              <Radio value="TwoDayOffPerWeekend">周末双休</Radio>
+              <Radio value="OneDayOffPerWeekend">单休</Radio>
+              <Radio value="StaggerWeekends">大小周</Radio>
+              <Radio value="d">排版轮休</Radio>
             </Radio.Group>
           </Form.Item>
-          <Form.Item name="overtime" label="加班情况(选填)">
+          <Form.Item name="overtimeWorkDegree" label="加班情况(选填)">
             <Radio.Group>
-              <Radio.Button value="a">有偿加班</Radio.Button>
-              <Radio.Button value="b">不加班</Radio.Button>
-              <Radio.Button value="c">偶尔加班</Radio.Button>
+              <Radio value="Paid">有偿加班</Radio>
+              <Radio value="None">不加班</Radio>
+              <Radio value="SomeTime">偶尔加班</Radio>
             </Radio.Group>
           </Form.Item>
-          <Form.Item name="bonus" label="福利标签">
+          <Form.Item name="customTags" label="福利标签">
             <Select
-              mode="multiple"
-              showArrow
-              tagRender={tagRender}
+              placeholder="输入任意内容回车"
+              mode="tags"
               style={{width: '100%'}}
               options={options}
-            />
+            >{[]}</Select>
           </Form.Item>
 
           <Form.Item {...tailFormItemLayout}>

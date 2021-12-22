@@ -15,6 +15,7 @@ const Base = (props: Enterprise.InfoProps) => {
     industry_involved,
     business_nature,
     enterprise_financing,
+    enterprise_loc_detail,
     enterprise_size,
     enterprise_profile,
     established_time,
@@ -25,10 +26,15 @@ const Base = (props: Enterprise.InfoProps) => {
   } = props
   const [form] = Form.useForm();
 
+  const loc_format = enterprise_loc_detail && enterprise_loc_detail.length>=3?enterprise_loc_detail.slice(0,3):[]
+  const detail_format =  enterprise_loc_detail && enterprise_loc_detail.length>=1?enterprise_loc_detail.slice(-1)[0]:''
   const [Edit_Enterprise_BaseInfo] = useMutation<void,{info: Enterprise.EditEnterpriseBasicInfo}>(editEnterpriseBaseInfo)
 
   const onFinish = (values: Enterprise.InfoProps) => {
+    const detail = values?.detail_address? [values.detail_address] : []
     console.log(values)
+    const loc = values.enterprise_loc_detail && values.enterprise_loc_detail.length===3?
+                values.enterprise_loc_detail.map(n=>String(n)):[]
     Edit_Enterprise_BaseInfo({
       variables:{
         info:{
@@ -44,6 +50,7 @@ const Base = (props: Enterprise.InfoProps) => {
           enterprisecCoordinate:values.enterprise_coordinates,
           tel:values.tel,
           logo:values.enterprise_logo,
+          enterpriseLocation:[...loc,...detail]
         }
       }
     }).then(()=>{
@@ -74,7 +81,9 @@ const Base = (props: Enterprise.InfoProps) => {
             homepage,
             enterprise_coordinates,
             tel,
-            enterprise_logo
+            enterprise_logo,
+            enterprise_loc_detail:loc_format,
+            detail_address:detail_format
           }}
           scrollToFirstError
         >
@@ -208,10 +217,10 @@ const Base = (props: Enterprise.InfoProps) => {
           <ProFormText label='公司官网' name='homepage'/>
           <ProFormText label='座机号码' name='tel'/>
           <Form.Item label="公司地址" style={{marginBottom: '0'}}>
-            <Form.Item name="region"  >
+            <Form.Item name="enterprise_loc_detail"  >
               <FormCascade/>
             </Form.Item>
-            <Form.Item name="address2" >
+            <Form.Item name="detail_address" >
               <Input placeholder="请输入详细地址"/>
             </Form.Item>
           </Form.Item>

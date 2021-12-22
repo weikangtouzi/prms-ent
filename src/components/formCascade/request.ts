@@ -42,3 +42,26 @@ export const GET_TOWN_DATA = gql`
     }
   }
 `;
+
+// 获取所有的省市区数据
+export const GET_ALL_REGION = gql`
+  query get_all_region {
+    StaticGetAllRegion{
+      data{
+        name,
+        province_id,
+        id:province_id
+        children:Cities{
+          city_id,
+          id:city_id
+          name,
+          children:Counties{
+            id:county_id,
+            county_id,
+            name
+          }
+        }
+      }
+    }
+  }
+`;

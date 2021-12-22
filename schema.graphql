@@ -9,6 +9,8 @@ schema {
 "make it available when different thing happens in same query"
 union InterviewData = EnterpriseUserSideInterviewData | PersonalUserSideInterviewData
 
+union JobDataListForAllUsers = JobDataBriefly | JobDataForHRDetailPageOrEntJobList
+
 type AdminLogInResult {
   rights: String!
   token: String!
@@ -326,6 +328,7 @@ type Mutation {
   ENTInviteWorkMate(phoneNumber: String!, pos: String, role: String): Void
   ENTRecruitmentApply(recruitmentId: Int!, size: String): Void
   ENTRemoveWorker(role: EnterpriseRole!, workerId: Int!): Void
+  ENTSetDisabled(workerId: Int!): Void
   "end a iterview with the description, need to tell the interview is passed or not, most of time the description is about some special situation"
   HREndInterview(description: String, interviewId: Int!, ispassed: Boolean!): Void
   HRHideJob(jobId: Int!): Void
@@ -336,10 +339,12 @@ type Mutation {
   HRRemoveJob(jobId: Int!): Void
   "this api need you to pass the provider's phone number as the authorization header"
   QNInsertPersonalData(info: PersonalData!): Int!
+  UserChangePhoneNumber(newNum: String!): Void
   "switch to another indentity if exists, should pass indetity and role, Identity and role types are enums, checkout their type definitions, return token"
   UserChooseOrSwitchIdentity(role: EnterpriseRole, targetIdentity: Identity!): Void
   "insert or edit a personal data"
   UserEditBasicInfo(info: BasicData!): Void
+  UserEditEmail(code: String!, newEmail: String!): Void
   "enterprise certification need censor"
   UserEnterpriseIdentify(info: EnterpriseCharterSencorRequest!): Void
   "only availiable when token is expired and not dead"
@@ -422,6 +427,7 @@ type Query {
   StaticGetCities(provinceId: String!): [City]!
   "get all counties of the given city"
   StaticGetCounties(cityId: String!): [County]!
+  StaticGetHotJobs: Void
   "get Province data"
   StaticGetProvinces: [Province]
   "get all town of the given county"
@@ -461,6 +467,7 @@ type ResumeData {
   jobExpectation: JobExpectation!
   "checkout ResumeJobStatus type for value options"
   jobStatus: String!
+  personalAdvantage: String!
   personalData: ResumePersonalData!
   projectExperience: [ResumeProExp]
   workExperience: [ResumeWorkExp]
@@ -470,6 +477,7 @@ type ResumeEduExp {
   detail: String!
   "check out Education type for value options"
   education: String!
+  id: Int!
   major: String!
   schoolName: String!
 }
@@ -487,6 +495,7 @@ type ResumePersonalData {
 
 type ResumeProExp {
   detail: String!
+  id: Int!
   projectName: String!
   "maybe not needed to send when showing the whole resume at a page"
   project_performance: String
@@ -498,6 +507,7 @@ type ResumeWorkExp {
   departmentName: String!
   detail: String!
   enterpriseName: String!
+  id: Int!
   positionName: String!
   time: String!
 }
@@ -568,18 +578,6 @@ enum EducationRequired {
   RegularCollege
 }
 
-enum EnterpriseOvertimeDegree {
-  None
-  Occasionally
-  Usually
-}
-
-enum EnterpriseRestRule {
-  OneDayOffPerWeekend
-  StaggerWeekends
-  TwoDayOffPerWeekend
-}
-
 enum InterviewProcess {
   "whatnever this is canceled the status will be set to Canceled, when status is like this, return value will contains a description of the canceled status"
   Canceled
@@ -641,7 +639,7 @@ input ApplicantFilter {
 
 "because the personal data is already exists, I choose this for the name"
 input BasicData {
-  birthday: Int
+  birthday: String
   currentCity: String
   education: Education
   firstTimeWorking: String
@@ -732,10 +730,11 @@ input EnterpriseCharterSencorRequest {
 
 input EnterpriseWorkTimeAndWelfare {
   customTags: [String]
-  overtimeWorkDegree: String
-  restRule: String
+  overtimeWorkDegree: EnterpriseOvertime
+  restRule: EnterpriseRestRule
   welfare: [String]
-  workRule: String
+  workRule: [String]
+
 }
 
 input EnterpriseWorkerInfo {
@@ -869,6 +868,9 @@ scalar Void
 "enum Education {    LessThanPrime,    Primary,    Junior,    High,    JuniorCollege,    RegularCollege,    Postgraduate,    Doctor  }"
 scalar Education
 
+"enum EnterpriseOvertime {    None,    Paid,    SomeTime"
+scalar EnterpriseOvertime
+
 "enum {Full,        Part,        InternShip}"
 scalar FullTime
 
@@ -883,6 +885,9 @@ scalar EnterpriseFinancing
 
 "enum EnterpriseSize {    LessThanFifteen,     FifteenToFifty,     FiftyToOneHundredFifty,     OneHundredFiftyToFiveHundreds,     FiveHundredsToTwoThousands,     MoreThanTwoThousands  }"
 scalar EnterpriseSize
+
+"enum EnterpriseRestRule {    OneDayOffPerWeekend,     TwoDayOffPerWeekend,     StaggerWeekends  }"
+scalar EnterpriseRestRule
 
 "enum {None, Failed, Passed, Waiting}"
 scalar EnterpriseIdentificationStatus

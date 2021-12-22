@@ -99,3 +99,10 @@ export const edit_enterprise_extra = gql`
     ENTEditEnterpriseExtraData (info: $info)
   }
 `
+
+// 修改企业福利信息
+export const edit_enterprise_welfare = gql`
+  mutation editEnterpriseWelfare($info:EnterpriseWorkTimeAndWelfare!) {
+    ENTEditEnterpriseWorkTimeAndWelfare (info: $info)
+  }
+`
