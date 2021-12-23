@@ -15,11 +15,11 @@ declare namespace Enterprise {
     homepage: string
     industry_involved: string[]
     job_counter: number
-    overtime_work_degree: string
-    rest_rule: string
-    tags: string
+    overtime_work_degree: overtimeWorkDegreeType
+    rest_rule: EnterpriseRestRuleType
+    tags: string[]
     tel: string
-    work_time: number,
+    work_time: string,
     abbreviation: string,
     detail_address?: string
   }
@@ -73,14 +73,14 @@ declare namespace Enterprise {
   }
 
   type overtimeWorkDegreeType = 'None'|'Paid'|'SomeTime'
-  type EnterpriseRestRuleType = 'OneDayOffPerWeekend'|'TwoDayOffPerWeekend'|'StaggerWeekends'
+  type EnterpriseRestRuleType = 'OneDayOffPerWeekend'|'TwoDayOffPerWeekend'|'StaggerWeekends'|'ShiftWork'
 
   type welfareType = {
     customTags: string[]
     overtimeWorkDegree: overtimeWorkDegreeType
     restRule: EnterpriseRestRule
     welfare?: string[]
-    workRule: string[]
+    workRule: string
     worktime?: 1|2
     startTime?: any,
     endTime?: any,

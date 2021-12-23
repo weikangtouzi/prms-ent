@@ -2,37 +2,48 @@ import {Form, Button, Select, Card, Radio, Space, TimePicker, message} from 'ant
 import {tailFormItemLayout, formItemLayout} from '@/common/js/config';
 import {useMutation} from "@apollo/client";
 import {edit_enterprise_welfare} from "@/services/gqls/enterprise";
+import moment from "moment";
 
 const options = [
   {value: '周末双休', label: '周末双休'},
   {value: '年终奖', label: '年终奖'},
 ];
-const Bonus = () => {
+
+interface BonusProps {
+  overtime_work_degree?: Enterprise.overtimeWorkDegreeType,
+  rest_rule?: Enterprise.EnterpriseRestRuleType,
+  tags?: string[],
+  work_time?: string
+}
+
+const Bonus = (props: BonusProps) => {
+  const {overtime_work_degree,rest_rule,tags=[],work_time=''} = props
   const [form] = Form.useForm();
-  const [edit_welfare] =  useMutation<void,{info: Enterprise.welfareType}>(edit_enterprise_welfare)
+  const [edit_welfare] = useMutation<void, { info: Enterprise.welfareType }>(edit_enterprise_welfare)
+  const format = 'HH:mm';
+
+
 
   const onFinish = (values: Enterprise.welfareType) => {
-    console.log('Received values of form: ', values);
     edit_welfare({
-      variables:{
-        info:{
-          customTags:values.customTags,
-          restRule:values.restRule,
-          overtimeWorkDegree:values.overtimeWorkDegree,
+      variables: {
+        info: {
+          customTags: values.customTags,
+          restRule: values.restRule,
+          overtimeWorkDegree: values.overtimeWorkDegree,
           welfare: [],
-          workRule:values.worktime===1?[values.startTime.format('HH:mm:ss'),values.endTime.format('HH:mm:ss')]:[]
+          workRule: values.worktime === 1 ? `${values.startTime.format(format)}-${values.endTime.format(format)}` : ""
         }
       }
-    }).then(()=>{
+    }).then(() => {
       message.success('保存成功').then()
-    }).catch((e)=>{
+    }).catch((e) => {
       message.error(e.graphQLErrors?.[0].message).then()
     })
   };
-
   const checkConfirm = (_: any, value: string) => {
     const promise = Promise;
-    if (form.getFieldValue('worktime') ===1 && !value) {
+    if (form.getFieldValue('worktime') === 1 && !value) {
       return promise.reject('');
     }
     return promise.resolve();
@@ -47,44 +58,55 @@ const Bonus = () => {
           form={form}
           name="base"
           onFinish={onFinish}
-          initialValues={{}}
+          initialValues={{
+            restRule:rest_rule,
+            overtimeWorkDegree:overtime_work_degree,
+            customTags:tags,
+            worktime:work_time?1:2,
+            startTime:work_time?moment(work_time.split('-')[0],format):undefined,
+            endTime:work_time?moment(work_time.split('-')[1],format):undefined
+          }}
           scrollToFirstError
         >
-          <Form.Item label="工作时间" name='worktime' rules={[{required:true}]}>
+
+          <Form.Item label="工作时间" name='worktime' rules={[{required: true}]} className={'needPt5'}>
             <Radio.Group>
               <Space direction="vertical">
-                <Radio value={1}><Space>固定时间
-                  <Form.Item
-                    name='startTime'
-                    noStyle
-                    rules={[
-                      {
-                        validator: checkConfirm,
-                      }
-                    ]}
-                  >
-                    <TimePicker size={"small"} placeholder='选择开始时间' showNow={false}/>
-                  </Form.Item>
-                  <Form.Item
-                    name='endTime'
-                    noStyle
-                  >
-                    <TimePicker size={"small"} placeholder='选择开始时间' showNow={false} />
-                  </Form.Item>
-                </Space></Radio>
+                <Radio value={1}>固定时间
+                  <div style={{margin: '12px 0 8px'}}>
+                    <Space>
+                      <Form.Item
+                        name='startTime'
+                        noStyle
+                        rules={[
+                          {
+                            validator: checkConfirm,
+                          }
+                        ]}
+                      >
+                        <TimePicker placeholder='选择开始时间' showNow={false} style={{width: '185px'}} format={format}/>
+                      </Form.Item> -
+                      <Form.Item
+                        name='endTime'
+                        noStyle
+                      >
+                        <TimePicker placeholder='选择开始时间' showNow={false} style={{width: '185px'}} format={format}/>
+                      </Form.Item>
+                    </Space>
+                  </div>
+                </Radio>
                 <Radio value={2}>弹性工作</Radio>
               </Space>
             </Radio.Group>
           </Form.Item>
-          <Form.Item name="restRule" label="作息时间(选填)">
+          <Form.Item name="restRule" label="作息时间">
             <Radio.Group>
               <Radio value="TwoDayOffPerWeekend">周末双休</Radio>
               <Radio value="OneDayOffPerWeekend">单休</Radio>
-              <Radio value="StaggerWeekends">大小周</Radio>
-              <Radio value="d">排版轮休</Radio>
+              <Radio value="ShiftWork">排版轮休</Radio>
             </Radio.Group>
           </Form.Item>
-          <Form.Item name="overtimeWorkDegree" label="加班情况(选填)">
+          <Form.Item name="overtimeWorkDegree" label="加班情况">
             <Radio.Group>
               <Radio value="Paid">有偿加班</Radio>
               <Radio value="None">不加班</Radio>

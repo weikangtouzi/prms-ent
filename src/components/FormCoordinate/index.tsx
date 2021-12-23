@@ -1,6 +1,6 @@
 import {Button, Col, Input, Row,} from "antd";
-import React, {useRef, useState} from "react";
-import {useLayoutEffect} from "react";
+import React, {useCallback, useRef, useState} from "react";
+import {useEffect} from "react";
 
 const FormCoordinate: React.FC<{
   value?: (number|undefined)[];
@@ -11,7 +11,20 @@ const FormCoordinate: React.FC<{
   const [coordinate,setCoordinate] = useState<(number|undefined)[]>(()=>{
     return value && value.length>1?value:[undefined,undefined]
   })
-  useLayoutEffect(() => {
+
+  const  select  = useCallback((e)=>{
+    searchRef?.current?.setCity(e.poi.adcode);
+    searchRef.current?.search(e.poi.name); //关键字查询查询
+  },[])
+
+  const showInfoClick = useCallback((e)=>{
+    const lng = e.lnglat.getLng();
+    const lat = e.lnglat.getLat();
+    setCoordinate([lng,lat])
+    onChange?.([lng,lat])
+  },[])
+
+  useEffect(() => {
     // 由于Chrome、iOS10等已不再支持非安全域的浏览器定位请求，为保证定位成功率和精度
     const map = new AMap.Map('container', {
       resizeEnable: true,
@@ -26,17 +39,6 @@ const FormCoordinate: React.FC<{
       map: map,
     });
 
-    function select(e: any) {
-      searchRef?.current?.setCity(e.poi.adcode);
-      searchRef.current?.search(e.poi.name); //关键字查询查询
-    }
-
-    function showInfoClick(e: any) {
-      const lng = e.lnglat.getLng();
-      const lat = e.lnglat.getLat();
-      setCoordinate([lng,lat])
-      onChange?.([lng,lat])
-    }
 
     function searchClick(e: any) {
       const lng = e.data.location.lng;

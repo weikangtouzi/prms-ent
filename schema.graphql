@@ -253,7 +253,7 @@ type JobExpectation {
 
 type JobListForHRDetailPageOrEntJobList {
   count: Int!
-  data: [JobDataForHRDetailPageOrEntJobList]!
+  data: [JobDataListForAllUsers]!
 }
 
 type JobSimpifiedDataPageView {
@@ -733,8 +733,7 @@ input EnterpriseWorkTimeAndWelfare {
   overtimeWorkDegree: EnterpriseOvertime
   restRule: EnterpriseRestRule
   welfare: [String]
-  workRule: [String]
-
+  workRule: String
 }
 
 input EnterpriseWorkerInfo {
@@ -886,7 +885,7 @@ scalar EnterpriseFinancing
 "enum EnterpriseSize {    LessThanFifteen,     FifteenToFifty,     FiftyToOneHundredFifty,     OneHundredFiftyToFiveHundreds,     FiveHundredsToTwoThousands,     MoreThanTwoThousands  }"
 scalar EnterpriseSize
 
-"enum EnterpriseRestRule {    OneDayOffPerWeekend,     TwoDayOffPerWeekend,     StaggerWeekends  }"
+"enum EnterpriseRestRule {    OneDayOffPerWeekend,     TwoDayOffPerWeekend,     StaggerWeekends,    ShiftWork  }"
 scalar EnterpriseRestRule
 
 "enum {None, Failed, Passed, Waiting}"
