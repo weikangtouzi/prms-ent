@@ -77,16 +77,19 @@ const Layouts = (props: PropsWithChildren<any>) => {
       rightContentRender={() => <RightContent />}
       // footerRender={() => <Footer />}
       disableContentMargin={false}
-      menuItemRender={(item, dom) => (
-        <a
-          onClick={() => {
-            setPathname(item.path || '/enterprise/info');
-            history.push(item.path as string);
-          }}
-        >
-          {dom}
-        </a>
-      )}
+      menuItemRender={(item, dom) => {
+        return item.path==='/index'? dom :
+          <a
+            onClick={() => {
+              setPathname(item.path || '/enterprise/info');
+              history.push(item.path as string);
+            }}
+          >
+            pre {dom}
+          </a>
+
+      }}
+      subMenuItemRender={(_, dom) => <div>{dom}</div>}
       onMenuHeaderClick={(e) => console.log(e)}
     >
       {props.children}

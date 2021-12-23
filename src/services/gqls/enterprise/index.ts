@@ -79,6 +79,13 @@ export const get_enterprise_member   = gql`
   }
 `
 
+// 禁用成员
+export const setMemberDisable = gql`
+  mutation entSetDisabled($workerId:Int!){
+    ENTSetDisabled(workerId: $workerId)
+  }
+`
+
 // 邀请成员
 export const invite_member = gql`
   mutation invite_member($phoneNumber:String!,$role:String!) {
@@ -88,8 +95,8 @@ export const invite_member = gql`
 
 // 删除成员
 export const del_member = gql`
-  mutation del_member($workerId:Int!) {
-    ENTRemoveWorker(workerId: $workerId)
+  mutation del_member($role: EnterpriseRole!,$workerId:Int!) {
+    ENTRemoveWorker(role:$role,workerId: $workerId)
   }
 `
 

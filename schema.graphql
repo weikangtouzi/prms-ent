@@ -108,7 +108,7 @@ type EnterpriseInfoForEntDetail {
   job_counter: Int
   overtime_work_degree: String
   rest_rule: String
-  tags: String
+  tags: [String]!
   tel: String
   work_time: String
 }
@@ -193,7 +193,6 @@ type JobDataBriefly {
   comp_name: String!
   comp_size: EnterpriseSize!
   emergency: Boolean!
-  expired_at: String!
   full_time_job: FullTime!
   hr_name: String!
   hr_pos: String!
@@ -274,6 +273,7 @@ type LoginResult {
 }
 
 type Message {
+  createdAt: String!
   "0 for system message"
   from: String!
   messageContent: String!
@@ -441,7 +441,7 @@ type Query {
   UserGetContractList: [Contract]!
   UserGetEnterpriseDetail_EntInfo(entId: Int): EnterpriseInfoForEntDetail!
   UserGetEnterpriseDetail_WorkerList(entId: Int, role: EnterpriseRole): [WorkerInfoForWorkerList]!
-  UserGetJobListByEntId(category: [String], entId: Int, page: Int, pageSize: Int): JobListForHRDetailPageOrEntJobList!
+  UserGetJobListByEntId(category: [String], entId: Int, page: Int, pageSize: Int, status: JobStatus, title: String, workerId: Int): JobListForHRDetailPageOrEntJobList!
   "if page not provided it will be 0,for pageSize it will be 10"
   UserGetMessages(page: Int, pageSize: Int, targetId: Int!): MessagePage
   "api for login"
@@ -761,6 +761,7 @@ input JobPost {
   education: EducationRequired!
   experience: Int!
   isFullTime: FullTime!
+  publishNow: Boolean!
   requiredNum: Int!
   "just a two value array which first value means the min one, second means the max"
   salary: [Int]!
@@ -899,3 +900,6 @@ scalar WorkerMatePrecheckResult
 
 "enum {    Normal,    System,    Resume,    InterviewInvitation,    Other    }"
 scalar MessageType
+
+"enum JobStatus {    NotPublishedYet,    InRecruitment,    OffLine  }"
+scalar JobStatus

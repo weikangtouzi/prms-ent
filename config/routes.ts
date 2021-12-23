@@ -37,6 +37,59 @@
         ],
       },
       {
+        name: '招聘管理',
+        icon: 'icon-icon_zhaopinguanli',
+        path: '/employ',
+        routes: [
+          {
+            path: '/employ/position',
+            name: '职位管理',
+            icon: 'smile',
+            routes: [
+              {
+                path: '/employ/position',
+                name: '职位管理',
+                icon: 'smile',
+                hideInMenu: true,
+                component: './Employ/index.tsx',
+              },
+              {
+                path: '/employ/position/publish',
+                name: '发布职位',
+                icon: 'smile',
+                hideInMenu: true,
+                component: './Employ/publish.tsx',
+              },
+              {
+                path: '/employ/position/edit',
+                name: '职位详情',
+                icon: 'smile',
+                hideInMenu: true,
+                component: './Employ/edit.tsx',
+              },
+            ],
+          },
+          {
+            path: '/employ/people',
+            name: '人才管理',
+            icon: 'smile',
+            component: './Employ/people.tsx',
+          },
+          {
+            path: '/employ/search',
+            name: '寻找人才',
+            icon: 'smile',
+            component: './Employ/search.tsx',
+          },
+          {
+            path: '/employ/recruitment',
+            name: '招聘会记录',
+            icon: 'smile',
+            component: './Employ/recruitment.tsx',
+          },
+        ],
+      },
+      {
         name: '企业管理',
         icon: 'icon-a-icon_qiyeguanli2',
         path: '/enterprise',
@@ -94,59 +147,7 @@
           },
         ],
       },
-      {
-        name: '招聘管理',
-        icon: 'icon-icon_zhaopinguanli',
-        path: '/employ',
-        routes: [
-          {
-            path: '/employ/position',
-            name: '职位管理',
-            icon: 'smile',
-            routes: [
-              {
-                path: '/employ/position',
-                name: '职位管理',
-                icon: 'smile',
-                hideInMenu: true,
-                component: './Employ/index.tsx',
-              },
-              {
-                path: '/employ/position/publish',
-                name: '发布职位',
-                icon: 'smile',
-                hideInMenu: true,
-                component: './Employ/publish.tsx',
-              },
-              {
-                path: '/employ/position/edit',
-                name: '职位详情',
-                icon: 'smile',
-                hideInMenu: true,
-                component: './Employ/edit.tsx',
-              },
-            ],
-          },
-          {
-            path: '/employ/people',
-            name: '人才管理',
-            icon: 'smile',
-            component: './Employ/people.tsx',
-          },
-          {
-            path: '/employ/search',
-            name: '寻找人才',
-            icon: 'smile',
-            component: './Employ/search.tsx',
-          },
-          {
-            path: '/employ/recruitment',
-            name: '招聘会记录',
-            icon: 'smile',
-            component: './Employ/recruitment.tsx',
-          },
-        ],
-      },
+
       // {
       //   name: '套餐管理',
       //   icon: 'icon-icon_taocanguanli',

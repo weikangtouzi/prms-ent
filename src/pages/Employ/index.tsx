@@ -1,4 +1,4 @@
-import {Button, Modal, Space} from "antd";
+import {Avatar, Button, Modal, Select, Space} from "antd";
 import type {ActionType, ProColumns} from "@ant-design/pro-table";
 import ProTable from "@ant-design/pro-table";
 import {ExclamationCircleOutlined, PlusOutlined} from "@ant-design/icons";
@@ -6,14 +6,23 @@ import {useRef, useState} from "react";
 import {history} from "umi";
 import {useQuery} from "@apollo/client";
 import {GET_JOB_LIST} from "@/services/gqls/employ";
-import moment from "moment";
+import {get_enterprise_member} from "@/services/gqls/enterprise";
 
 
 const {confirm} = Modal;
 
 const Employ = () => {
   const actionRef = useRef<ActionType>();
-  const {refetch} = useQuery<ResultDataType<'UserGetJobListByEntId', Employ.JobList>,{page: number,pageSize: number}>(GET_JOB_LIST)
+  const {data={UserGetEnterpriseDetail_WorkerList:[]}} = useQuery<ResultDataType<'UserGetEnterpriseDetail_WorkerList', Enterprise.member_info[]>>(get_enterprise_member)
+  console.log(data)
+  const {refetch} = useQuery<ResultDataType<'UserGetJobListByEntId', Employ.JobList>,
+    {
+      page?: number,
+      pageSize?: number,
+      title?: string,
+      status?: string,
+      workerId: number
+    }>(GET_JOB_LIST)
   const [modalShow, setModalShow] = useState(false)
   const showConfirm = () => {
     confirm({
@@ -48,6 +57,12 @@ const Employ = () => {
       },
     },
     {
+      title: '类型',
+      dataIndex: 'type',
+      ellipsis: true,
+      hideInSearch: true
+    },
+    {
       title: '地区',
       dataIndex: 'loc',
       ellipsis: true,
@@ -55,8 +70,9 @@ const Employ = () => {
     },
     {
       title: '学历要求',
-      dataIndex: 'education',
+      dataIndex: 'min_education',
       valueType: 'select',
+      hideInSearch: true,
       valueEnum: {
         LessThanPrime: {
           text: '小学以下',
@@ -85,22 +101,73 @@ const Employ = () => {
       },
     },
     {
+      title: '经验要求',
+      dataIndex: 'min_experience',
+      hideInSearch: true,
+      render: (_, r) => r.min_experience + '年以上'
+    },
+    {
       title: '薪资待遇',
+      hideInSearch: true,
       dataIndex: 'salary',
-      render:(_,r)=>{
-        return `${r.salary[0]/1000}k-${r.salary[1]/1000}k`
+      render: (_, r) => {
+        return `${r.min_salary / 1000}k-${r.max_salary / 1000}k`
+      }
+    },
+    {
+      title: '浏览数',
+      dataIndex: 'look_number',
+      hideInSearch: true,
+    },
+    {
+      title: '简历数',
+      dataIndex: 'resume_number',
+      hideInSearch: true,
+    },
+    {
+      title: '状态',
+      dataIndex: 'status',
+    },
+    {
+      title: '发布人',
+      dataIndex: 'hr_name',
+      render: (_, r) => {
+        return <Space>
+          <Avatar src="https://joeschmoe.io/api/v1/random" size={"small"}/>{r.hr_name}
+        </Space>
+      },
+      renderFormItem: (_, { type, defaultRender, formItemProps, fieldProps, ...rest }, form) => {
+        if (type === 'form') {
+          return null;
+        }
+        return (
+          // value 和 onchange 会通过 form 自动注入。
+          <Select
+            // 组件的配置
+            {...fieldProps}
+            options={data?.UserGetEnterpriseDetail_WorkerList.map(d=>{
+                return {
+                  value:d.id,
+                  label:d.name
+                }
+              })
+            }
+            // 自定义配置
+            placeholder="请选择"
+          />
+        );
       }
     },
     {
       title: '上线时间',
-      dataIndex: 'createdAt',
-      render:(_,r)=>{
-        return moment(Number(r.createdAt)).format('YYYY-MM-DD hh:mm:ss')
-      }
+      dataIndex: 'publishTime',
+      hideInSearch: true
     },
+
     {
       title: '操作',
       valueType: 'option',
+      width: 200,
       render: (text, record,) =>
         <Space>
           <Button type={"link"}
@@ -112,28 +179,28 @@ const Employ = () => {
           >
             修改
           </Button>
-          {record.state === 'open'
+          {record.hr_name === 'open'
           && <Button type={"link"} key="editable"
                      className='padding-0'
                      onClick={() => {
                      }}>
             刷新
           </Button>}
-          {record.state === 'open'
+          {record.hr_name === 'open'
           && <Button type={"link"} key="editable"
                      className='padding-0'
                      onClick={() => {
                      }}>
             置顶
           </Button>}
-          {record.state !== 'open'
+          {record.hr_name !== 'open'
           && <Button type={"link"} key="editable"
                      className='padding-0'
                      onClick={() => {
                      }}>
             取消置顶
           </Button>}
-          {record.state === 'open'
+          {record.hr_name === 'open'
           && <Button type={"link"} key="editable"
                      className='padding-0'
                      onClick={() => {
@@ -141,7 +208,7 @@ const Employ = () => {
                      }}>
             分享合作
           </Button>}
-          {record.state === 'open'
+          {record.hr_name === 'open'
           && <Button type={"link"} key="editable"
                      className='padding-0'
                      onClick={showConfirm}>
@@ -157,8 +224,11 @@ const Employ = () => {
       params,
     ) => {
       const res = await refetch({
-        page:params.current===undefined?0:params.current-1,
-        pageSize:params.pageSize
+        page: params.current === undefined ? 0 : params.current - 1,
+        pageSize: params.pageSize,
+        status:params.status,
+        title:params.title,
+        workerId:params.hr_name
       });
       const list = res.data.UserGetJobListByEntId?.data
       return {

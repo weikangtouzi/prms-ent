@@ -6,7 +6,7 @@ import ProTable from '@ant-design/pro-table';
 import OptionModal from './memberParts/optionalModal'
 import InviteModal from "@/pages/Enterprise/memberParts/inviteModal";
 import {useQuery, useMutation} from "@apollo/client";
-import {get_enterprise_member, invite_member, del_member} from "@/services/gqls/enterprise";
+import {get_enterprise_member, invite_member, del_member,setMemberDisable} from "@/services/gqls/enterprise";
 import {defaultImage} from "@/common/js/const";
 import Moment from "moment";
 
@@ -16,6 +16,7 @@ export default () => {
   const [visible, setVisible] = useState<boolean>(false);
   const [invite_enterprise_member] = useMutation<void, Enterprise.invite_data>(invite_member)
   const [del_enterprise_member] = useMutation<void, Enterprise.del_member_param>(del_member)
+  const [disable_member] = useMutation<void, {workerId: number}>(setMemberDisable)
   const {refetch} = useQuery<ResultDataType<'UserGetEnterpriseDetail_WorkerList', Enterprise.member_info[]>>(get_enterprise_member, {skip: true})
 
   const inviteMember = () => {
@@ -30,6 +31,7 @@ export default () => {
       }
     }).then(() => {
       message.success('邀请成功').then()
+      setVisible(false)
     }).catch(e => {
       message.error(e.graphQLErrors?.[0].message).then()
     })
@@ -105,9 +107,21 @@ export default () => {
         <Popconfirm
           key='action'
           onConfirm={() => {
-
+            if(!record.disabled){
+              disable_member({
+                variables:{
+                  workerId:record.id
+                }
+              }).then(()=>{
+                message.success('已禁用该用户').then()
+                actionRef.current?.reload()
+              }).catch(e=>{
+                message.error(e.graphQLErrors?.[0].message).then()
+              })
+            }
           }}
           onCancel={() => {
+
           }}
           title={`确认要${record.disabled ? '解封' : '禁用'}这个用户吗`}
         >
@@ -124,7 +138,8 @@ export default () => {
           onConfirm={() => {
             del_enterprise_member({
               variables:{
-                workerId:record.id
+                workerId:record.id,
+                role:record.role
               }
             }).then(()=>{
               message.success('删除该用户成功').then()
@@ -174,15 +189,13 @@ export default () => {
           pageSize: 10,
         }}
         dateFormatter="string"
-        headerTitle="成员管理"
+        headerTitle={  <Button key="button" icon={<PlusOutlined/>} type="primary" onClick={() => {
+          inviteMember()
+        }}>
+          邀请成员
+        </Button>}
         options={false}
-        toolBarRender={() => [
-          <Button key="button" icon={<PlusOutlined/>} type="primary" onClick={() => {
-            inviteMember()
-          }}>
-            邀请成员
-          </Button>
-        ]}
+        toolBarRender={() => []}
       />
       <OptionModal modalShow={modalShow} setModalVisible={(flag: boolean) => setModalShow(flag)}/>
       <InviteModal onCancel={() => {

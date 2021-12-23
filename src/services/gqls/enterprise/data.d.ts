@@ -1,14 +1,16 @@
 declare namespace Enterprise {
+  type EnterpriseFinancing = 'NotYet' | 'AngelFinancing' | 'A' | 'B' | 'C' | 'D' | 'Listed' | 'NoNeed'
+  type EnterpriseSize ='LessThanFifteen' | 'FifteenToFifty' | 'FiftyToOneHundredFifty' | 'OneHundredFiftyToFiveHundreds' | 'FiveHundredsToTwoThousands' | 'MoreThanTwoThousands'
   interface BaseInfo {
     business_nature: 'ForeignVentures' | 'ForeignFundedEnterprises' | 'PrivateEnterprise' | 'StateOwnedEnterprises' | 'Extra';
     createdAt: string;
     enterprise_coordinates: number[];
-    enterprise_financing: 'NotYet' | 'AngelFinancing' | 'A' | 'B' | 'C' | 'D' | 'Listed' | 'NoNeed'
+    enterprise_financing: EnterpriseFinancing
     enterprise_loc_detail: string[]
     enterprise_logo: string
     enterprise_name: string
     enterprise_profile: string
-    enterprise_size: 'LessThanFifteen' | 'FifteenToFifty' | 'FiftyToOneHundredFifty' | 'OneHundredFiftyToFiveHundreds' | 'FiveHundredsToTwoThousands' | 'MoreThanTwoThousands'
+    enterprise_size: EnterpriseSize
     enterprise_welfare: string[]
     established_time: string
     extra_attribute: string
@@ -69,7 +71,8 @@ declare namespace Enterprise {
   }
 
   interface del_member_param{
-    workerId: number
+    workerId: number,
+    role: 'HR'| 'Teacher'|'Admin'|'None'
   }
 
   type overtimeWorkDegreeType = 'None'|'Paid'|'SomeTime'
