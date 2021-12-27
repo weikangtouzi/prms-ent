@@ -83,21 +83,22 @@ const Layouts = (props: PropsWithChildren<any>) => {
       // footerRender={() => <Footer />}
       disableContentMargin={false}
       menuItemRender={(item, dom) => {
-        return item.path === '/index' ? dom :
-          <a
+        return <a
             onClick={() => {
               setPathname(item.path || '/enterprise/info');
               history.push(item.path as string);
             }}
           >
             {/*<div className='menu_custom_item_way'>*/}
-            <div className={item.replace?'activeMenuItem menu_custom_item_way':'menu_custom_item_way'}>
+          {
+            item.path === '/index' ? dom : <div className={item.replace?'activeMenuItem menu_custom_item_way':'menu_custom_item_way'}>
               <span>
                 <MyIcon type={item.aIcon} className={'activeIcon'}/>
                 <MyIcon type={item.icon as any} className={'noActiveIcon'}/>
               </span>
               {dom}
             </div>
+          }
           </a>
 
       }}

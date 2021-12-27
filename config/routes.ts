@@ -75,7 +75,7 @@
             path: '/employ/search',
             name: '寻找人才',
             icon: 'icon-icon_xunzhaorencaioff1',
-            aIcon:'icon-icon_xiaoxizhongxinoff',
+            aIcon:'icon-icon_xunzhaorencaion1',
             component: './Employ/search.tsx',
           },
           {

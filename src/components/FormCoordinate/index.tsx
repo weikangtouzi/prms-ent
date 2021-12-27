@@ -18,6 +18,7 @@ const FormCoordinate: React.FC<{
   },[])
 
   const showInfoClick = useCallback((e)=>{
+    console.log(123)
     const lng = e.lnglat.getLng();
     const lat = e.lnglat.getLat();
     setCoordinate([lng,lat])

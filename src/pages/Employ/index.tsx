@@ -147,7 +147,7 @@ const Employ = () => {
       dataIndex: 'status',
       valueEnum: {
         '': { text: '全部', status: 'Default' },
-        NotPublishedYet: {
+        NotPublished: {
           text: '未发布',
         },
         OffLine: {

@@ -308,6 +308,8 @@ type MessagePage {
 "most of mutations needed token for authorization"
 type Mutation {
   AdminSetCensoredForAnItem(_id: String!, description: String, isPassed: Boolean): Void
+  "the file uploaded in this api goes to preludeDatas folder"
+  AdminUploadPreludeData(file: Upload!): String!
   "accept or reject an interview by id"
   CandidateAcceptOrRejectInterview(accept: Boolean!, interviewId: Int!): Void
   "insert or edit a education experience"
@@ -589,13 +591,6 @@ enum ActiveTime {
   Today
 }
 
-enum CustomFileType {
-  Charter
-  Other
-  Photo
-  Resume
-}
-
 "min education required for the job"
 enum EducationRequired {
   Doctor
@@ -780,7 +775,7 @@ input JobPost {
   "just a two value array which first value means the min one, second means the max"
   salary: [Int]!
   tags: [String]!
-  workingAddress: String!
+  workingAddress: [String]!
 }
 
 input LogIn {
@@ -841,7 +836,7 @@ input SendMessage {
 input UploadExtraAttributes {
   customFileName: String
   "checkout CustomFileType for value options"
-  customFileType: String
+  customFileType: CustomFileType
   customUploadPath: String
 }
 
@@ -905,6 +900,9 @@ scalar EnterpriseSize
 
 "enum EnterpriseRestRule {    OneDayOffPerWeekend,     TwoDayOffPerWeekend,     StaggerWeekends,    ShiftWork  }"
 scalar EnterpriseRestRule
+
+"enum CustomFileType {    Charter,    Resume,    Photo,    Other  }"
+scalar CustomFileType
 
 "enum {None, Failed, Passed, Waiting}"
 scalar EnterpriseIdentificationStatus
