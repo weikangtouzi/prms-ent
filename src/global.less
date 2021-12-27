@@ -26,17 +26,56 @@ body,
     transition: opacity ease .2s;
   }
 }
-.ant-pro-menu-item{
-  font-size: 15px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-
+.ant-menu-title-content{
+  .ant-pro-menu-item{
+    font-size: 15px;
+    font-weight: bold;
+    align-items: center;
+    display: flex;
+  }
 }
+
 .ant-pro-global-header-layout-mix {
   background-color: #fff;
   .anticon{
     color: rgba(0, 0, 0, 0.85);
+  }
+}
+.ant-menu-item-active{
+  .menu_custom_item_way{
+      .noActiveIcon{
+        display: none !important;
+      }
+      .activeIcon{
+        display: inline-block;
+      }
+  }
+}
+.menu_custom_item_way{
+  display: flex;
+  align-items: center;
+  padding-left: 13px;
+  .activeIcon{
+    display: none;
+  }
+  .anticon{
+    margin-left: 0 !important;
+  }
+  .ant-pro-menu-item-title{
+    margin-left: 8px;
+  }
+  &.activeMenuItem{
+    .activeIcon{
+      display: inline-block;
+    }
+    .noActiveIcon{
+      display: none;
+    }
+  }
+
+  >span{
+    display: flex;
+    align-items: center;
   }
 }
 .ant-pro-basicLayout-has-header{

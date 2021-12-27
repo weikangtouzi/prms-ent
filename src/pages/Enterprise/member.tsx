@@ -17,7 +17,9 @@ export default () => {
   const [invite_enterprise_member] = useMutation<void, Enterprise.invite_data>(invite_member)
   const [del_enterprise_member] = useMutation<void, Enterprise.del_member_param>(del_member)
   const [disable_member] = useMutation<void, {workerId: number}>(setMemberDisable)
-  const {refetch} = useQuery<ResultDataType<'UserGetEnterpriseDetail_WorkerList', Enterprise.member_info[]>>(get_enterprise_member, {skip: true})
+  const {refetch} = useQuery<ResultDataType<'UserGetEnterpriseDetail_WorkerList', Enterprise.member_info[]>>(get_enterprise_member, {
+    fetchPolicy:"network-only"
+  })
 
   const inviteMember = () => {
     setVisible(true)
@@ -169,7 +171,7 @@ export default () => {
           params,
         ) => {
           const res = await refetch();
-          const list = res.data.UserGetEnterpriseDetail_WorkerList
+          const list = res?.data.UserGetEnterpriseDetail_WorkerList
           const filterList = list.filter(item => {
             const name = params?.name?.trim() || ''
             const disabled = params?.disabled || 'all'

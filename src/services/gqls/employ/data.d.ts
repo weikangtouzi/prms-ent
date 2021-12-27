@@ -1,13 +1,16 @@
 declare namespace Employ {
+  type JobStatus = 'NotPublishedYet'|'InRecruitment'|'OffLine'
   type FullTime = 'Full'| 'Part'|'InternShip'
   type Education =
     'LessThanPrime'|'Primary'| 'Junior'| 'High'| 'JuniorCollege'| 'RegularCollege'|'Postgraduate'|'Doctor'
   interface JobDetail {
     address_coordinate?: string,
+    address_description: string[]
     category?: string[]
     comp_financing?: Enterprise.EnterpriseFinancing
     comp_name?: string,
     comp_size?: Enterprise.EnterpriseSize
+    createdAt: string
     emergency?: boolean,
     full_time_job?: FullTime
     hr_name?: string,
@@ -20,8 +23,11 @@ declare namespace Employ {
     min_experience: number
     min_salary: number
     ontop?: boolean
+    resumeCount: number
+    status: JobStatus
     tags:  string[]
-    title: string
+    title: string,
+    views: number
   }
 
   interface JobList {

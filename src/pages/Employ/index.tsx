@@ -1,4 +1,4 @@
-import {Avatar, Button, Modal, Select, Space} from "antd";
+import {Avatar, Button, Modal, Select, Space, Tooltip} from "antd";
 import type {ActionType, ProColumns} from "@ant-design/pro-table";
 import ProTable from "@ant-design/pro-table";
 import {ExclamationCircleOutlined, PlusOutlined} from "@ant-design/icons";
@@ -7,6 +7,7 @@ import {history} from "umi";
 import {useQuery} from "@apollo/client";
 import {GET_JOB_LIST} from "@/services/gqls/employ";
 import {get_enterprise_member} from "@/services/gqls/enterprise";
+import moment from "moment";
 
 
 const {confirm} = Modal;
@@ -38,11 +39,11 @@ const Employ = () => {
     });
   }
   const columns: ProColumns<Employ.JobDetail>[] = [
-    {
-      dataIndex: 'index',
-      valueType: 'indexBorder',
-      width: 48,
-    },
+    // {
+    //   dataIndex: 'index',
+    //   valueType: 'indexBorder',
+    //   width: 48,
+    // },
     {
       title: '职位名称',
       dataIndex: 'title',
@@ -58,15 +59,32 @@ const Employ = () => {
     },
     {
       title: '类型',
-      dataIndex: 'type',
+      dataIndex: 'category',
       ellipsis: true,
-      hideInSearch: true
+      hideInSearch: true,
+      render:(_,r)=>{
+        return r.category?r.category[r.category.length-1]:'-'
+      }
     },
     {
       title: '地区',
-      dataIndex: 'loc',
-      ellipsis: true,
-      hideInSearch: true
+      dataIndex: 'address_description',
+      ellipsis: {
+        showTitle:false
+      },
+      hideInSearch: true,
+      render: (_,r)=>{
+        const desc = r.address_description || []
+        if(desc.length>3){
+          const add =  desc.slice(3).join('-')
+          return <Tooltip placement="topLeft" title={add}>
+            {add}
+          </Tooltip>
+        }
+        else{
+          return  '--'
+        }
+      },
     },
     {
       title: '学历要求',
@@ -116,24 +134,39 @@ const Employ = () => {
     },
     {
       title: '浏览数',
-      dataIndex: 'look_number',
+      dataIndex: 'views',
       hideInSearch: true,
     },
     {
       title: '简历数',
-      dataIndex: 'resume_number',
+      dataIndex: 'resumeCount',
       hideInSearch: true,
     },
     {
       title: '状态',
       dataIndex: 'status',
+      valueEnum: {
+        '': { text: '全部', status: 'Default' },
+        NotPublishedYet: {
+          text: '未发布',
+        },
+        OffLine: {
+          text: '已下线',
+          status: 'Error',
+          disabled: true,
+        },
+        InRecruitment: {
+          text: '招聘中',
+          status: 'Processing',
+        },
+      },
     },
     {
       title: '发布人',
       dataIndex: 'hr_name',
       render: (_, r) => {
         return <Space>
-          <Avatar src="https://joeschmoe.io/api/v1/random" size={"small"}/>{r.hr_name}
+          <Avatar src={r.logo} size={"small"}/>{r.hr_name}
         </Space>
       },
       renderFormItem: (_, { type, defaultRender, formItemProps, fieldProps, ...rest }, form) => {
@@ -160,8 +193,9 @@ const Employ = () => {
     },
     {
       title: '上线时间',
-      dataIndex: 'publishTime',
-      hideInSearch: true
+      dataIndex: 'createdAt',
+      hideInSearch: true,
+      render:(_,r)=>moment(r.createdAt).format("YYYY-MM-DD HH:mm:ss")
     },
 
     {

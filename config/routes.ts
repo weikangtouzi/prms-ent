@@ -44,7 +44,8 @@
           {
             path: '/employ/position',
             name: '职位管理',
-            icon: 'smile',
+            icon: 'icon-icon_zhiweiguanlioff1',
+            aIcon:'icon-icon_zhiweiguanlion1',
             routes: [
               {
                 path: '/employ/position',
@@ -69,22 +70,26 @@
               },
             ],
           },
-          {
-            path: '/employ/people',
-            name: '人才管理',
-            icon: 'smile',
-            component: './Employ/people.tsx',
-          },
+
           {
             path: '/employ/search',
             name: '寻找人才',
-            icon: 'smile',
+            icon: 'icon-icon_xunzhaorencaioff1',
+            aIcon:'icon-icon_xiaoxizhongxinoff',
             component: './Employ/search.tsx',
+          },
+          {
+            path: '/employ/people',
+            name: '人才管理',
+            icon: 'icon-icon_rencaiguanlioff',
+            aIcon:'icon-icon_rencaiguanlion1',
+            component: './Employ/people.tsx',
           },
           {
             path: '/employ/recruitment',
             name: '招聘会记录',
-            icon: 'smile',
+            icon: 'icon-icon_zhaopinhuijiluoff',
+            aIcon:'icon-icon_zhaopinhuijiluon',
             component: './Employ/recruitment.tsx',
           },
         ],
@@ -97,13 +102,15 @@
           {
             path: '/enterprise/info',
             name: '企业信息',
-            icon: 'smile',
+            icon: 'icon-icon_qiyexinxioff',
+            aIcon:'icon-icon_qiyexinxion',
             component: './Enterprise/index.tsx',
           },
           {
             path: '/enterprise/member',
             name: '成员管理',
-            icon: 'smile',
+            icon: 'icon-icon_chengyuanguanlioff',
+            aIcon:'icon-icon_chengyuanguanlion',
             component: './Enterprise/member.tsx',
           },
           // {
@@ -129,20 +136,22 @@
           {
             path: '/userinfo/index',
             name: '我的资料',
-            icon: 'smile',
+            icon: 'icon-icon_wodeziliaooff',
+            aIcon:'icon-icon_wodeziliaoon1',
             component: './user/info/index.tsx',
           },
         ],
       },
       {
         name: '系统通知',
-        icon: 'icon-icon_xitongtongzhi',
+        icon: 'icon-icon_xitongtongzhi1',
         path: '/message',
         routes: [
           {
             path: '/message/index',
             name: '消息中心',
-            icon: 'smile',
+            icon: 'icon-icon_xiaoxizhongxinoff',
+            aIcon:'icon-icon_xiaoxizhongxinon1',
             component: './message/index.tsx',
           },
         ],

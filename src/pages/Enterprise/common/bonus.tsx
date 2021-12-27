@@ -103,7 +103,7 @@ const Bonus = (props: BonusProps) => {
             <Radio.Group>
               <Radio value="TwoDayOffPerWeekend">周末双休</Radio>
               <Radio value="OneDayOffPerWeekend">单休</Radio>
-              <Radio value="ShiftWork">排版轮休</Radio>
+              <Radio value="ShiftWork">排班轮休</Radio>
             </Radio.Group>
           </Form.Item>
           <Form.Item name="overtimeWorkDegree" label="加班情况">

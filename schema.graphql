@@ -6,6 +6,8 @@ schema {
   subscription: Subscription
 }
 
+union ContractItem = Contract | Talent
+
 "make it available when different thing happens in same query"
 union InterviewData = EnterpriseUserSideInterviewData | PersonalUserSideInterviewData
 
@@ -188,10 +190,12 @@ type InterviewSchedule {
 "for list query"
 type JobDataBriefly {
   address_coordinate: String!
+  address_description: [String]!
   category: [String]!
   comp_financing: EnterpriseFinancing!
   comp_name: String!
   comp_size: EnterpriseSize!
+  createdAt: String!
   emergency: Boolean!
   full_time_job: FullTime!
   hr_name: String!
@@ -204,8 +208,11 @@ type JobDataBriefly {
   min_experience: Int!
   min_salary: Int!
   ontop: Boolean!
+  resumeCount: Int!
+  status: JobStatus!
   tags: [String]!
   title: String!
+  views: Int!
 }
 
 type JobDataForHRDetailPageOrEntJobList {
@@ -232,7 +239,7 @@ type JobDataForJobDetailPage {
   salaryExpected: [Int]!
   tags: [String]
   title: String!
-  updatedAt: String!
+  updated_at: String!
 }
 
 type JobDetailPageReply {
@@ -266,6 +273,7 @@ type JobSimpifiedDataPageView {
 type LoginResult {
   "the very first time the user is created"
   createdAt: String!
+  id: Int!
   "jwt token for the user, expiresIn 60 minutes"
   token: String!
   "maybe become nullable in the future"
@@ -438,7 +446,7 @@ type Query {
   "just tests"
   TestShowDatas(lastIndex: String, pageSize: Int): [PersonalDataView]!
   UserGetBasicInfo: UserBasicInfo!
-  UserGetContractList: [Contract]!
+  UserGetContractList: [ContractItem]!
   UserGetEnterpriseDetail_EntInfo(entId: Int): EnterpriseInfoForEntDetail!
   UserGetEnterpriseDetail_WorkerList(entId: Int, role: EnterpriseRole): [WorkerInfoForWorkerList]!
   UserGetJobListByEntId(category: [String], entId: Int, page: Int, pageSize: Int, status: JobStatus, title: String, workerId: Int): JobListForHRDetailPageOrEntJobList!
@@ -466,7 +474,7 @@ type ResumeData {
   employmentNature: String!
   jobExpectation: JobExpectation!
   "checkout ResumeJobStatus type for value options"
-  jobStatus: String!
+  jobStatus: ResumeJobStatus!
   personalAdvantage: String!
   personalData: ResumePersonalData!
   projectExperience: [ResumeProExp]
@@ -519,6 +527,25 @@ type SearchApplicantsResult {
 type Subscription {
   newContract: Contract!
   newMessage: Message!
+}
+
+type Talent {
+  age: Int
+  city_expectation: String!
+  exp: Int
+  gender: Boolean
+  id: Int!
+  "some api not having this"
+  job: String
+  job_category_expectation: [String]!
+  job_status: ResumeJobStatus!
+  last_log_out_time: String
+  last_msg: String!
+  last_msg_time: String!
+  logo: String!
+  "may not be the real name"
+  name: String!
+  salary_expectations: [Int]!
 }
 
 type Town {
@@ -606,19 +633,6 @@ enum ResumeEmployNature {
   MoreThanOneMonth
 }
 
-enum ResumeJobStatus {
-  "应届生"
-  GraduatingStudent
-  "不想找工作的无业游民"
-  NoJobButNoJob
-  "离职状态的求职者"
-  NoJobButWantJob
-  "有工作，但无求职意向"
-  OnTheJob
-  "准备跳槽下家的在职者"
-  OnTheJobButLookingForAJob
-}
-
 input ApplicantFilter {
   "checkout ActiveTime type for value options"
   activeTime: String
@@ -631,7 +645,7 @@ input ApplicantFilter {
   "true means male, sorry for female people"
   gender: Boolean
   "checkout ResumeJobStatus type for value options"
-  jobStatus: String
+  jobStatus: ResumeJobStatus
   max_salary: Int
   min_salary: Int
   token: String!
@@ -873,6 +887,9 @@ scalar EnterpriseOvertime
 
 "enum {Full,        Part,        InternShip}"
 scalar FullTime
+
+"enum ResumeJobStatus {    不想找工作的无业游民    NoJobButNoJob,    离职状态的求职者    NoJobButWantJob,    有工作，但无求职意向    OnTheJob,     准备跳槽下家的在职者    OnTheJobButLookingForAJob,    应届生    GraduatingStudent  }"
+scalar ResumeJobStatus
 
 "enum {    PersonalUser,    EnterpriseUser,    Administrator,    Counselor,  }"
 scalar Identity

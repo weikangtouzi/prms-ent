@@ -14,8 +14,15 @@ export const GET_JOB_LIST = gql`
          max_salary,
          min_education,
          min_experience,
+         address_description,
          category,
-         hr_name
+         hr_name,
+         views,
+         logo,
+         ontop,
+         resumeCount,
+         status,
+         createdAt
        }
       }
     }

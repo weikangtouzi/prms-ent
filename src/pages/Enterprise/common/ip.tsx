@@ -41,7 +41,7 @@ const Ip = (props: {extraData: string|undefined}) => {
           <Form.Item
             name="videos"
             label="企业视频"
-            extra="只支持.mp4格式(总后台审核,最多5张)"
+            extra="只支持.mp4格式(总后台审核,最多5个)"
           >
             <MultipleUpload max={5} accept='video/*'/>
           </Form.Item>

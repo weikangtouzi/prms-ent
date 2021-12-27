@@ -1,5 +1,6 @@
 import {Button, Card, Cascader, Col, Form, Input, InputNumber, Row, Select, Space} from "antd";
 import {formItemLayout, tailFormItemLayout} from "@/common/js/config";
+import FormSingleTree from "@/components/FormSingleTree";
 import {useLayoutEffect} from "react";
 import styles from './index.less';
 
@@ -109,11 +110,7 @@ const Publish = () => {
           scrollToFirstError
         >
           <Form.Item name="type" label="类型">
-            <Select options={[
-              {value:'product',label:'产品'},
-              {value:'dev',label:'开发'},
-              {value:'design',label:'设计'},
-            ]}/>
+           <FormSingleTree url={'/job.json'}/>
           </Form.Item>
           <Form.Item
             name="title"
