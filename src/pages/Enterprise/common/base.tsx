@@ -33,8 +33,8 @@ const Base = (props: Enterprise.InfoProps) => {
   const onFinish = (values: Enterprise.InfoProps) => {
     const detail = values?.detail_address? [values.detail_address] : []
     console.log(values)
-    const loc = values.enterprise_loc_detail && values.enterprise_loc_detail.length===3?
-                values.enterprise_loc_detail.map(n=>String(n)):[]
+    const loc = values.enterprise_loc_detail && values.enterprise_loc_detail.length>=3?
+                values.enterprise_loc_detail.slice(0,3).map(n=>String(n)):[]
     Edit_Enterprise_BaseInfo({
       variables:{
         info:{

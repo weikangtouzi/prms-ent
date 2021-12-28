@@ -34,4 +34,20 @@ declare namespace Employ {
     count: number,
     data: JobDetail[]
   }
+
+  interface jobDetailForUpdate{
+    category: string[]
+    coordinates: number[]
+    description: string
+    education: Education
+    experience: number
+    isFullTime: FullTime
+    jobTitle: string
+    onLineTimes?: string[]
+    publishNow: boolean
+    requiredNum: number
+    salary: number[]
+    tags?: string[]
+    workingAddress: string[]
+  }
 }

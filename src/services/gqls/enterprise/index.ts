@@ -86,6 +86,13 @@ export const setMemberDisable = gql`
   }
 `
 
+// 解禁成员
+export const setMemberEnabled = gql`
+  mutation entSetEnabled($id:Int!){
+    ENTSetEnabled(id: $id)
+  }
+`
+
 // 邀请成员
 export const invite_member = gql`
   mutation invite_member($phoneNumber:String!,$role:String!) {

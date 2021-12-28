@@ -83,6 +83,11 @@ type CountyWithChildren {
   name: String!
 }
 
+type EntListForSearchResult {
+  count: Int!
+  data: [EnterpriseInfoForEntDetail]!
+}
+
 "if the status is Failed, will get the other three fields"
 type EnterpriseIdentification {
   charter: String
@@ -339,6 +344,8 @@ type Mutation {
   ENTRecruitmentApply(recruitmentId: Int!, size: String): Void
   ENTRemoveWorker(role: EnterpriseRole!, workerId: Int!): Void
   ENTSetDisabled(workerId: Int!): Void
+  ENTSetEnabled(id: Int!): Void
+  HREditJob(info: JobEdit!): Void
   "end a iterview with the description, need to tell the interview is passed or not, most of time the description is about some special situation"
   HREndInterview(description: String, interviewId: Int!, ispassed: Boolean!): Void
   HRHideJob(jobId: Int!): Void
@@ -437,7 +444,7 @@ type Query {
   StaticGetCities(provinceId: String!): [City]!
   "get all counties of the given city"
   StaticGetCounties(cityId: String!): [County]!
-  StaticGetHotJobs: Void
+  StaticGetHotJobs(category: String!): Void
   "get Province data"
   StaticGetProvinces: [Province]
   "get all town of the given county"
@@ -458,6 +465,7 @@ type Query {
   UserLogIn(info: LogIn!): LoginResult!
   "check if the input num is availiable or not"
   UserNumberCheck(num: String!): Boolean!
+  UserSearchEnterprise(keyword: String!, page: Int, pageSize: Int): EntListForSearchResult!
   UserVerifyCodeConsume(info: VerifyInfo): Void
 }
 
@@ -575,7 +583,7 @@ type UserBasicInfo {
 
 type WorkerInfoForWorkerList {
   createdAt: String
-  disabled: Boolean
+  disabled: DisabledLevel
   id: Int!
   logo: String!
   name: String!
@@ -591,11 +599,18 @@ enum ActiveTime {
   Today
 }
 
+enum DisabledLevel {
+  HIGH
+  LOW
+  MIDIUM
+}
+
 "min education required for the job"
 enum EducationRequired {
   Doctor
   High
   JuniorCollege
+  Null
   Postgraduate
   RegularCollege
 }
@@ -750,6 +765,24 @@ input EnterpriseWorkerInfo {
   role: EnterpriseRole!
 }
 
+input JobEdit {
+  category: [String]!
+  coordinates: [Float]!
+  description: String!
+  education: EducationRequired!
+  experience: Int!
+  id: Int!
+  isFullTime: FullTime!
+  jobTitle: String!
+  onLineTimes: [String]
+  publishNow: Boolean!
+  requiredNum: Int!
+  "just a two value array which first value means the min one, second means the max"
+  salary: [Int]!
+  tags: [String]!
+  workingAddress: [String]!
+}
+
 input JobFilter {
   category: [String]
   education: Education
@@ -764,12 +797,14 @@ input JobFilter {
 }
 
 input JobPost {
-  JobTitle: String!
+  category: [String]!
   coordinates: [Float]!
   description: String!
   education: EducationRequired!
   experience: Int!
   isFullTime: FullTime!
+  jobTitle: String!
+  onLineTimes: [String]
   publishNow: Boolean!
   requiredNum: Int!
   "just a two value array which first value means the min one, second means the max"

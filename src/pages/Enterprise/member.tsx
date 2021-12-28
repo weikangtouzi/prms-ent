@@ -6,7 +6,13 @@ import ProTable from '@ant-design/pro-table';
 import OptionModal from './memberParts/optionalModal'
 import InviteModal from "@/pages/Enterprise/memberParts/inviteModal";
 import {useQuery, useMutation} from "@apollo/client";
-import {get_enterprise_member, invite_member, del_member,setMemberDisable} from "@/services/gqls/enterprise";
+import {
+  get_enterprise_member,
+  invite_member,
+  del_member,
+  setMemberDisable,
+  setMemberEnabled
+} from "@/services/gqls/enterprise";
 import {defaultImage} from "@/common/js/const";
 import Moment from "moment";
 
@@ -17,6 +23,7 @@ export default () => {
   const [invite_enterprise_member] = useMutation<void, Enterprise.invite_data>(invite_member)
   const [del_enterprise_member] = useMutation<void, Enterprise.del_member_param>(del_member)
   const [disable_member] = useMutation<void, {workerId: number}>(setMemberDisable)
+  const [enable_member] = useMutation<void, {id: number}>(setMemberEnabled)
   const {refetch} = useQuery<ResultDataType<'UserGetEnterpriseDetail_WorkerList', Enterprise.member_info[]>>(get_enterprise_member, {
     fetchPolicy:"network-only"
   })
@@ -116,6 +123,17 @@ export default () => {
                 }
               }).then(()=>{
                 message.success('已禁用该用户').then()
+                actionRef.current?.reload()
+              }).catch(e=>{
+                message.error(e.graphQLErrors?.[0].message).then()
+              })
+            }else{
+              enable_member({
+                variables:{
+                  id:record.id
+                }
+              }).then(()=>{
+                message.success('已解封该用户').then()
                 actionRef.current?.reload()
               }).catch(e=>{
                 message.error(e.graphQLErrors?.[0].message).then()
