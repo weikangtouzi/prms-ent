@@ -36,6 +36,7 @@ declare namespace Employ {
   }
 
   interface jobDetailForUpdate{
+    id?: string,
     category: string[]
     coordinates: number[]
     description: string

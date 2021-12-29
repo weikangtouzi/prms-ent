@@ -35,8 +35,9 @@ const Publish = () => {
         }
       }
     }).then(()=>{
-      message.success('发布成功').then()
-      form.resetFields()
+      message.success('发布职位成功').then()
+      history.back()
+      // form.resetFields()
     }).catch(e=>{
       message.error(e.graphQLErrors?.[0].message).then()
     })

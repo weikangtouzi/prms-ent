@@ -69,6 +69,7 @@ const Employ = () => {
     {
       title: '地区',
       dataIndex: 'address_description',
+      width:200,
       ellipsis: {
         showTitle:false
       },
@@ -76,7 +77,7 @@ const Employ = () => {
       render: (_,r)=>{
         const desc = r.address_description || []
         if(desc.length>3){
-          const add =  desc.slice(3).join('-')
+          const add =  desc.slice(3,6).join('-')
           return <Tooltip placement="topLeft" title={add}>
             {add}
           </Tooltip>
