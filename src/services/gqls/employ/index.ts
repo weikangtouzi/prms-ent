@@ -37,8 +37,8 @@ export const PUBLISH_JOB = gql`
 `
 
 // 根据id获取岗位详情
-export const GET_JOB_BY_ID = gql`
-`
+// export const GET_JOB_BY_ID = gql`
+// `
 
 // 修改岗位信息
 export const EDIT_JOB = gql`

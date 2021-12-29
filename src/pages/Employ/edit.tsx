@@ -1,24 +1,29 @@
 import {Button, Card, Form, Input, InputNumber, message, Select, Space} from "antd";
 import {formItemLayout, tailFormItemLayout} from "@/common/js/config";
+
 import FormSingleTree from "@/components/FormSingleTree";
 import styles from './index.less';
 import FormCascade from "@/components/formCascade";
 import FormCoordinate from "@/components/FormCoordinate";
 import {ProFormDateRangePicker, ProFormSwitch} from "@ant-design/pro-form";
 import {useMutation} from "@apollo/client";
-import {PUBLISH_JOB} from "@/services/gqls/employ";
+import {EDIT_JOB} from "@/services/gqls/employ";
+import { useLocation } from 'umi';
 
 const Edit = () => {
   const [form] = Form.useForm();
-
-  const [publishJob]=  useMutation<void,{info: Employ.jobDetailForUpdate}>(PUBLISH_JOB)
+  const location = useLocation();
+  // @ts-ignore
+  const {id} = location.query
+  const [editJob]=  useMutation<void,{info: Employ.jobDetailForUpdate}>(EDIT_JOB)
 
   const onFinish = (values: any) => {
     console.log('Received values of form: ', values);
     const times =  values.times && values.times.length===2 ? [values.times[0].toISOString(),values.times[1].toISOString()]: undefined
-    publishJob({
+    editJob({
       variables:{
         info:{
+          id:id,
           jobTitle:values.jobTitle,
           category:values.category,
           isFullTime:values.isFullTime,
