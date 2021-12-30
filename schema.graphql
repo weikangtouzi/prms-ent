@@ -423,8 +423,6 @@ type Query {
   CandidateGetHRDetail_HRInfo(hrId: Int): HRInfoForHRDetailPage!
   CandidateGetHRDetail_JobListPageView(hrId: Int!, page: Int, pageSize: Int): JobListForHRDetailPageOrEntJobList!
   CandidateGetHRDetail_RecommendationsList(hrId: Int!): RecommendationsListForHRDetailPage!
-  "get job data by id"
-  CandidateGetJob(jobid: Int): JobDetailPageReply!
   CandidateGetJobList(filter: JobFilter): JobSimpifiedDataPageView!
   "detail page for interview"
   CommonGetIterviewDetail(interviewId: Int!): InterviewDetail
@@ -434,6 +432,7 @@ type Query {
   CommonGetResume(cacheId: String, resumeId: Int): ResumeData!
   ENTCheckEnterpriseIdentification: EnterpriseIdentification!
   ENTPrecheckForInviteWorkMate(phoneNumber: String): WorkerMatePrecheckResult!
+  ENTSearchCandidates(education: String, expectation: String, page: Int, pageSize: Int, salary: [Int], sortByUpdatedTime: Boolean): TalentListForSearchResult!
   "get applicant by conditions, null for no limitation, null when no matched data"
   HRGetApplicants(filter: ApplicantFilter): SearchApplicantsResult
   "true means already inserted"
@@ -458,6 +457,7 @@ type Query {
   UserGetContractList: [ContractItem]!
   UserGetEnterpriseDetail_EntInfo(entId: Int): EnterpriseInfoForEntDetail!
   UserGetEnterpriseDetail_WorkerList(entId: Int, role: EnterpriseRole): [WorkerInfoForWorkerList]!
+  UserGetJob(jobid: Int): JobDetailPageReply!
   UserGetJobListByEntId(category: [String], entId: Int, page: Int, pageSize: Int, status: JobStatus, title: String, workerId: Int): JobListForHRDetailPageOrEntJobList!
   "if page not provided it will be 0,for pageSize it will be 10"
   UserGetMessages(page: Int, pageSize: Int, targetId: Int!): MessagePage
@@ -556,6 +556,25 @@ type Talent {
   "may not be the real name"
   name: String!
   salary_expectations: [Int]!
+}
+
+type TalentDataForSearchResult {
+  age: Int
+  aimed_city: String!
+  education: Education
+  experience: Int
+  gender: Boolean
+  id: Int!
+  job_expectation: [String]!
+  job_status: ResumeJobStatus!
+  last_log_out_time: String!
+  name: String!
+  salary: [Int]!
+}
+
+type TalentListForSearchResult {
+  count: Int!
+  data: [TalentDataForSearchResult]!
 }
 
 type Town {

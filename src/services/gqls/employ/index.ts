@@ -1,6 +1,6 @@
 import {gql} from '@apollo/client';
 
-// 获取企业简要信息
+// 获取职位信息
 export const GET_JOB_LIST = gql`
   query get_job_list($page:Int,$pageSize:Int,$title: String,$status: JobStatus,$workerId: Int) {
     UserGetJobListByEntId(page:$page,pageSize: $pageSize,title:$title,status: $status,workerId: $workerId,) {
@@ -45,4 +45,26 @@ export const EDIT_JOB = gql`
   mutation edit_job($info:JobEdit!){
     HREditJob(info:$info)
   }
+`
+
+// 寻找人才列表
+export const GET_SEARCHER_LIST = gql`
+   query get_searcher_list($page:Int,$pageSize:Int,$education: String,$salary: [Int]){
+     ENTSearchCandidates(page:$page,pageSize: $pageSize,education: $education,salary:$salary,sortByUpdatedTime:false){
+       count,
+       data{
+         age,
+         aimed_city,
+         education,
+         experience,
+         gender,
+         id,
+         name,
+         salary,
+         job_expectation,
+         job_status,
+         last_log_out_time,
+       }
+     }
+   }
 `

@@ -1,6 +1,7 @@
 declare namespace Employ {
   type JobStatus = 'NotPublishedYet'|'InRecruitment'|'OffLine'
   type FullTime = 'Full'| 'Part'|'InternShip'
+  type ResumeJobStatus = 'NoJobButNoJob' | 'NoJobButWantJob' | 'OnTheJob' |'OnTheJobButLookingForAJob'|'GraduatingStudent'
   type Education =
     'LessThanPrime'|'Primary'| 'Junior'| 'High'| 'JuniorCollege'| 'RegularCollege'|'Postgraduate'|'Doctor'
   interface JobDetail {
@@ -50,5 +51,23 @@ declare namespace Employ {
     salary: number[]
     tags?: string[]
     workingAddress: string[]
+  }
+  interface jobHunter{
+    age: number,
+    aimed_city: string,
+    education: Education,
+    experience: number,
+    gender: boolean,
+    id: number,
+    job_expectation: string[],
+    job_status: ResumeJobStatus,
+    last_log_out_time: string,
+    name: string
+    salary: number[]
+  }
+
+  interface JobHunterList {
+    count: number,
+    data: jobHunter[]
   }
 }
