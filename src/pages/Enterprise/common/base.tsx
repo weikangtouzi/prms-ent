@@ -124,7 +124,8 @@ const Base = (props: Enterprise.InfoProps) => {
             name="industry_involved"
             label="所在行业"
           >
-            <FormSingleTree url='/industry.json'/>
+            {/*<FormSingleTree url='/industry.json'/>*/}
+            <FormSingleTree url='https://be.chenzaozhao.com/preludeDatas/industry_category.json'/>
           </Form.Item>
           <ProFormSelect
             options={[

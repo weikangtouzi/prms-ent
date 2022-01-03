@@ -64,7 +64,8 @@ const Edit = () => {
         <Form.Item name="category" label="类型" rules={[
           {required:true,message:'请选择职位类型'}
         ]}>
-          <FormSingleTree url={'/job.json'}/>
+          {/*<FormSingleTree url={'/job.json'}/>*/}
+          <FormSingleTree url={'https://be.chenzaozhao.com/preludeDatas/job_category.json'}/>
         </Form.Item>
         <Form.Item
           name="jobTitle"
