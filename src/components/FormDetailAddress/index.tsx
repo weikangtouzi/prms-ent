@@ -2,27 +2,29 @@ import {Button, Col, Input, Row,} from "antd";
 import React, {useCallback, useRef, useState} from "react";
 import {useEffect} from "react";
 
-const FormCoordinate: React.FC<{
+const FormDetailAddress: React.FC<{
   value?: (number|undefined)[];
   onChange?: (value: number|undefined[]) => void;
 }>  = ({value,onChange}) => {
   const searchRef = useRef<any>(null)
   const [searchWord,setSearchword] = useState('')
+  const [doorName,setDoorName] = useState('')
   const [coordinate,setCoordinate] = useState<(number|undefined)[]>(()=>{
     return value && value.length>1?value:[undefined,undefined]
   })
 
   const  select  = useCallback((e)=>{
     searchRef?.current?.setCity(e.poi.adcode);
+    // setSearchword(e.poi.name)
     searchRef.current?.search(e.poi.name); //关键字查询查询
+    setCoordinate([e.poi.location.lng,e.poi.location.lat,])
   },[])
 
   const showInfoClick = useCallback((e)=>{
-    console.log(123)
-    const lng = e.lnglat.getLng();
-    const lat = e.lnglat.getLat();
-    setCoordinate([lng,lat])
-    onChange?.([lng,lat])
+    // const lng = e.lnglat.getLng();
+    // const lat = e.lnglat.getLat();
+    // setCoordinate([lng,lat])
+    // onChange?.([lng,lat])
   },[])
 
   useEffect(() => {
@@ -45,45 +47,30 @@ const FormCoordinate: React.FC<{
       const lng = e.data.location.lng;
       const lat = e.data.location.lat;
       setCoordinate([lng,lat])
+      setSearchword(e.data.address)
     }
 
     AMap.event.addListener(auto, 'select', select);
     AMap.event.addListener(searchRef.current, 'markerClick', searchClick);
-    map.on('click', showInfoClick);
+    // map.on('click', showInfoClick);
     return () => {
-      map.off('click', showInfoClick);
+      // map.off('click', showInfoClick);
       AMap.event.removeListener(auto, 'select', select);
       AMap.event.removeListener(searchRef.current, 'markerClick', searchClick);
     };
   },[]);
-
-  const search = ()=>{
-    searchRef.current?.search('北京'); //关键字查询查询
-  }
   return <>
-    <div style={{marginBottom:'12px'}}>
-      <Input placeholder="经度"
-             value={coordinate[0]}
-             style={{display: 'inline-block', width: 'calc(50% - 8px)',marginRight:'16px'}}
-      />
-      <Input
-        placeholder="纬度"
-        value={coordinate[1]}
-        style={{display: 'inline-block', width: 'calc(50% - 8px)'}}
-      />
-    </div>
-
-    {/*<Row style={{marginBottom: '10px'}}>*/}
-    {/*  <Col span={20}>*/}
-    {/*    <Input id="keywordAdd" placeholder='输入地址搜索' autoComplete={'off'} value={searchWord} onChange={(e)=>setSearchword(e.target.value)}/>*/}
-    {/*  </Col>*/}
-    {/*  <Col span={4} style={{textAlign: 'right'}}>*/}
-    {/*    <Button type={'primary'} onClick={search}>搜索</Button>*/}
-    {/*  </Col>*/}
-    {/*</Row>*/}
+    <Row style={{marginBottom: '10px'}} gutter={8}>
+      <Col span={16}>
+        <Input  placeholder='请点击选择地图上的位置' autoComplete={'off'} value={searchWord}/>
+      </Col>
+      <Col span={8} style={{textAlign: 'right'}}>
+        <Input placeholder='楼层门牌号' autoComplete={'off'} value={doorName} onChange={(e)=>setDoorName(e.target.value)}/>
+      </Col>
+    </Row>
     <div id="container" style={{width: '100%', height: '250px'}}/>
     <Input id="keywordAdd"  autoComplete={'off'}  style={{position:'absolute',top:'50px',right:'8px',width:'180px'}}  placeholder='输入地址搜索'/>
   </>
 }
 
-export default FormCoordinate;
+export default FormDetailAddress;

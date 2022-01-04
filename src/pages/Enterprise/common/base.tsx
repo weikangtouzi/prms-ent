@@ -1,4 +1,4 @@
-import {Form, Input, Button, Card, message} from 'antd';
+import {Form, Input, Button, Card, message, Row, Col} from 'antd';
 import {tailFormItemLayout, formItemLayout} from '@/common/js/config';
 import {ProFormDatePicker, ProFormSelect, ProFormText, ProFormTextArea} from "@ant-design/pro-form";
 import FormCascade from "@/components/formCascade";
@@ -7,6 +7,7 @@ import FormSingleTree from "@/components/FormSingleTree";
 import {useMutation} from "@apollo/client";
 import {editEnterpriseBaseInfo} from "@/services/gqls/enterprise";
 import FormCoordinate from "@/components/FormCoordinate";
+// import FormDetailAddress from "@/components/FormDetailAddress";
 
 const Base = (props: Enterprise.InfoProps) => {
   const {
@@ -221,9 +222,19 @@ const Base = (props: Enterprise.InfoProps) => {
             <Form.Item name="enterprise_loc_detail"  >
               <FormCascade/>
             </Form.Item>
-            <Form.Item name="detail_address" >
-              <Input placeholder="请输入详细地址"/>
-            </Form.Item>
+            <Row gutter={8}>
+              <Col span={16}>
+                <Form.Item name="detail_address" >
+                  <Input placeholder="请输入详细地址"/>
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item name="door" >
+                  <Input placeholder="楼层门牌号"/>
+                </Form.Item>
+              </Col>
+            </Row>
+
           </Form.Item>
 
           <Form.Item label="公司定位" name='enterprise_coordinates'>
