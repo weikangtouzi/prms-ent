@@ -1,4 +1,4 @@
-import {Button, Card, Form, Input, InputNumber, message, Select, Space} from "antd";
+import {Button, Card, Col, Form, Input, InputNumber, message, Row, Select, Space} from "antd";
 import {formItemLayout, tailFormItemLayout} from "@/common/js/config";
 import FormSingleTree from "@/components/FormSingleTree";
 import styles from './index.less';
@@ -30,7 +30,7 @@ const Publish = () => {
           publishNow:values.publishNow,
           tags:[],
           salary:[Number(values.min),Number(values.max)],
-          workingAddress:[...values.enterprise_loc_detail,values.detail_address],
+          workingAddress:[...values.enterprise_loc_detail,values.detail_address,values.door],
           onLineTimes:times,
         }
       }
@@ -140,9 +140,18 @@ const Publish = () => {
             >
               <FormCascade/>
             </Form.Item>
-            <Form.Item name="detail_address" >
-              <Input placeholder="请输入详细地址"/>
-            </Form.Item>
+            <Row gutter={8}>
+              <Col span={16}>
+                <Form.Item name="detail_address" >
+                  <Input placeholder="请输入详细地址"/>
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item name="door" >
+                  <Input placeholder="楼层门牌号"/>
+                </Form.Item>
+              </Col>
+            </Row>
           </Form.Item>
 
           <Form.Item label="地址定位" name='coordinates'

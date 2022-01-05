@@ -23,7 +23,8 @@ declare namespace Enterprise {
     tel: string
     work_time: string,
     abbreviation: string,
-    detail_address?: string
+    detail_address?: string,
+    door?: string
   }
 
   interface EditEnterpriseBasicInfo{

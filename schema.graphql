@@ -65,6 +65,13 @@ type CompInfoForJobDetailPage {
 type Contract {
   ent: String
   id: Int!
+  """
+
+  some api not having this
+  using Void because the type not settled yet
+  Void will represent any value
+  """
+  job: Void
   last_msg: String!
   last_msg_time: String!
   logo: String!
@@ -115,7 +122,7 @@ type EnterpriseInfoForEntDetail {
   job_counter: Int
   overtime_work_degree: String
   rest_rule: String
-  tags: [String]!
+  tags: [String]
   tel: String
   work_time: String
 }
@@ -431,6 +438,7 @@ type Query {
   "get resume data, if cache id exists then will return the cache data, cache expired every 30 minutes"
   CommonGetResume(cacheId: String, resumeId: Int): ResumeData!
   ENTCheckEnterpriseIdentification: EnterpriseIdentification!
+  ENTGetCandidatesWithInterviewStatus(education: String, expectation: String, page: Int, pageSize: Int, salary: [Int], sortByUpdatedTime: Boolean, status: InterviewStatus): TalentListForSearchResult!
   ENTPrecheckForInviteWorkMate(phoneNumber: String): WorkerMatePrecheckResult!
   ENTSearchCandidates(education: String, expectation: String, page: Int, pageSize: Int, salary: [Int], sortByUpdatedTime: Boolean): TalentListForSearchResult!
   "get applicant by conditions, null for no limitation, null when no matched data"
@@ -461,6 +469,7 @@ type Query {
   UserGetJobListByEntId(category: [String], entId: Int, page: Int, pageSize: Int, status: JobStatus, title: String, workerId: Int): JobListForHRDetailPageOrEntJobList!
   "if page not provided it will be 0,for pageSize it will be 10"
   UserGetMessages(page: Int, pageSize: Int, targetId: Int!): MessagePage
+  UserGetRecruitmentList(appointment: Boolean, keyword: String, page: Int, pageSize: Int): Void
   "api for login"
   UserLogIn(info: LogIn!): LoginResult!
   "check if the input num is availiable or not"
@@ -545,8 +554,13 @@ type Talent {
   exp: Int
   gender: Boolean
   id: Int!
-  "some api not having this"
-  job: String
+  """
+
+  some api not having this
+  using Void because the type not settled yet
+  Void will represent any value
+  """
+  job: Void
   job_category_expectation: [String]!
   job_status: ResumeJobStatus!
   last_log_out_time: String
@@ -565,11 +579,20 @@ type TalentDataForSearchResult {
   experience: Int
   gender: Boolean
   id: Int!
+  """
+
+  some api not having this
+  using Void because the type not settled yet
+  Void will represent any value
+  """
+  job: Void
   job_expectation: [String]!
   job_status: ResumeJobStatus!
   last_log_out_time: String!
   name: String!
+  personal_advantage: String
   salary: [Int]!
+  skills: [String]
 }
 
 type TalentListForSearchResult {
@@ -645,6 +668,12 @@ enum InterviewProcess {
   Started
   "Waiting is a status that stands for waiting applicant to accept this invitation"
   Waiting
+}
+
+enum InterviewStatus {
+  Failed
+  Passed
+  Waitting
 }
 
 enum ResumeEmployNature {
@@ -882,6 +911,12 @@ input ResetPassword {
 }
 
 input SendMessage {
+  """
+
+  this just works when two user is hr and candidate
+  will be skiped when user is other identities
+  """
+  jobId: Int
   messageContent: String!
   messageType: MessageType!
   to: Int!

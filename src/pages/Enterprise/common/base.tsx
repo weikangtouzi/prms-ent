@@ -28,11 +28,13 @@ const Base = (props: Enterprise.InfoProps) => {
   const [form] = Form.useForm();
 
   const loc_format = enterprise_loc_detail && enterprise_loc_detail.length>=3?enterprise_loc_detail.slice(0,3):[]
-  const detail_format =  enterprise_loc_detail && enterprise_loc_detail.length>=1?enterprise_loc_detail.slice(-1)[0]:''
+  const detail_format =  enterprise_loc_detail && enterprise_loc_detail.length>=1?enterprise_loc_detail.slice(-2)[0]:''
+  const door_format =  enterprise_loc_detail && enterprise_loc_detail.length>=4?enterprise_loc_detail.slice(-1)[0]:''
   const [Edit_Enterprise_BaseInfo] = useMutation<void,{info: Enterprise.EditEnterpriseBasicInfo}>(editEnterpriseBaseInfo)
 
   const onFinish = (values: Enterprise.InfoProps) => {
     const detail = values?.detail_address? [values.detail_address] : []
+    const door  = values?.door?[values.door] : []
     console.log(values)
     const loc = values.enterprise_loc_detail && values.enterprise_loc_detail.length>=3?
                 values.enterprise_loc_detail.slice(0,3).map(n=>String(n)):[]
@@ -51,7 +53,7 @@ const Base = (props: Enterprise.InfoProps) => {
           enterprisecCoordinate:values.enterprise_coordinates,
           tel:values.tel,
           logo:values.enterprise_logo,
-          enterpriseLocation:[...loc,...detail]
+          enterpriseLocation:[...loc,...detail,...door]
         }
       }
     }).then(()=>{
@@ -84,7 +86,8 @@ const Base = (props: Enterprise.InfoProps) => {
             tel,
             enterprise_logo,
             enterprise_loc_detail:loc_format,
-            detail_address:detail_format
+            detail_address:detail_format,
+            door:door_format
           }}
           scrollToFirstError
         >

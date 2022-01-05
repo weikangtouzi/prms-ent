@@ -66,6 +66,23 @@ declare namespace Employ {
     salary: number[]
   }
 
+  interface communicate_list{
+    age: number
+    city_expectation: string
+    exp: number
+    gender: boolean
+    id: number
+    job: any
+    job_category_expectation: string[]
+    job_status: ResumeJobStatus
+    last_log_out_time: string
+    last_msg: string
+    last_msg_time: string
+    logo: string
+    name: string
+    salary_expectations: number[]
+  }
+
   interface JobHunterList {
     count: number,
     data: jobHunter[]

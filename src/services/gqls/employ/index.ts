@@ -68,3 +68,27 @@ export const GET_SEARCHER_LIST = gql`
      }
    }
 `
+
+// 人才管理沟通中
+export const GET_COMMUNICATE_LIST  = gql`
+   query get_communicate_list{
+     UserGetContractList{
+       ... on Talent{
+         age,
+         id,
+         city_expectation,
+         exp,
+         gender,
+         job,
+         job_category_expectation,
+         job_status,
+         last_log_out_time,
+         last_msg,
+         last_msg_time,
+         logo,
+         name,
+         salary_expectations
+       }
+     }
+   }
+`
