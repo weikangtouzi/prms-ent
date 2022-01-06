@@ -68,7 +68,7 @@ declare namespace Employ {
 
   interface communicate_list{
     age: number
-    city_expectation: string
+    city_expectation: string,
     exp: number
     gender: boolean
     id: number
@@ -83,8 +83,30 @@ declare namespace Employ {
     salary_expectations: number[]
   }
 
+  interface interviewer_detail{
+    age: number
+    aimed_city: string
+    education: Education
+    experience: number
+    gender: boolean
+    id: number
+    job: any
+    job_expectation: string[]
+    job_status: ResumeJobStatus
+    last_log_out_time: string
+    name: string
+    personal_advantage: string
+    salary: number[]
+    skills: string[]
+  }
+
   interface JobHunterList {
     count: number,
     data: jobHunter[]
+  }
+
+  interface InterviewerList{
+    count: number,
+    data: interviewer_detail[]
   }
 }

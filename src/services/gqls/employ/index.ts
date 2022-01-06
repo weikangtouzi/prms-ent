@@ -92,3 +92,26 @@ export const GET_COMMUNICATE_LIST  = gql`
      }
    }
 `
+
+// 人才管理，待面试，已面试，不合适
+export const GET_PEOPLE_LIST_OF_INTERVIEW  = gql`
+  query get_people_list_of_interview($education:String,$expectation:String,$page:Int,$pageSize:Int,$salary: [Int],$sortByUpdatedTime:Boolean,$status: InterviewStatus){
+    ENTGetCandidatesWithInterviewStatus(education: $education,expectation: $expectation,page: $page,pageSize: $pageSize,salary: $salary,sortByUpdatedTime: $sortByUpdatedTime,status: $status){
+      count,
+      data{
+        age,
+        name,
+        salary,
+        skills,
+        aimed_city,
+        education,
+        experience,
+        id,
+        job,
+        job_expectation,
+        job_status,
+        personal_advantage,
+      }
+    }
+  }
+`

@@ -1,6 +1,7 @@
 import {Tabs} from "antd";
 import {useState} from "react";
 import Communicate from './parts/Communicate';
+import Interview from './parts/interview'
 
 const messageType = [
   {
@@ -36,7 +37,7 @@ const Index = ()=>{
       messageType.map(tab=>{
         return  <TabPane tab={tab.tab} key={tab.key}>
           {tabKey === 'communicate' && <Communicate />}
-          {tabKey === 'wait-interview' && <Communicate />}
+          {tabKey === 'wait-interview' && <Interview />}
           {tabKey === 'interviewed' && <Communicate />}
           {tabKey === 'no-suit' && <Communicate />}
           {/*{tabKey === 'saw' && <Communicate />}*/}
