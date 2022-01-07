@@ -4,6 +4,7 @@ import {useRef} from "react";
 import {useQuery} from "@apollo/client";
 import {GET_PEOPLE_LIST_OF_INTERVIEW} from "@/services/gqls/employ";
 import MinMax from "@/components/FormSalary";
+import FormSingleTree from "@/components/FormSingleTree";
 
 const Interview = ()=>{
   const actionRef = useRef<ActionType>();
@@ -18,7 +19,7 @@ const Interview = ()=>{
     }
     >(GET_PEOPLE_LIST_OF_INTERVIEW,{
     variables:{
-      status:'Waitting'
+      status:'Passed'
     }
   })
 
@@ -89,7 +90,12 @@ const Interview = ()=>{
     {
       title: '期待岗位',
       dataIndex: 'job_expectation',
-      hideInSearch:true
+      render: (_,r)=>{
+        return r.job_expectation && r.job_expectation.length>0? r.job_expectation.join('/'):'--'
+      },
+      renderFormItem:()=>{
+        return <FormSingleTree url={'https://be.chenzaozhao.com/preludeDatas/job_category.json'}/>
+      }
     },
     {
       title: '期望城市',
@@ -167,12 +173,14 @@ const Interview = ()=>{
         pageSize: params.pageSize,
         salary:params.salary,
         education:params.education,
+        expectation: params.job_expectation && params.job_expectation.length>0?params.job_expectation[params.job_expectation.length-1]:null,
+        status:'Passed'
       });
-      const list = res.data.ENTSearchCandidates?.data
+      const list = res.data.ENTGetCandidatesWithInterviewStatus?.data
       return {
         data: list,
         success: true,
-        total: res.data.ENTSearchCandidates?.count
+        total: res.data.ENTGetCandidatesWithInterviewStatus?.count
       };
     }}
     columnsState={{

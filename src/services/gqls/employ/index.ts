@@ -102,6 +102,7 @@ export const GET_PEOPLE_LIST_OF_INTERVIEW  = gql`
         age,
         name,
         salary,
+        gender,
         skills,
         aimed_city,
         education,
@@ -110,6 +111,7 @@ export const GET_PEOPLE_LIST_OF_INTERVIEW  = gql`
         job,
         job_expectation,
         job_status,
+        last_log_out_time,
         personal_advantage,
       }
     }

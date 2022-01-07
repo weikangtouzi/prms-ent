@@ -438,9 +438,9 @@ type Query {
   "get resume data, if cache id exists then will return the cache data, cache expired every 30 minutes"
   CommonGetResume(cacheId: String, resumeId: Int): ResumeData!
   ENTCheckEnterpriseIdentification: EnterpriseIdentification!
-  ENTGetCandidatesWithInterviewStatus(education: String, expectation: String, page: Int, pageSize: Int, salary: [Int], sortByUpdatedTime: Boolean, status: InterviewStatus): TalentListForSearchResult!
+  ENTGetCandidatesWithInterviewStatus(city: String, education: String, expectation: String, page: Int, pageSize: Int, salary: [Int], sortByUpdatedTime: Boolean, status: InterviewStatus): TalentListForSearchResult!
   ENTPrecheckForInviteWorkMate(phoneNumber: String): WorkerMatePrecheckResult!
-  ENTSearchCandidates(education: String, expectation: String, page: Int, pageSize: Int, salary: [Int], sortByUpdatedTime: Boolean): TalentListForSearchResult!
+  ENTSearchCandidates(city: String, education: String, expectation: String, page: Int, pageSize: Int, salary: [Int], sortByUpdatedTime: Boolean): TalentListForSearchResult!
   "get applicant by conditions, null for no limitation, null when no matched data"
   HRGetApplicants(filter: ApplicantFilter): SearchApplicantsResult
   "true means already inserted"
@@ -673,7 +673,7 @@ enum InterviewProcess {
 enum InterviewStatus {
   Failed
   Passed
-  Waitting
+  Waiting
 }
 
 enum ResumeEmployNature {
