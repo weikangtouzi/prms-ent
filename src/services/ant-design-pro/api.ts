@@ -4,12 +4,13 @@ import { request } from 'umi';
 
 /** 获取当前的用户 GET /api/currentUser */
 export async function currentUser(options?: { [key: string]: any }) {
-  return request<{
-    data: API.CurrentUser;
-  }>('https://www.fastmock.site/mock/4c7c7304de92ebad44f20a8890307bc2/way/currentUser', {
-    method: 'GET',
-    ...(options || {}),
-  });
+	const valueList = await HTAPI.UserGetBasicInfo()
+	return {
+		data: {
+			name: valueList.username,
+			avatar: valueList.image_url
+		}
+	}
 }
 
 /** 退出登录接口 POST /api/login/outLogin */

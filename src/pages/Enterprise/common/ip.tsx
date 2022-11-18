@@ -1,14 +1,11 @@
 import {Button, Card, Form, message} from 'antd';
 import {formItemLayout, tailFormItemLayout} from '@/common/js/config';
-import MultipleUpload from "@/components/Upload/multiUpload";
-import {useMutation} from "@apollo/client";
-import {edit_enterprise_extra} from "@/services/gqls/enterprise";
-
+import MultipleUpload from "@/components/Upload/multiUpload"
+import HTAuthManager from '@/common/auth/common/model/HTAuthManager'
 
 const Ip = (props: {extraData: string|undefined}) => {
   const {extraData='{}'} = props
-  const [form] = Form.useForm();
-  const [edit_extra_data] = useMutation<void,{info: string}>(edit_enterprise_extra)
+  const [form] = Form.useForm()
   let initData = {}
   try{
     initData= JSON.parse(extraData)
@@ -16,14 +13,12 @@ const Ip = (props: {extraData: string|undefined}) => {
 
   const onFinish = (values: any) => {
     console.log('Received values of form: ', values);
-    edit_extra_data({
-      variables:{
-        info:JSON.stringify(values)
-      }
+    HTAPI.ENTEditEnterpriseExtraData({
+    	info:JSON.stringify(values)
     }).then(()=>{
       message.success('保存成功').then()
     }).catch(e=>{
-      message.error(e.graphQLErrors?.[0].message).then()
+      
     })
   };
 
@@ -37,6 +32,7 @@ const Ip = (props: {extraData: string|undefined}) => {
           onFinish={onFinish}
           initialValues={initData}
           scrollToFirstError
+          disabled={HTAuthManager?.keyValueList?.enterpriseRole?.toLowerCase() != 'admin'}
         >
           <Form.Item
             name="videos"

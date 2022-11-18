@@ -70,14 +70,14 @@ const Layouts = (props: PropsWithChildren<any>) => {
       }}
       iconfontUrl={'//at.alicdn.com/t/font_2919626_sgku75qiwh.js'}
       layout={'side'}
-      // logo={'/images/login/logo.png'}
+      logo={'/images/login/logo.png'}
       primaryColor={'#00DA8A'}
       siderWidth={208}
       navTheme={'light'}
       fixedHeader={true}
       fixSiderbar={true}
       colorWeak={false}
-      headerContentRender={() => <Header/>}
+      // headerContentRender={() => <Header/>}
       title={''}
       rightContentRender={() => <RightContent/>}
       // footerRender={() => <Footer />}

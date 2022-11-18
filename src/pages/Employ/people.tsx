@@ -11,14 +11,17 @@ const messageType = [
   {
     tab: '待面试',
     key: 'wait-interview',
+    // disabled: true,
   },
   {
     tab: '已面试',
     key: 'interviewed',
+    // disabled: true,
   },
   {
     tab: '不合适',
     key: 'no-suit',
+    // disabled: true,
   },
   // {
   //   tab: '查看过该岗位',
@@ -35,11 +38,11 @@ const Index = ()=>{
   return <Tabs onChange={(t)=>setTabKey(t)}>
     {
       messageType.map(tab=>{
-        return  <TabPane tab={tab.tab} key={tab.key}>
+        return  <TabPane tab={tab.tab} key={tab.key} disabled={tab.disabled}>
           {tabKey === 'communicate' && <Communicate />}
-          {tabKey === 'wait-interview' && <Interview />}
-          {tabKey === 'interviewed' && <Communicate />}
-          {tabKey === 'no-suit' && <Communicate />}
+          {tabKey === 'wait-interview' && <Interview status={'Waiting'} />}
+          {tabKey === 'interviewed' && <Interview status={'Passed'} />}
+          {tabKey === 'no-suit' && <Interview status={'Failed'} />}
           {/*{tabKey === 'saw' && <Communicate />}*/}
           {/*{tabKey === 'favorite' && <Communicate />}*/}
         </TabPane>})

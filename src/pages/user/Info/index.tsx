@@ -1,10 +1,8 @@
 import { Tabs} from 'antd';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Base from '@/pages/user/Info/base';
 import Safe from '@/pages/user/Info/safe';
 import Title from '@/pages/user/Info/title';
-import {useQuery} from "@apollo/client";
-import {GET_USERINFO} from "@/services/gqls/user/info";
 
 const userInfoTab = [
   {
@@ -18,6 +16,7 @@ const userInfoTab = [
   {
     tab: '任职信息',
     key: 'title',
+    disabled: true
   },
 
 ];
@@ -25,14 +24,27 @@ const userInfoTab = [
 const {TabPane} = Tabs;
 const UserInfo = () => {
   const [tabKey, setTabKey] = useState('base');
-  const {data,loading} =  useQuery<ResultDataType<'UserGetBasicInfo', User.UserInfo>>(GET_USERINFO)
+  const [userInfo, setUserInfo] = useState()
+  const [loading, setLoading] = useState(false)
+  useEffect(() => {
+  	setLoading(true)
+  	Promise.all([
+  		HTAPI.UserGetBasicInfo(),
+	  	HTAPI.ENTGetAccountInfo()
+  	]).then(([userInfo, { pos }]) => {
+  		userInfo.pos = pos
+  		setUserInfo(userInfo)
+  	}).finally(() => {
+  		setLoading(false)
+  	})
+  }, [])
   return (
   <Tabs onChange={(t)=>setTabKey(t)}>
     {
       !loading && userInfoTab.map(tab=>{
-        return  <TabPane tab={tab.tab} key={tab.key}>
-          {tabKey === 'base' && <Base {...data?.UserGetBasicInfo}/>}
-           {tabKey === 'safe' && <Safe />}
+        return  <TabPane tab={tab.tab} key={tab.key} disabled={tab.disabled}>
+          {tabKey === 'base' && <Base userInfo={userInfo} />}
+           {tabKey === 'safe' && <Safe userInfo={userInfo} />}
          {tabKey === 'title' && <Title />}
         </TabPane>})
     }

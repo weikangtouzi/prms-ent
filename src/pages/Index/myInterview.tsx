@@ -32,7 +32,7 @@ const MyInterview = () => {
             icon={<img src={'/images/empty_1.png'} alt="no interview" style={{ width: '180px' }} />}
             title="今天还没有安排面试哦～"
             subTitle=""
-            extra={<Button type="link">快去挑选心仪的人才</Button>}
+            extra={<Button disabled type="link">快去挑选心仪的人才</Button>}
           />
         )}
       </div>

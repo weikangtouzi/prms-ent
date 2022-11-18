@@ -1,14 +1,12 @@
 import styles from './index.less';
-import ProForm, { ProFormCaptcha, ProFormText } from '@ant-design/pro-form';
+import ProForm, { ProFormCaptcha, ProFormText, LoginForm } from '@ant-design/pro-form';
 import { Alert, message, Tabs } from 'antd';
 import { LockOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons';
 import { FormattedMessage } from '@@/plugin-locale/localeExports';
 import React, { useState } from 'react';
 import { useModel } from '@@/plugin-model/useModel';
 import { history } from '@@/core/history';
-import { useLazyQuery,useMutation} from '@apollo/client';
-import { GET_LOGIN, Get_Fake_Captcha, Login_By_Phone,Choose_Identity } from '@/services/gqls/user/login';
-import {GET_ENTERPRISE_INFO} from '@/services/gqls/enterprise'
+import HTAuthManager from '@/common/auth/common/model/HTAuthManager'
 
 const LoginMessage: React.FC<{
   content: string;
@@ -23,135 +21,82 @@ const LoginMessage: React.FC<{
   />
 );
 const Login = () => {
-  const loginSuccess = () => {
+  const loginSuccess = async () => {
     /** 此方法会跳转到 redirect 参数所在的位置 */
     if (!history) return;
     const { query } = history.location;
     const { redirect } = query as { redirect: string };
-    history.push(redirect || '/');
+    // history.push(redirect || '/');
+    window.location = redirect || '/'
   };
   const [submitting, setSubmitting] = useState(false);
   const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
   const { setInitialState } = useModel('@@initialState');
   const [type, setType] = useState<string>('account');
 
-
-
-  // 获取账户信息
-  const [get_enterprise_info] = useLazyQuery<ResultDataType<'UserGetEnterpriseDetail_EntInfo', Enterprise.BaseInfo>>(GET_ENTERPRISE_INFO, {
-    onCompleted: (res) => {
-      // 切换身份
-      setInitialState((s) => ({
-        ...s,
-        currentUser: {
-          avatar: res.UserGetEnterpriseDetail_EntInfo.enterprise_logo||'',
-          name: res.UserGetEnterpriseDetail_EntInfo.enterprise_name,
-          userid: res.UserGetEnterpriseDetail_EntInfo.enterprise_name,
-        },
-      })).then(() => {
-        loginSuccess();
-      });
-    },
-    onError: () => {
-      message.error('获取账户信息失败').then();
-    },
-    fetchPolicy:'network-only'
-  });
-
-  const [choose_identify] = useMutation<ResultDataType<'UserChooseOrSwitchIdentity', string>>(Choose_Identity,{
-    onCompleted:(res)=>{
-      localStorage.setItem('token',res.UserChooseOrSwitchIdentity)
-      get_enterprise_info()
-    },
-    onError:()=>{
-      message.error('切换身份失败').then();
-    }
-  })
-  const [loginAction] = useLazyQuery<
-    ResultDataType<'UserLogIn', User.UserData>,
-    User.UserNameLoginVar
-  >(GET_LOGIN, {
-    onCompleted: (resData) => {
-      setSubmitting(false);
-      const { UserLogIn } = resData;
-      localStorage.setItem('token', UserLogIn.token);
-      localStorage.setItem('username', UserLogIn.username);
-      // 切换身份
-      choose_identify().then()
-    },
-    onError: () => {
-      setUserLoginState({
-        status: 'error',
-        type: 'account',
-      });
-      setSubmitting(false);
-    },
-    fetchPolicy:'network-only'
-  });
-
-  // 发送验证码
-  const [get_sms_code] = useLazyQuery<void, User.FakeCodeParams>(Get_Fake_Captcha, {
-    onCompleted: () => {
-      message.success('验证码发送成功').then();
-    },
-    onError: (e) => {
-      const msg = (e.graphQLErrors[0].extensions as any).error.phoneNumber;
-      message.error('发送失败' + msg).then();
-    },
-  });
-
-  // 验证码登录
-  const [login_by_code, { variables }] = useLazyQuery<void, User.VerifyCode>(Login_By_Phone, {
-    onCompleted: () => {
-      // 校验成功后
-      const { info } = variables as User.VerifyCode;
-      loginAction({
-        variables: {
-          info: {
-            account: info.phoneNumber,
-          },
-        },
-      });
-    },
-    onError: () => {
-      message.error('验证码校验不通过').then();
-    },
-    fetchPolicy:'network-only'
-  });
   const { status, type: loginType } = userLoginState;
 
   const handleSubmit = async (values: API.LoginParams) => {
+  	const callLoginApi = () => {
+  		HTAPI.UserLogIn({
+      	info: {
+	        account: type != 'mobile' ? values?.username : values.phone,
+	        password: type != 'mobile' ? values?.password : undefined,
+	      },
+      }).then(response => {
+      	const chooseAdminAndHrRole = () => {
+					return new Promise((resolve, reject) => {
+						HTAPI.UserChooseOrSwitchIdentity({
+				  		targetIdentity: 'EnterpriseUser',
+							role: 'Admin'
+				  	}, { showError: false }, { Authorization: response.token }).then(response => {
+				  		resolve({ token: response, role: 'Admin' })
+				  	}).catch(() => {
+				  		HTAPI.UserChooseOrSwitchIdentity({
+				    		targetIdentity: 'EnterpriseUser',
+								role: 'HR'
+				    	}, { }, { Authorization: response.token }).then(response => {
+				    		resolve({ token: response, role: 'HR' })
+				  		}).catch(e => {
+				  			reject(e)
+				  		})
+				  	})
+					})
+				}
+				chooseAdminAndHrRole().then(response => {
+					HTAuthManager.updateKeyValueList({ enterpriseToken: response.token, enterpriseRole: response.role })
+      		HTAPI.UserChooseOrSwitchIdentity({
+	      		targetIdentity: 'PersonalUser',
+						role: 'PersonalUser'
+	      	}).then(response => {
+	      		HTAPI.CandidateGetAllJobExpectations({}, {}, { Authorization: response }).then((expectationList) => {
+							if ((expectationList?.length ?? 0) <= 0) {
+								loginSuccess()
+								return
+							}
+							HTAuthManager.updateKeyValueList({ userToken: response })
+							loginSuccess()
+						}).catch(() => {
+							loginSuccess()
+						})
+	      	}).catch(() => {
+	      		loginSuccess()
+	      	})
+				})
+      })
+  	}
     if (type === 'mobile') {
-      console.log(values);
-      // 手机号登录
-      login_by_code({
-        variables: {
-          info: {
-            phoneNumber: values.phone || '',
-            verifyCode: values.captcha || '',
-            operation: 'UserLogIn',
-          },
-        },
-      });
+      HTAPI.UserVerifyCodeConsume({
+    		info: {
+    			phoneNumber: values.phone,
+          verifyCode: values.captcha,
+          operation: 'UserLogIn'
+    		}
+    	}).then(() => {
+    		callLoginApi()
+    	})
     } else {
-      // 用户名密码登录
-      loginAction({
-        variables: {
-          info: {
-            account: values.username,
-            password: values.password,
-          },
-        },
-      });
-      // const fetchUserInfo = async () => {
-      //   const userInfo = await initialState?.fetchUserInfo?.();
-      //   if (userInfo) {
-      //     await setInitialState((s) => ({
-      //       ...s,
-      //       currentUser: userInfo,
-      //     }));
-      //   }
-      // };
+      callLoginApi()
     }
   };
 
@@ -167,23 +112,11 @@ const Login = () => {
             欢迎使用<span>趁早找企业端</span>
           </h3>
           <div className={styles.main}>
-            <ProForm
+            <LoginForm
               initialValues={{
                 autoLogin: true,
               }}
-              submitter={{
-                searchConfig: {
-                  submitText: '登录',
-                },
-                render: (_, dom) => dom.pop(),
-                submitButtonProps: {
-                  loading: submitting,
-                  size: 'large',
-                  style: {
-                    width: '100%',
-                  },
-                },
-              }}
+              actions={[]}
               onFinish={async (values) => {
                 await handleSubmit(values as API.LoginParams);
               }}
@@ -252,11 +185,9 @@ const Login = () => {
                     onGetCaptcha={async (phone) => {
                       // 判断phone是否合法
                       try {
-                        await get_sms_code({
-                          variables: {
-                            phoneNumber: phone,
-                          },
-                        });
+                        await HTAPI.StaticSendSms({
+					              	phoneNumber: phone
+					              })
                       } catch (e) {
                         message.error('发送失败!');
                       }
@@ -273,7 +204,7 @@ const Login = () => {
                       size: 'large',
                       prefix: <UserOutlined className={styles.prefixIcon} />,
                     }}
-                    placeholder="用户名: admin or user"
+                    placeholder="手机号"
                     rules={[
                       {
                         required: true,
@@ -292,7 +223,7 @@ const Login = () => {
                       size: 'large',
                       prefix: <LockOutlined className={styles.prefixIcon} />,
                     }}
-                    placeholder="密码: ant.design"
+                    placeholder="密码"
                     rules={[
                       {
                         required: true,
@@ -310,15 +241,15 @@ const Login = () => {
               {status === 'error' && loginType === 'mobile' && (
                 <LoginMessage content="验证码错误" />
               )}
-            </ProForm>
-            <a
+            </LoginForm>
+            {/*<a
               style={{
                 marginTop: '8px',
                 float: 'right',
               }}
             >
               <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" />
-            </a>
+            </a>*/}
           </div>
         </div>
       </div>

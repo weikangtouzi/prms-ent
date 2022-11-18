@@ -2,9 +2,7 @@ import React, {useState} from 'react';
 import {message, Upload} from 'antd';
 import {PlusOutlined} from '@ant-design/icons';
 import type {UploadFile} from 'antd/es/upload/interface';
-import {UploadFileToServer} from '@/services/gqls/file'
 import type {UploadRequestOption} from "rc-upload/lib/interface";
-import {useMutation} from "@apollo/client";
 
 const UploadButton = (
   <div>
@@ -16,7 +14,6 @@ const UpButton: React.FC<{
   value?: string;
   onChange?: (value: string) => void;
 }> = ({value, onChange}) => {
-  const [up_file] = useMutation<ResultDataType<'CommonSingleUpload', string>, { file: File }>(UploadFileToServer)
   const [files, setFiles] = useState<UploadFile<any>[]>(value ? [
     {
       uid: '-1',
@@ -40,11 +37,7 @@ const UpButton: React.FC<{
     const {onSuccess, onError, file,} = options;
     const reader = new FileReader();
     reader.readAsDataURL(file as Blob);
-    up_file({
-      variables: {
-        file: file as File
-      }
-    }).then(res => {
+    HTAPI.CommonSingleUpload(file).then(res => {
       const url = res.data?.CommonSingleUpload || ''
       setFiles([
         {
@@ -60,7 +53,7 @@ const UpButton: React.FC<{
       if (onChange) {
         onChange(url)
       }
-    }).catch(onError)
+    })
   };
 
   const handleChange = async ({file}: any) => {

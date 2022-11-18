@@ -1,9 +1,7 @@
 import React, {useState} from 'react';
 import {Button, message, Upload} from 'antd';
 import {PlusOutlined, UploadOutlined} from '@ant-design/icons';
-import {UploadFileToServer} from '@/services/gqls/file'
 import type {UploadRequestOption} from "rc-upload/lib/interface";
-import {useMutation} from "@apollo/client";
 
 const UploadButton = (
   <div>
@@ -17,7 +15,6 @@ const MultipleUpload: React.FC<{
   accept?: string
   onChange?: (value: string[]) => void;
 }> = ({value, onChange,max=1,accept='image/*,video/*'}) => {
-  const [up_file] = useMutation<ResultDataType<'CommonSingleUpload', string>, { file: File }>(UploadFileToServer)
   const [files, setFiles] = useState<any[]>(()=>{
     if(!value || value.length<=0) return []
     return value.map((v)=>{
@@ -45,11 +42,7 @@ const MultipleUpload: React.FC<{
     const {onSuccess, onError, file,} = options;
     const reader = new FileReader();
     reader.readAsDataURL(file as Blob);
-    up_file({
-      variables: {
-        file: file as File
-      }
-    }).then(res => {
+    HTAPI.CommonSingleUpload(file).then(res => {
       const url = res.data?.CommonSingleUpload || ''
       setFiles((f: any[])=>{
         return [
@@ -71,7 +64,7 @@ const MultipleUpload: React.FC<{
         ]
         onChange(urls)
       }
-    }).catch(onError)
+    })
   };
 
   const handleChange = async ({file}: any) => {

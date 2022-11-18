@@ -1,39 +1,29 @@
 import type {ActionType, ProColumns} from "@ant-design/pro-table";
 import ProTable from "@ant-design/pro-table";
-import {useRef} from "react";
-import {useQuery} from "@apollo/client";
-import {GET_PEOPLE_LIST_OF_INTERVIEW} from "@/services/gqls/employ";
+import {useRef} from "react"
 import MinMax from "@/components/FormSalary";
 import FormSingleTree from "@/components/FormSingleTree";
 
-const Interview = ()=>{
-  const actionRef = useRef<ActionType>();
-  const {refetch} = useQuery<ResultDataType<'ENTGetCandidatesWithInterviewStatus', Employ.InterviewerList>,
-    {
-      page?: number,
-      education?: string,
-      expectation?: string,
-      pageSize?: number,
-      salary?: number[],
-      status?: string,
-    }
-    >(GET_PEOPLE_LIST_OF_INTERVIEW,{
-    variables:{
-      status:'Passed'
-    }
-  })
+const Interview = ({ status })=>{
+  const actionRef = useRef<ActionType>()
 
 
   const columns: ProColumns<Employ.jobHunter>[] = [
     {
-      dataIndex: 'index',
-      valueType: 'indexBorder',
-      width: 48,
+    	title: 'id',
+      dataIndex: 'id',
+      hideInSearch: true
     },
     {
       title: '人才',
       dataIndex: 'name',
       hideInSearch:true
+    },
+    {
+    	title: '头像',
+    	dataIndex: 'logo',
+    	valueType: 'avatar',
+    	hideInSearch: true
     },
     {
       title: '性别',
@@ -90,32 +80,46 @@ const Interview = ()=>{
     {
       title: '期待岗位',
       dataIndex: 'job_expectation',
+      hideInSearch: true,
       render: (_,r)=>{
-        return r.job_expectation && r.job_expectation.length>0? r.job_expectation.join('/'):'--'
+      	return (
+      		<label>
+      			{r.job_expectation.map(item => `${item.job_category}_${item.aimed_city}_${item.min_salary_expectation}-${item.max_salary_expectation}`).map(item => (<div>{item}</div>))}
+      		</label>
+      	)
       },
-      renderFormItem:()=>{
+      renderFormItem:(r)=>{
         return <FormSingleTree url={'https://be.chenzaozhao.com/preludeDatas/job_category.json'}/>
       }
     },
     {
-      title: '期望城市',
-      dataIndex: 'aimed_city',
+      title: '所在城市',
+      dataIndex: 'current_city',
       hideInSearch:true
     },
     {
-      title: '期望薪资',
-      dataIndex: 'salary',
-      render:(_,r)=>{
-        if(r.salary && r.salary.length>1){
-          return (r.salary[0]/1000).toFixed(0)+ 'k~' + (r.salary[1]/1000).toFixed(0)+'k'
-        }else{
-          return (r.salary[0]/1000).toFixed(0) + 'k'
-        }
+    	title: '技能',
+      dataIndex: 'resume_data',
+      render: (_, r) => {
+      	return r?.resume_data?.skills
       },
-      renderFormItem:()=>{
-        return <MinMax/>
-      }
+      hideInSearch:true
     },
+    // {
+    //   title: '期望薪资',
+    //   dataIndex: 'salary',
+    //   render:(_,r)=>{
+    //   	return null
+    //     if(r.salary && r.salary.length>1){
+    //       return (r.min_salary_expectation/1000).toFixed(0)+ 'k~' + (r.max_salary_expectation/1000).toFixed(0)+'k'
+    //     }else{
+    //       return (r.salary[0]/1000).toFixed(0) + 'k'
+    //     }
+    //   },
+    //   renderFormItem:()=>{
+    //     return <MinMax/>
+    //   }
+    // },
     {
       title: '状态',
       dataIndex: 'job_status',
@@ -151,13 +155,19 @@ const Interview = ()=>{
       render: (text, record, ) => [
         <a
           key="editable"
+          disabled
           onClick={() => {
           }}
         >
           打招呼
         </a>,
-        <a target="_blank" rel="noopener noreferrer" key="view">
-          求简历
+        <a
+          key="resume"
+          onClick={() => {
+          	
+          }}
+        >
+          查看简历
         </a>
       ],
     },
@@ -168,19 +178,21 @@ const Interview = ()=>{
     request={async (
       params,
     ) => {
-      const res = await refetch({
+      const res = await HTAPI.ENTSearchCandidates({
         page: params.current === undefined ? 0 : params.current - 1,
         pageSize: params.pageSize,
-        salary:params.salary,
-        education:params.education,
-        expectation: params.job_expectation && params.job_expectation.length>0?params.job_expectation[params.job_expectation.length-1]:null,
-        status:'Passed'
+        filter: {
+        	salary:params.salary,
+	        education:params.education,
+	        // expectation: params.job_expectation && params.job_expectation.length>0?params.job_expectation[params.job_expectation.length-1]:null,
+	        interview_status: status
+        }
       });
-      const list = res.data.ENTGetCandidatesWithInterviewStatus?.data
+      const list = res?.data
       return {
         data: list,
         success: true,
-        total: res.data.ENTGetCandidatesWithInterviewStatus?.count
+        total: res?.count
       };
     }}
     columnsState={{

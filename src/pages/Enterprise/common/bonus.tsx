@@ -1,8 +1,7 @@
 import {Form, Button, Select, Card, Radio, Space, TimePicker, message} from 'antd';
 import {tailFormItemLayout, formItemLayout} from '@/common/js/config';
-import {useMutation} from "@apollo/client";
-import {edit_enterprise_welfare} from "@/services/gqls/enterprise";
 import moment from "moment";
+import HTAuthManager from '@/common/auth/common/model/HTAuthManager'
 
 const options = [
   {value: '周末双休', label: '周末双休'},
@@ -19,26 +18,23 @@ interface BonusProps {
 const Bonus = (props: BonusProps) => {
   const {overtime_work_degree,rest_rule,tags=[],work_time=''} = props
   const [form] = Form.useForm();
-  const [edit_welfare] = useMutation<void, { info: Enterprise.welfareType }>(edit_enterprise_welfare)
   const format = 'HH:mm';
 
 
 
   const onFinish = (values: Enterprise.welfareType) => {
-    edit_welfare({
-      variables: {
-        info: {
-          customTags: values.customTags,
-          restRule: values.restRule,
-          overtimeWorkDegree: values.overtimeWorkDegree,
-          welfare: [],
-          workRule: values.worktime === 1 ? `${values.startTime.format(format)}-${values.endTime.format(format)}` : ""
-        }
+  	HTAPI.ENTEditEnterpriseWorkTimeAndWelfare({
+  		info: {
+        customTags: [],
+        restRule: values.restRule,
+        overtimeWorkDegree: values.overtimeWorkDegree,
+        welfare: values.customTags,
+        workRule: values.worktime === 1 ? `${values.startTime.format(format)}-${values.endTime.format(format)}` : ""
       }
-    }).then(() => {
+  	}).then(() => {
       message.success('保存成功').then()
     }).catch((e) => {
-      message.error(e.graphQLErrors?.[0].message).then()
+      
     })
   };
   const checkConfirm = (_: any, value: string) => {
@@ -67,6 +63,7 @@ const Bonus = (props: BonusProps) => {
             endTime:work_time?moment(work_time.split('-')[1],format):undefined
           }}
           scrollToFirstError
+          disabled={HTAuthManager?.keyValueList?.enterpriseRole?.toLowerCase() != 'admin'}
         >
 
           <Form.Item label="工作时间" name='worktime' rules={[{required: true}]} className={'needPt5'}>

@@ -17,7 +17,9 @@ export default defineConfig({
   request:{
     dataField:''
   },
-  layout: false,
+  layout: {
+  	
+  },
   // https://umijs.org/zh-CN/plugins/plugin-locale
   locale: {
     // default zh-CN
@@ -36,7 +38,7 @@ export default defineConfig({
     type:'hash'
   },
   // umi routes: https://umijs.org/docs/routing
-  routes:routes,
+  routes,
   // Theme for antd: https://ant.design/docs/react/customize-theme-cn
   theme: {
     'primary-color': defaultSettings.primaryColor,

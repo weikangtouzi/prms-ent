@@ -2,28 +2,21 @@ import {Form, Input, Button, Card, message} from 'antd';
 import {tailFormItemLayout, formItemLayout} from '@/common/js/config';
 import UpButton from "@/components/Upload";
 import {ProFormText} from "@ant-design/pro-form";
-import {useMutation} from "@apollo/client";
-import {UPDATE_USERINFO} from "@/services/gqls/user/info";
 
 const Base = (props: Partial<User.UserInfo>) => {
-  const {username} = props
+  const userInfo = props?.userInfo
   const [form] = Form.useForm();
 
-  const [update_userInfo] =  useMutation<void,{info: Partial<User.UserInfo_Update>}>(UPDATE_USERINFO,{
-    fetchPolicy:"network-only"
-  })
-
   const onFinish = (values: any) => {
-    update_userInfo({
-      variables:{
-        info:{
-          username:values.username
-        }
-      }
-    }).then(()=>{
-      message.success('更新成功').then()
-    }).catch(r=>{
-      message.error(r.graphQLErrors?.[0].message).then()
+  	const { pos, ...infoList } = values
+  	infoList.logo = infoList.image_url
+  	infoList.image_url = undefined
+  	Promise.all([
+  		HTAPI.UserEditBasicInfo({ info: infoList }),
+  		HTAPI.ENTEditAccountInfo({ pos })
+  	]).then(()=>{
+  		window.location.reload()
+      message.success('更新成功')
     })
   };
 
@@ -35,13 +28,11 @@ const Base = (props: Partial<User.UserInfo>) => {
           form={form}
           name="base"
           onFinish={onFinish}
-          initialValues={{
-            username:username,
-          }}
+          initialValues={userInfo}
           scrollToFirstError
         >
-          <ProFormText name="username" label="姓名" rules={[{required: true, message: '请输入姓名!'}]}/>
-          <Form.Item name="title" label="职务">
+          {/*<ProFormText name="username" label="姓名" rules={[{required: true, message: '请输入姓名!'}]}/>*/}
+          <Form.Item name="pos" label="职务">
             <Input/>
           </Form.Item>
           <Form.Item
@@ -54,9 +45,8 @@ const Base = (props: Partial<User.UserInfo>) => {
 
 
           <Form.Item
-            name="nickname"
+            name="username"
             label="昵称"
-
           >
             <Input/>
           </Form.Item>

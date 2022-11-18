@@ -4,10 +4,9 @@ import {ProFormDatePicker, ProFormSelect, ProFormText, ProFormTextArea} from "@a
 import FormCascade from "@/components/formCascade";
 import UpButton from "@/components/Upload";
 import FormSingleTree from "@/components/FormSingleTree";
-import {useMutation} from "@apollo/client";
-import {editEnterpriseBaseInfo} from "@/services/gqls/enterprise";
 import FormCoordinate from "@/components/FormCoordinate";
 // import FormDetailAddress from "@/components/FormDetailAddress";
+import HTAuthManager from '@/common/auth/common/model/HTAuthManager'
 
 const Base = (props: Enterprise.InfoProps) => {
   const {
@@ -30,36 +29,30 @@ const Base = (props: Enterprise.InfoProps) => {
   const loc_format = enterprise_loc_detail && enterprise_loc_detail.length>=3?enterprise_loc_detail.slice(0,3):[]
   const detail_format =  enterprise_loc_detail && enterprise_loc_detail.length>=1?enterprise_loc_detail.slice(-2)[0]:''
   const door_format =  enterprise_loc_detail && enterprise_loc_detail.length>=4?enterprise_loc_detail.slice(-1)[0]:''
-  const [Edit_Enterprise_BaseInfo] = useMutation<void,{info: Enterprise.EditEnterpriseBasicInfo}>(editEnterpriseBaseInfo)
 
   const onFinish = (values: Enterprise.InfoProps) => {
     const detail = values?.detail_address? [values.detail_address] : []
     const door  = values?.door?[values.door] : []
     console.log(values)
-    const loc = values.enterprise_loc_detail && values.enterprise_loc_detail.length>=3?
-                values.enterprise_loc_detail.slice(0,3).map(n=>String(n)):[]
-    Edit_Enterprise_BaseInfo({
-      variables:{
-        info:{
-          enterpriseName:enterprise_name,
-          abbreviation:values.abbreviation,
-          enterpriseIndustry:values.industry_involved,
-          enterpriseNature:values.business_nature,
-          enterpriseFinancing:values.enterprise_financing,
-          enterpriseSize:values.enterprise_size,
-          enterpriseProfile:values.enterprise_profile,
-          establishedDate:values.established_time,
-          homepage:values.homepage,
-          enterprisecCoordinate:values.enterprise_coordinates,
-          tel:values.tel,
-          logo:values.enterprise_logo,
-          enterpriseLocation:[...loc,...detail,...door]
-        }
+    const loc = values.enterprise_loc_detail
+    HTAPI.ENTEditEnterpriseBasicInfo({
+    	info:{
+        enterpriseName:enterprise_name,
+        abbreviation:values.abbreviation,
+        enterpriseIndustry:values.industry_involved,
+        enterpriseNature:values.business_nature,
+        enterpriseFinancing:values.enterprise_financing,
+        enterpriseSize:values.enterprise_size,
+        enterpriseProfile:values.enterprise_profile,
+        establishedDate:values.established_time,
+        homepage:values.homepage,
+        enterprisecCoordinate:values.enterprise_coordinates,
+        tel:values.tel,
+        logo:values.enterprise_logo,
+        enterpriseLocation:[...loc, detail?.[0], door?.[0]]
       }
     }).then(()=>{
       message.success('保存成功').then()
-    }).catch(e=>{
-      message.error(e.graphQLErrors?.[0].message).then()
     })
   };
 
@@ -90,6 +83,7 @@ const Base = (props: Enterprise.InfoProps) => {
             door:door_format
           }}
           scrollToFirstError
+          disabled={HTAuthManager?.keyValueList?.enterpriseRole?.toLowerCase() != 'admin'}
         >
           <ProFormText name="enterprise_name" label="全称" readonly={true}/>
           <Form.Item

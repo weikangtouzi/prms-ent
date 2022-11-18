@@ -1,21 +1,29 @@
 import type {ActionType, ProColumns} from "@ant-design/pro-table";
 import ProTable from "@ant-design/pro-table";
 import {useRef, useState} from "react";
-import {useQuery} from "@apollo/client";
-import {GET_SEARCHER_LIST} from "@/services/gqls/employ";
 import MinMax from "@/components/FormSalary";
 
 const Search = ()=>{
   const actionRef = useRef<ActionType>();
-  const {refetch} = useQuery<ResultDataType<'ENTSearchCandidates', Employ.JobHunterList>>(GET_SEARCHER_LIST)
   const  [modalShow,setModalShow] = useState(false)
 
 
   const columns: ProColumns<Employ.jobHunter>[] = [
     {
-      dataIndex: 'index',
-      valueType: 'indexBorder',
-      width: 48,
+      dataIndex: 'id',
+      title: 'id',
+      hideInSearch: true
+    },
+    {
+    	dataIndex: 'keyword',
+    	title: '关键词',
+    	hideInTable: true,
+    },
+    {
+    	title: '头像',
+    	dataIndex: 'logo',
+    	valueType: 'avatar',
+    	hideInSearch: true,
     },
     {
       title: '人才',
@@ -40,15 +48,9 @@ const Search = ()=>{
       dataIndex: 'education',
       valueType:'select',
       valueEnum: {
-        LessThanPrime: {
-          text: '小学以下',
-        },
-        Primary: {
-          text: '小学',
-        },
-        Junior: {
-          text: '初中',
-        },
+      	Null: {
+      		text: '高中以下'
+      	},
         High: {
           text: '高中',
         },
@@ -67,80 +69,88 @@ const Search = ()=>{
       },
     },
     {
-      title: '经验',
+      title: '工作经验',
       dataIndex: 'experience',
       hideInSearch:true,
       render: (_,r)=>{
          return r.experience?r.experience+'年':'-'
       }
     },
+    // {
+    //   title: '期待岗位',
+    //   dataIndex: 'job_expectation',
+    //   hideInSearch:true
+    // },
     {
-      title: '期待岗位',
-      dataIndex: 'job_expectation',
-      hideInSearch:true
-    },
-    {
-      title: '期望城市',
-      dataIndex: 'aimed_city',
-      hideInSearch:true
+    	title: '当前城市',
+    	hideInSearch: true,
+    	dataIndex: 'current_city'
     },
     {
       title: '期望薪资',
       dataIndex: 'salary',
+      hideInSearch: true,
       render:(_,r)=>{
-         if(r.salary && r.salary.length>1){
-           return (r.salary[0]/1000).toFixed(0)+ 'k~' + (r.salary[1]/1000).toFixed(0)+'k'
-         }else{
-           return (r.salary[0]/1000).toFixed(0) + 'k'
+      	  const salaryInfo = r?.job_expectation?.[0]
+         if(salaryInfo){
+           return salaryInfo.min_salary_expectation+ '~' + salaryInfo.max_salary_expectation
          }
       },
       renderFormItem:()=>{
         return <MinMax/>
       }
     },
-    {
-      title: '状态',
-      dataIndex: 'job_status',
-      valueType: 'select',
-      hideInSearch:true,
-      valueEnum: {
-        all: {text: '全部', status: 'Default'},
-        NoJobButNoJob: {
-          text: '不想找工作的无业游民',
-        },
-        NoJobButWantJob: {
-          text: '离职状态的求职者',
-        },
-        OnTheJob: {
-          text: '有工作，但无求职意向',
-        },
-        OnTheJobButLookingForAJob: {
-          text: '准备跳槽下家的在职者',
-        },
-        GraduatingStudent: {
-          text: '应届生',
-        },
-      },
-    },
-    {
-      title: '最近活跃时间',
-      dataIndex: 'last_log_out_time',
-      hideInSearch:true
-    },
+    // {
+    //   title: '状态',
+    //   dataIndex: 'interview_status',
+    //   valueType: 'select',
+    //   hideInSearch:true,
+    //   valueEnum: {
+    //     all: {text: '全部', status: 'Default'},
+    //     NoJobButNoJob: {
+    //       text: '不想找工作的无业游民',
+    //     },
+    //     NoJobButWantJob: {
+    //       text: '离职状态的求职者',
+    //     },
+    //     OnTheJob: {
+    //       text: '有工作，但无求职意向',
+    //     },
+    //     OnTheJobButLookingForAJob: {
+    //       text: '准备跳槽下家的在职者',
+    //     },
+    //     GraduatingStudent: {
+    //       text: '应届生',
+    //     },
+    //   },
+    // },
+    // {
+    //   title: '最近活跃时间',
+    //   dataIndex: 'last_log_out_time',
+    //   hideInSearch:true
+    // },
     {
       title: '操作',
       valueType: 'option',
       render: (text, record, ) => [
+        // <a
+        //   key="editable"
+        //   onClick={() => {
+        //     setModalShow(true)
+        //   }}
+        // >
+        //   打招呼
+        // </a>,
+        // <a href={record.url} target="_blank" rel="noopener noreferrer" key="view">
+        //   求简历
+        // </a>
         <a
-          key="editable"
+          key="resume"
           onClick={() => {
-            setModalShow(true)
+          	
           }}
         >
-          打招呼
-        </a>,
-        <a href={record.url} target="_blank" rel="noopener noreferrer" key="view">
-          求简历
+          查看简历
         </a>
       ],
     },
@@ -151,17 +161,21 @@ const Search = ()=>{
         request={async (
           params,
         ) => {
-          const res = await refetch({
+        	console.log(params)
+          const res = await HTAPI.ENTSearchCandidates({
             page: params.current === undefined ? 0 : params.current - 1,
             pageSize: params.pageSize,
-            salary:params.salary,
-            education:params.education,
+            filter: {
+            	salary:params.salary,
+            	education:params.education,
+            	keyword: params.keyword
+            }
           });
-          const list = res.data.ENTSearchCandidates?.data
+          const list = res?.data
           return {
             data: list,
             success: true,
-            total: res.data.ENTSearchCandidates?.count
+            total: res?.count
           };
         }}
         columnsState={{

@@ -2,8 +2,6 @@ import {Form, Input, Button, Result, Card, message, Tabs} from 'antd';
 import {tailFormItemLayout, formItemLayout} from '@/common/js/config';
 import UpButton from "@/components/Upload";
 import type {ApolloError} from "@apollo/client";
-import { useMutation} from "@apollo/client";
-import {EnterpriseIdentify} from "@/services/gqls/enterprise";
 import {useState} from "react";
 
 
@@ -15,7 +13,6 @@ const Auth = (props: authProp) => {
   const {status} = props
   const [form] = Form.useForm();
   const [customStatus,setCustomStatus] = useState<string|undefined>(undefined)
-  const [enterpriseIdentify] = useMutation<void, { info: Enterprise.Identification_Content }>(EnterpriseIdentify)
 
   const onFinish = (values: any) => {
     // 企业认证提交
@@ -29,8 +26,6 @@ const Auth = (props: authProp) => {
       }
     }).then(() => {
       setCustomStatus('Waiting')
-    }).catch((e: ApolloError)=>{
-      message.error(e.graphQLErrors?.[0].message).then()
     })
   };
 

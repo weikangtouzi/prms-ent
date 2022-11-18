@@ -1,25 +1,29 @@
 import type {ActionType, ProColumns} from "@ant-design/pro-table";
 import ProTable from "@ant-design/pro-table";
-import {useRef} from "react";
-import {useQuery} from "@apollo/client";
-import {GET_COMMUNICATE_LIST} from "@/services/gqls/employ";
-import MinMax from "@/components/FormSalary";
+import {useRef} from "react"
+import { message } from 'antd'
+import MinMax from "@/components/FormSalary"
+import {ModalForm} from "@ant-design/pro-form"
 
 const Communicate = ()=>{
-  const actionRef = useRef<ActionType>();
-  const {refetch} = useQuery<ResultDataType<'UserGetContractList', Employ.communicate_list[]>>(GET_COMMUNICATE_LIST)
-
+  const actionRef = useRef<ActionType>()
 
   const columns: ProColumns<Employ.jobHunter>[] = [
     {
-      dataIndex: 'index',
-      valueType: 'indexBorder',
-      width: 48,
+    	title: 'id',
+      dataIndex: 'id',
+      hideInSearch: true,
     },
     {
       title: '人才',
       dataIndex: 'name',
       hideInSearch:true
+    },
+    {
+      title: '头像',
+      dataIndex: 'logo',
+      hideInSearch:true,
+      valueType: 'avatar'
     },
     {
       title: '性别',
@@ -34,64 +38,63 @@ const Communicate = ()=>{
       dataIndex: 'age',
       hideInSearch:true
     },
-    {
-      title: '学历',
-      dataIndex: 'education',
-      valueType:'select',
-      valueEnum: {
-        LessThanPrime: {
-          text: '小学以下',
-        },
-        Primary: {
-          text: '小学',
-        },
-        Junior: {
-          text: '初中',
-        },
-        High: {
-          text: '高中',
-        },
-        JuniorCollege: {
-          text: '大专',
-        },
-        RegularCollege: {
-          text: '本科',
-        },
-        Postgraduate: {
-          text: '硕士',
-        },
-        Doctor: {
-          text: '博士',
-        },
-      },
-    },
+    // {
+    //   title: '学历',
+    //   dataIndex: 'education',
+    //   valueType:'select',
+    //   valueEnum: {
+    //     LessThanPrime: {
+    //       text: '小学以下',
+    //     },
+    //     Primary: {
+    //       text: '小学',
+    //     },
+    //     Junior: {
+    //       text: '初中',
+    //     },
+    //     High: {
+    //       text: '高中',
+    //     },
+    //     JuniorCollege: {
+    //       text: '大专',
+    //     },
+    //     RegularCollege: {
+    //       text: '本科',
+    //     },
+    //     Postgraduate: {
+    //       text: '硕士',
+    //     },
+    //     Doctor: {
+    //       text: '博士',
+    //     },
+    //   },
+    // },
     {
       title: '经验',
-      dataIndex: 'experience',
+      dataIndex: 'exp',
       hideInSearch:true,
       render: (_,r)=>{
-        return r.experience?r.experience+'年':'-'
+        return r.exp?r.exp+'年':'-'
       }
     },
     {
       title: '期待岗位',
-      dataIndex: 'job_expectation',
+      dataIndex: ['job','title'],
       hideInSearch:true
     },
     {
       title: '期望城市',
-      dataIndex: 'aimed_city',
+      dataIndex: 'city_expectation',
       hideInSearch:true
     },
     {
       title: '期望薪资',
       dataIndex: 'salary',
       render:(_,r)=>{
-        if(r.salary && r.salary.length>1){
-          return (r.salary[0]/1000).toFixed(0)+ 'k~' + (r.salary[1]/1000).toFixed(0)+'k'
-        }else{
-          return (r.salary[0]/1000).toFixed(0) + 'k'
-        }
+         const salaryInfo = r?.salary_expectations
+         if(salaryInfo){
+           return salaryInfo[0]+ '~' + salaryInfo[1]
+         }
       },
       renderFormItem:()=>{
         return <MinMax/>
@@ -121,45 +124,58 @@ const Communicate = ()=>{
         },
       },
     },
-    {
-      title: '最近活跃时间',
-      dataIndex: 'last_log_out_time',
-      hideInSearch:true
-    },
+    // {
+    //   title: '最近活跃时间',
+    //   dataIndex: 'last_log_out_time',
+    //   hideInSearch:true
+    // },
     {
       title: '操作',
       valueType: 'option',
       render: (text, record, ) => [
         <a
-          key="editable"
+          key="invite"
           onClick={() => {
+          	HTAPI.HRInviteInterview({
+          		userId: record?.id,
+          		jobId: record?.job?.id,
+          		time: [new Date().toISOString(), new Date().toISOString()]
+          	}).then(response => {
+          		message.success('邀请成功')
+          	})
           }}
         >
-          打招呼
-        </a>,<a href={record?.education} target="_blank" rel="noopener noreferrer" key="view">
-          求简历
+          邀面试
+        </a>,
+        <a
+          key="resume"
+          onClick={() => {
+          	
+          }}
+        >
+          查看简历
         </a>
-
       ],
     },
   ];
-  return <ProTable<Employ.jobHunter>
+  return <>
+  <ProTable<Employ.jobHunter>
     columns={columns}
     actionRef={actionRef}
     request={async (
       params,
     ) => {
-      const res = await refetch({
-        page: params.current === undefined ? 0 : params.current - 1,
-        pageSize: params.pageSize,
-        salary:params.salary,
-        education:params.education,
+      const res = await HTAPI.UserGetContractList({
+        // page: params.current === undefined ? 0 : params.current - 1,
+        // pageSize: params.pageSize,
+        // salary:params.salary,
+        // education:params.education,
       });
-      const list = res.data.ENTSearchCandidates?.data
+      const list = res
       return {
         data: list,
         success: true,
-        total: res.data.ENTSearchCandidates?.count
+        total: res?.count
       };
     }}
     columnsState={{
@@ -167,16 +183,29 @@ const Communicate = ()=>{
       persistenceType: 'localStorage',
     }}
     rowKey="id"
-    search={{
-      labelWidth: 'auto',
-    }}
+    search={false}
     pagination={{
       pageSize: 10,
     }}
     dateFormatter="string"
     options={false}
   />
-
+	{/*<ModalForm
+	  title={`新${newNameTypeValue?.title}`}
+	  width={480}
+	  visible={(newNameType?.length ?? 0) > 0}
+	  modalProps={{
+	    destroyOnClose: false,
+	    onCancel: () => {
+	    	setNewNameType('')
+	    }
+	  }}
+	  onFinish={async () => {
+	  	newNameTypeValue?.onSubmit()
+	  }}
+	>
+	</ModalForm>*/}
+  </>
 }
 
 export default Communicate

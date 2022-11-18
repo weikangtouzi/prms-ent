@@ -5,41 +5,33 @@ import styles from './index.less';
 import FormCascade from "@/components/formCascade";
 import FormCoordinate from "@/components/FormCoordinate";
 import {ProFormDateRangePicker, ProFormSwitch} from "@ant-design/pro-form";
-import {useMutation} from "@apollo/client";
-import {PUBLISH_JOB} from "@/services/gqls/employ";
 
 const Publish = () => {
   const [form] = Form.useForm();
 
-  const [publishJob]=  useMutation<void,{info: Employ.jobDetailForUpdate}>(PUBLISH_JOB)
-
   const onFinish = (values: any) => {
     console.log('Received values of form: ', values);
     const times =  values.times && values.times.length===2 ? [values.times[0].toISOString(),values.times[1].toISOString()]: undefined
-    publishJob({
-      variables:{
-        info:{
-          jobTitle:values.jobTitle,
-          category:values.category,
-          isFullTime:values.isFullTime,
-          requiredNum:values.requiredNum,
-          description:values.description,
-          education:values.education,
-          coordinates:values.coordinates,
-          experience:values.experience,
-          publishNow:values.publishNow,
-          tags:[],
-          salary:[Number(values.min),Number(values.max)],
-          workingAddress:[...values.enterprise_loc_detail,values.detail_address,values.door],
-          onLineTimes:times,
-        }
-      }
+    HTAPI.HRPostJob({
+      info:{
+	      jobTitle:values.jobTitle,
+	      category:values.category,
+	      isFullTime:values.isFullTime,
+	      requiredNum:values.requiredNum,
+	      description:values.description,
+	      education:values.education,
+	      coordinates:values.coordinates,
+	      experience:values.experience,
+	      publishNow:values.publishNow,
+	      tags:[],
+	      salary:[Number(values.min),Number(values.max)],
+	      workingAddress:[...values.enterprise_loc_detail,values.detail_address,values.door],
+	      onLineTimes:times,
+	    }
     }).then(()=>{
       message.success('发布职位成功').then()
-      history.back()
+      history.goBack()
       // form.resetFields()
-    }).catch(e=>{
-      message.error(e.graphQLErrors?.[0].message).then()
     })
   };
 

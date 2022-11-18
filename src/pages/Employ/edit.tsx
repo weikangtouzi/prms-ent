@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import {Button, Card, Form, Input, InputNumber, message, Select, Space} from "antd";
 import {formItemLayout, tailFormItemLayout} from "@/common/js/config";
 
@@ -6,50 +7,57 @@ import styles from './index.less';
 import FormCascade from "@/components/formCascade";
 import FormCoordinate from "@/components/FormCoordinate";
 import {ProFormDateRangePicker, ProFormSwitch} from "@ant-design/pro-form";
-import {useMutation} from "@apollo/client";
-import {EDIT_JOB} from "@/services/gqls/employ";
-import { useLocation } from 'umi';
+import { history, useLocation } from 'umi';
 
 const Edit = () => {
   const [form] = Form.useForm();
   const location = useLocation();
   // @ts-ignore
-  const {id} = location.query
-  const [editJob]=  useMutation<void,{info: Employ.jobDetailForUpdate}>(EDIT_JOB)
+  const id = location?.query.id
+  const [jobDetail, setJobDetail] = useState()
+  useEffect(() => {
+  	if (!id) {
+  		return
+  	}
+  	HTAPI.UserGetJob({ jobid: parseInt(id) }).then((response) => {
+  		setJobDetail(response?.job)
+  	})
+  }, [])
 
   const onFinish = (values: any) => {
     console.log('Received values of form: ', values);
     const times =  values.times && values.times.length===2 ? [values.times[0].toISOString(),values.times[1].toISOString()]: undefined
-    editJob({
-      variables:{
-        info:{
-          id:id,
-          jobTitle:values.jobTitle,
-          category:values.category,
-          isFullTime:values.isFullTime,
-          requiredNum:values.requiredNum,
-          description:values.description,
-          education:values.education,
-          coordinates:values.coordinates,
-          experience:values.experience,
-          publishNow:values.publishNow,
-          tags:[],
-          salary:[Number(values.min),Number(values.max)],
-          workingAddress:[...values.enterprise_loc_detail,values.detail_address],
-          onLineTimes:times,
-        }
+    const api = id ? HTAPI.HREditJob : HTAPI.HRPostJob
+    api({
+      info:{
+        id: id ? parseInt(id) : undefined,
+        jobTitle:values.jobTitle,
+        category:values.category,
+        isFullTime:values.isFullTime,
+        requiredNum:values.requiredNum,
+        description:values.description,
+        education:values.education,
+        coordinates:values.coordinates,
+        experience:values.experience,
+        publishNow:values.publishNow,
+        tags:[],
+        salary:[Number(values.min),Number(values.max)],
+        workingAddress:[...values.enterprise_loc_detail,values.detail_address],
+        onLineTimes:times,
       }
     }).then(()=>{
       message.success('发布职位成功').then()
-      history.back()
+      history.goBack()
       // form.resetFields()
-    }).catch(e=>{
-      message.error(e.graphQLErrors?.[0].message).then()
     })
   };
 
+  if (id && !jobDetail) {
+  	return null
+  }
 
-  return <Card title='职位详情' extra={<Button onClick={()=>{history.back()}}>返回</Button>}>
+
+  return <Card title='职位详情' extra={<Button onClick={()=>{history.goBack()}}>返回</Button>}>
     <div className={[styles.publish,'mx560'].join(' ')}>
       <Form
         {...formItemLayout}
@@ -57,7 +65,19 @@ const Edit = () => {
         name="base"
         onFinish={onFinish}
         initialValues={{
-          publishNow:true
+          publishNow:true,
+          category: jobDetail?.category,
+	        jobTitle: jobDetail?.title,
+	        isFullTime: jobDetail?.full_time_job,
+	        requiredNum: jobDetail?.required_num,
+	        education: jobDetail?.education,
+	        experience: jobDetail?.experience,
+	        min: jobDetail?.salaryExpected?.[0],
+	        max: jobDetail?.salaryExpected?.[1],
+	        description: jobDetail?.detail,
+	        enterprise_loc_detail: jobDetail?.address_description?.slice(3, 6),
+	        detail_address: jobDetail?.address_description?.slice(6)?.[0],
+	        coordinates: jobDetail?.address_coordinate,
         }}
         scrollToFirstError
       >
@@ -94,7 +114,7 @@ const Edit = () => {
             {required:true,message:'请输入招聘人数'}
           ]}
         >
-          <InputNumber/>
+          <InputNumber min={1} />
         </Form.Item>
         <Form.Item name="education" label="学历要求"  rules={[
           {required:true,message:'请选择学历要求'}
@@ -113,13 +133,13 @@ const Edit = () => {
                      {required:true,message:'请输入要求工作年限'}
                    ]}
         >
-          <InputNumber addonAfter="年以上" style={{width:'100%'}}/>
+          <InputNumber min={0} addonAfter="年以上" style={{width:'100%'}}/>
         </Form.Item>
 
         <Form.Item label="薪资待遇" style={{ marginBottom: 0 }}>
           <Form.Item
             name="min"
-            rules={[{required: true,message:'请输入最低薪资'}]}
+            rules={[{required: true, type: 'number', min: 0, transform: (value) => Number(value), message:'请输入最低薪资'}]}
             style={{display: 'inline-block', width: 'calc(50% - 12px)',marginRight:'8px'}}
           >
             <Input placeholder="最低薪资"/>
@@ -127,7 +147,7 @@ const Edit = () => {
           -
           <Form.Item
             name="max"
-            rules={[{required: true,message:'请输入最高薪资'}]}
+            rules={[{required: true, type: 'number', min: 0, transform: (value) => Number(value), message:'请输入最高薪资'}]}
             style={{display: 'inline-block', width: 'calc(50% - 12px)',marginLeft:'8px'}}
           >
             <Input placeholder="最高薪资"/>
@@ -164,10 +184,19 @@ const Edit = () => {
             <Button type="primary" htmlType="submit">
               提交
             </Button>
-            <Button danger>
-              下线
-            </Button>
-            <Button>
+            {
+            	id && (
+            		<Button danger onClick={() => {
+		            	HTAPI.HRHideJob({ jobId: parseInt(id) }).then(response => {
+		            		message.success('下线成功')
+		            		history.goBack()
+		            	})
+		            }}>
+		              下线
+		            </Button>
+            	)
+            }
+            <Button onClick={() => history.goBack()}>
               返回
             </Button>
           </Space>

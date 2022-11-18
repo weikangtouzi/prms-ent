@@ -1,9 +1,5 @@
-import React from 'react';
-import {Cascader, Spin} from 'antd';
-import {useQuery,} from "@apollo/client";
-import {
-  GET_ALL_REGION
-} from "@/components/formCascade/request";
+import React, { useState, useEffect } from 'react';
+import {Cascader, Spin} from 'antd'
 // @ts-ignore
 import type {DataNode,CascaderValueType} from "rc-cascader/lib/interface";
 
@@ -12,7 +8,16 @@ const FormCascade: React.FC<{
   onChange?: (value: CascaderValueType) => void;
 }> = ({value, onChange}) => {
 
- const {data,loading} = useQuery<ResultDataType<'StaticGetAllRegion', {data: any[]}>>(GET_ALL_REGION)
+	const [regionList, setRegionList] = useState([])
+	const [loading, setLoading] = useState(false)
+	useEffect(() => {
+		setLoading(true)
+		HTAPI.StaticGetAllRegion().then(response => {
+			setRegionList(response.data)
+		}).finally(() => {
+			setLoading(false)
+		})
+	}, [])
 
   const handleChange = (val: CascaderValueType,selectOptions: DataNode[]) => {
     // 把最后一个值给传递出去
@@ -29,7 +34,7 @@ const FormCascade: React.FC<{
       disabled={loading}
       fieldNames={{label: 'name', value: 'id'}}
       value={value && value?.length>=3?value.slice(0,3):value}
-      options={data?.StaticGetAllRegion?.data}
+      options={regionList}
       onChange={handleChange}
       placeholder="请选择"
     />
